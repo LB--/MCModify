@@ -1,5 +1,5 @@
 /******************************************************************************\
-|* Copyright © 2012 LB-Stuff                                                  *|
+|* Copyright © 2013 LB-Stuff                                                  *|
 |* All rights reserved.                                                       *|
 |*                                                                            *|
 |* Redistribution and use in source and binary forms, with or without         *|

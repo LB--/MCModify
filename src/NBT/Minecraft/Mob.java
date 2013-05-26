@@ -1,5 +1,5 @@
 /******************************************************************************\
-|* Copyright © 2012 LB-Stuff                                                  *|
+|* Copyright © 2013 LB-Stuff                                                  *|
 |* All rights reserved.                                                       *|
 |*                                                                            *|
 |* Redistribution and use in source and binary forms, with or without         *|
@@ -67,7 +67,7 @@ public abstract class Mob extends Entity
 		InstantHealth, InstantDamage,
 		JumpBoost,
 		Nausea,
-		Regeneration, Poison,
+		Regeneration, Poison, Wither,
 		Resistance, FireResistance,
 		WaterBreathing,
 		Invisibility,
@@ -78,25 +78,26 @@ public abstract class Mob extends Entity
 		{
 			switch(ID)
 			{
-			case 1:		return Speed;
-			case 2:		return Slowness;
-			case 3:		return Haste;
-			case 4:		return MiningFatigue;
-			case 5:		return Strength;
-			case 6:		return InstantHealth;
-			case 7:		return InstantDamage;
-			case 8:		return JumpBoost;
-			case 9:		return Nausea;
-			case 10:	return Regeneration;
-			case 11:	return Resistance;
-			case 12:	return FireResistance;
-			case 13:	return WaterBreathing;
-			case 14:	return Invisibility;
-			case 15:	return Blindness;
-			case 16:	return NightVision;
-			case 17:	return Hunger;
-			case 18:	return Weakness;
-			case 19:	return Poison;
+			case 1:  return Speed;
+			case 2:  return Slowness;
+			case 3:  return Haste;
+			case 4:  return MiningFatigue;
+			case 5:  return Strength;
+			case 6:  return InstantHealth;
+			case 7:  return InstantDamage;
+			case 8:  return JumpBoost;
+			case 9:  return Nausea;
+			case 10: return Regeneration;
+			case 11: return Resistance;
+			case 12: return FireResistance;
+			case 13: return WaterBreathing;
+			case 14: return Invisibility;
+			case 15: return Blindness;
+			case 16: return NightVision;
+			case 17: return Hunger;
+			case 18: return Weakness;
+			case 19: return Poison;
+			case 20: return Wither;
 			}
 			throw new FormatException("Unknown Potion Effect: "+ID);
 		}
@@ -104,25 +105,26 @@ public abstract class Mob extends Entity
 		{
 			switch(this)
 			{
-			case Speed:				return 1;
-			case Slowness:			return 2;
-			case Haste:				return 3;
-			case MiningFatigue:		return 4;
-			case Strength:			return 5;
-			case Weakness:			return 18;
-			case InstantHealth:		return 6;
-			case InstantDamage:		return 7;
-			case JumpBoost:			return 8;
-			case Nausea:			return 9;
-			case Regeneration:		return 10;
-			case Poison:			return 19;
-			case Resistance:		return 11;
-			case FireResistance:	return 12;
-			case WaterBreathing:	return 13;
-			case Invisibility:		return 14;
-			case Blindness:			return 15;
-			case NightVision:		return 16;
-			case Hunger:			return 17;
+			case Speed:          return 1;
+			case Slowness:       return 2;
+			case Haste:          return 3;
+			case MiningFatigue:  return 4;
+			case Strength:       return 5;
+			case Weakness:       return 18;
+			case InstantHealth:  return 6;
+			case InstantDamage:  return 7;
+			case JumpBoost:      return 8;
+			case Nausea:         return 9;
+			case Regeneration:   return 10;
+			case Poison:         return 19;
+			case Wither:         return 20;
+			case Resistance:     return 11;
+			case FireResistance: return 12;
+			case WaterBreathing: return 13;
+			case Invisibility:   return 14;
+			case Blindness:      return 15;
+			case NightVision:    return 16;
+			case Hunger:         return 17;
 			}
 			throw new IllegalArgumentException();
 		}
@@ -140,9 +142,14 @@ public abstract class Mob extends Entity
 		 * The number of ticks before the effect wears out.
 		 */
 		private int duration;
+		/**
+		 * Whether or not the effect was granted by a beacon and is therefore ambient.
+		 */
+		boolean ambient;
 
 		/**
 		 * Constructs this portion effect info from the given level and time.
+		 * <code>ambient</code> is assumed false.
 		 * @param level The level of the effect. 0 is level 1.
 		 * @param ticks The number of ticks before the effect wears off.
 		 */
@@ -150,6 +157,18 @@ public abstract class Mob extends Entity
 		{
 			amplifier = level;
 			duration = ticks;
+		}
+		/**
+		 * Constructs this portion effect info from the given level, time,
+		 * and ambience.
+		 * @param level The level of the effect. 0 is level 1.
+		 * @param ticks The number of ticks before the effect wears off.
+		 */
+		public EffectInfo(byte level, int ticks, boolean beacon)
+		{
+			amplifier = level;
+			duration = ticks;
+			ambient = beacon;
 		}
 
 		/**
@@ -185,11 +204,245 @@ public abstract class Mob extends Entity
 		{
 			duration = ticks;
 		}
+
+		/**
+		 * Returns whether or not the effect was granted by a beacon and is therefore ambient.
+		 * @return Whether or not the effect was granted by a beacon and is therefore ambient.
+		 */
+		public boolean Ambient()
+		{
+			return ambient;
+		}
+		/**
+		 * Sets whether or not the effect was granted by a beacon and is therefore ambient.
+		 * @param ticks Whether or not the effect was granted by a beacon and is therefore ambient.
+		 */
+		public void Ambient(boolean ticks)
+		{
+			ambient = ticks;
+		}
 	}
 	/**
 	 * The effects currently active on this mob.
 	 */
 	private Map<Effect, EffectInfo> activeeffects = new HashMap<>();
+
+	/**
+	 * Equip ID
+	 */
+	public static enum EquipmentSlot
+	{
+		/**
+		 * The slot for the item in the mob's hand.
+		 */
+		Hand,
+		/**
+		 * The slots for the items equipped as the mob's armor.
+		 */
+		Boots, Leggings, Chest, Helmet;
+
+		public static EquipmentSlot FromID(byte ID) throws FormatException
+		{
+			switch(ID)
+			{
+			case 0: return Hand;
+			case 1: return Boots;
+			case 2: return Leggings;
+			case 3: return Chest;
+			case 4: return Helmet;
+			}
+			throw new FormatException("Unknown Equip: "+ID);
+		}
+		public byte ID()
+		{
+			switch(this)
+			{
+			case Hand:     return 0;
+			case Boots:    return 1;
+			case Leggings: return 2;
+			case Chest:    return 3;
+			case Helmet:   return 4;
+			}
+			throw new IllegalArgumentException();
+		}
+	}
+	/**
+	 * The equipped items on this mob.
+	 */
+	private Map<EquipmentSlot, Inventory.Item> equipment = new HashMap<>();
+	/**
+	 * The chances for each equipped item on this mob to drop.
+	 */
+	private Map<EquipmentSlot, Float> dropchances = new HashMap<>();
+
+	/**
+	 * Whether or not this mob can pick up dropped items on the ground and equip them.
+	 */
+	private boolean canpickuploot;
+
+	/**
+	 * Whether or not this mob is disallowed from despawning.
+	 */
+	private boolean persistencerequired;
+
+	/**
+	 * The custom name for this particular mob. May be null.
+	 */
+	private String customname;
+	/**
+	 * Whether or not a nametag should display the custom name.
+	 */
+	private boolean customnamevisible;
+
+	/**
+	 * Health in a floating point format.
+	 */
+	private float healf;
+
+	/**
+	 * Represents a single leash the mob has.
+	 */
+	public static abstract class Leash
+	{
+		/**
+		 * Constructs a Leash from the given tag.
+		 * @param t The tag from which to construct the leash.
+		 * @return The leash constructed from the given tag.
+		 * @throws FormatException If a leash cannot be constructed from the given tag.
+		 */
+		public static Leash FromNBT(Tag.Compound t) throws FormatException
+		{
+			try
+			{
+				int x = ((Tag.Int)t.Find(Tag.Type.INT, "X")).v,
+				    y = ((Tag.Int)t.Find(Tag.Type.INT, "Y")).v,
+				    z = ((Tag.Int)t.Find(Tag.Type.INT, "Z")).v;
+				return new Leash.Fence(x, y, z);
+			}
+			catch(FormatException e)
+			{
+			}
+			long least = ((Tag.Long)t.Find(Tag.Type.LONG, "UUIDLeast")).v,
+			     most  = ((Tag.Long)t.Find(Tag.Type.LONG, "UUIDMost")).v;
+			return new Leash.UUID(least, most);
+		}
+		/**
+		 * Returns the tag for this leash.
+		 * @param name The name the compound tag should have, or null if the compound tag should not have a name.
+		 * @return The tag for this leash.
+		 */
+		public abstract Tag.Compound ToNBT(String name);
+
+		/**
+		 * Represents a leash that attaches a mob to a fence post.
+		 */
+		public static class Fence extends Leash
+		{
+			/**
+			 * The coordinates of the fence post.
+			 */
+			private int x, y, z;
+
+			/**
+			 * Constructs this leash from the given fence post coordinates.
+			 * @param tilex The x coordinate of the tile the fence post is in.
+			 * @param tiley The y coordinate of the tile the fence post is in.
+			 * @param tilez The z coordinate of the tile the fence post is in.
+			 */
+			public Fence(int tilex, int tiley, int tilez)
+			{
+				Tile(tilex, tiley, tilez);
+			}
+
+			/**
+			 * Returns the x coordinate of the tile the fence post is in.
+			 * @return The x coordinate of the tile the fence post is in.
+			 */
+			public int TileX()
+			{
+				return x;
+			}
+			/**
+			 * Returns the y coordinate of the tile the fence post is in.
+			 * @return The y coordinate of the tile the fence post is in.
+			 */
+			public int TileY()
+			{
+				return y;
+			}
+			/**
+			 * Returns the z coordinate of the tile the fence post is in.
+			 * @return The z coordinate of the tile the fence post is in.
+			 */
+			public int TileZ()
+			{
+				return z;
+			}
+			/**
+			 * Sets the coordinates of the tile the fence is in.
+			 * @param tilex The x coordinate of the tile the fence post is in.
+			 * @param tiley The y coordinate of the tile the fence post is in.
+			 * @param tilez The z coordinate of the tile the fence post is in.
+			 */
+			public void Tile(int tilex, int tiley, int tilez)
+			{
+				x = tilex;
+				y = tiley;
+				z = tilez;
+			}
+
+			/**
+			 * Returns the tag for this fence leash.
+			 * @param name The name the compound tag should have, or null if the compound tag should not have a name.
+			 * @return The tag for this fence leash.
+			 */
+			public Tag.Compound ToNBT(String name)
+			{
+				return new Tag.Compound(name, new Tag.Int("X", x),
+				                              new Tag.Int("Y", y),
+				                              new Tag.Int("Z", z));
+			}
+		}
+		public static class UUID extends Leash
+		{
+			private long least, most;
+
+			public UUID(long Least, long Most)
+			{
+				least = Least;
+				most = Most;
+			}
+
+			public long Least()
+			{
+				return least;
+			}
+			public long Most()
+			{
+				return most;
+			}
+			public void UUID(long Least, long Most)
+			{
+				least = Least;
+				most = Most;
+			}
+
+			/**
+			 * Returns the tag for this UUID leash.
+			 * @param name The name the compound tag should have, or null if the compound tag should not have a name.
+			 * @return The tag for this UUID leash.
+			 */
+			public Tag.Compound ToNBT(String name)
+			{
+				return new Tag.Compound(name, new Tag.Long("UUIDLeast", least),
+				                              new Tag.Long("UUIDMost", most));
+			}
+		}
+	}
+	/**
+	 * The leash this mob has.
+	 */
+	private Leash leash;
 
 	/**
 	 * Given an Entity ID, returns the Class object for the Mob class that represents that Entity ID.
@@ -201,31 +454,31 @@ public abstract class Mob extends Entity
 	{
 		switch(ID)
 		{
-		case "Blaze":			return Blaze.class;
-		case "CaveSpider":		return CaveSpider.class;
-		case "Chicken":			return Chicken.class;
-		case "Cow":				return Cow.class;
-		case "Creeper":			return Creeper.class;
-		case "EnderDragon":		return EnderDragon.class;
-		case "Enerman":			return Enderman.class;
-		case "Ghast":			return Ghast.class;
-		case "Giant":			return Giant.class;
-		case "LavaSlime":		return LavaSlime.class;
-		case "MushroomCow":		return MushroomCow.class;
-		case "Ozelot":			return Ozelot.class;
-		case "Pig":				return Pig.class;
-		case "PigZombie":		return PigZombie.class;
-		case "Sheep":			return Sheep.class;
-		case "Silverfish":		return Silverfish.class;
-		case "Skeleton":		return Skeleton.class;
-		case "Slime":			return Slime.class;
-		case "SnowMan":			return SnowMan.class;
-		case "Spider":			return Spider.class;
-		case "Squid":			return Squid.class;
-		case "Villager":		return Villager.class;
-		case "VillagerGolem":	return VillagerGolem.class;
-		case "Wolf":			return Wolf.class;
-		case "Zombie":			return Zombie.class;
+		case "Blaze":         return Blaze.class;
+		case "CaveSpider":    return CaveSpider.class;
+		case "Chicken":       return Chicken.class;
+		case "Cow":           return Cow.class;
+		case "Creeper":       return Creeper.class;
+		case "EnderDragon":   return EnderDragon.class;
+		case "Enerman":       return Enderman.class;
+		case "Ghast":         return Ghast.class;
+		case "Giant":         return Giant.class;
+		case "LavaSlime":     return LavaSlime.class;
+		case "MushroomCow":   return MushroomCow.class;
+		case "Ozelot":        return Ozelot.class;
+		case "Pig":           return Pig.class;
+		case "PigZombie":     return PigZombie.class;
+		case "Sheep":         return Sheep.class;
+		case "Silverfish":    return Silverfish.class;
+		case "Skeleton":      return Skeleton.class;
+		case "Slime":         return Slime.class;
+		case "SnowMan":       return SnowMan.class;
+		case "Spider":        return Spider.class;
+		case "Squid":         return Squid.class;
+		case "Villager":      return Villager.class;
+		case "VillagerGolem": return VillagerGolem.class;
+		case "Wolf":          return Wolf.class;
+		case "Zombie":        return Zombie.class;
 		}
 		throw new FormatException("Unknown Mob Entity ID: \""+ID+"\"");
 	}
@@ -261,9 +514,52 @@ public abstract class Mob extends Entity
 			{
 				Tag.Compound effect = (Tag.Compound)t;
 				activeeffects.put(Effect.FromID(((Tag.Byte)effect.Find(Tag.Type.BYTE, "Id")).v),
-								  new EffectInfo(((Tag.Byte)mob.Find(Tag.Type.BYTE, "Amplifier")).v,
-												 ((Tag.Int)mob.Find(Tag.Type.INT, "Duration")).v));
+				                  new EffectInfo(((Tag.Byte)mob.Find(Tag.Type.BYTE, "Amplifier")).v,
+				                                 ((Tag.Int)mob.Find(Tag.Type.INT, "Duration")).v,
+				                                 ((Tag.Byte)mob.Find(Tag.Type.BYTE, "Ambient")).v  == 1 ? true : false));
 			}
+		}
+
+		Tag.List equip = (Tag.List)mob.Find(Tag.Type.LIST, "Equipment");
+		equipment.put(EquipmentSlot.Hand,     new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Hand.    ID())));
+		equipment.put(EquipmentSlot.Boots,    new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Boots.   ID())));
+		equipment.put(EquipmentSlot.Leggings, new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Leggings.ID())));
+		equipment.put(EquipmentSlot.Chest,    new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Chest.   ID())));
+		equipment.put(EquipmentSlot.Helmet,   new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Helmet.  ID())));
+
+		Tag.List drops = (Tag.List)mob.Find(Tag.Type.LIST, "DropChances");
+		dropchances.put(EquipmentSlot.Hand,     ((Tag.Float)equip.Get(EquipmentSlot.Hand.    ID())).v);
+		dropchances.put(EquipmentSlot.Boots,    ((Tag.Float)equip.Get(EquipmentSlot.Boots.   ID())).v);
+		dropchances.put(EquipmentSlot.Leggings, ((Tag.Float)equip.Get(EquipmentSlot.Leggings.ID())).v);
+		dropchances.put(EquipmentSlot.Chest,    ((Tag.Float)equip.Get(EquipmentSlot.Chest.   ID())).v);
+		dropchances.put(EquipmentSlot.Helmet,   ((Tag.Float)equip.Get(EquipmentSlot.Helmet.  ID())).v);
+
+		canpickuploot = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "CanPickUpLoot")).v == 1 ? true : false;
+		persistencerequired = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "PersistenceRequired")).v == 1 ? true : false;
+		try
+		{
+			customname = ((Tag.String)mob.Find(Tag.Type.STRING, "CustomName")).v;
+		}
+		catch(FormatException e)
+		{
+			customname = null;
+		}
+		try
+		{
+			customnamevisible = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "CustomNameVisible")).v == 1 ? true : false;
+		}
+		catch(FormatException e)
+		{
+			customnamevisible = false;
+		}
+		healf = ((Tag.Float)mob.Find(Tag.Type.FLOAT, "HealF")).v;
+		if(((Tag.Byte)mob.Find(Tag.Type.BYTE, "Leashed")).v == 1)
+		{
+			leash = Leash.FromNBT((Tag.Compound)mob.Find(Tag.Type.COMPOUND, "Leash"));
+		}
+		else
+		{
+			leash = null;
 		}
 	}
 	/**
@@ -376,6 +672,145 @@ public abstract class Mob extends Entity
 	}
 
 	/**
+	 * Returns the item equipped in the given equipment slot, or null if no item is equipped there.
+	 * @param e The equipment slot to check.
+	 * @return The item equipped in the given equipment slot, or null if no item is equipped there.
+	 */
+	public Inventory.Item Equipment(EquipmentSlot e)
+	{
+		return equipment.get(e);
+	}
+	/**
+	 * Sets or removes the item equipped in the given equipment slot.
+	 * @param e The equipment slot to change.
+	 * @param i The item to equip, or null to unequip.
+	 */
+	public void Equipment(EquipmentSlot e, Inventory.Item i)
+	{
+		equipment.put(e, i);
+	}
+	/**
+	 * Returns the chance for an equipped item to be dropped when this mob dies, between 0 and 1 inclusive.
+	 * @param e The equipment slot to check.
+	 * @return The chance for an equipped item to be dropped when this mob dies, between 0 and 1 inclusive.
+	 */
+	public float DropChance(EquipmentSlot e)
+	{
+		return dropchances.get(e);
+	}
+	/**
+	 * Sets the chance for the item to drop when the mob dies for the given equipment slot.
+	 * @param e The equipment slot to check.
+	 * @param chance The chance for the item to drop between 0 and 1 inclusive.
+	 */
+	public void DropChance(EquipmentSlot e, float chance)
+	{
+		dropchances.put(e, chance);
+	}
+
+	/**
+	 * Returns whether or not this mob can pick up dropped items on the ground.
+	 * @return Whether or not this mob can pick up dropped items on the ground.
+	 */
+	public boolean PicksUpLoot()
+	{
+		return canpickuploot;
+	}
+	/**
+	 * Sets whether or not this mob can pick up dropped items on the ground.
+	 * @param can Whether or not this mob can pick up dropped items on the ground.
+	 */
+	public void PicksUpLoot(boolean can)
+	{
+		canpickuploot = can;
+	}
+
+	/**
+	 * Returns whether this mob is allowed to despawn or not.
+	 * @return Whether this mob is allowed to despawn or not.
+	 */
+	public boolean CanDespawn()
+	{
+		return !persistencerequired;
+	}
+	/**
+	 * Sets whether this mob is allowed to despawn or not.
+	 * @param can Whether this mob is allowed to despawn or not.
+	 */
+	public void CanDespawn(boolean can)
+	{
+		persistencerequired = !can;
+	}
+
+	/**
+	 * Returns the custom name for this mob, or null if the mob's name is not customized.
+	 * @return The custom name for this mob, or null if the mob's name is not customized.
+	 */
+	public String CustomName()
+	{
+		return customname;
+	}
+	/**
+	 * Sets or removes the custom name of this mob.
+	 * @param name The custom name of this mob, or null to remove the custom name.
+	 */
+	public void CustomName(String name)
+	{
+		customname = name;
+	}
+
+	/**
+	 * Returns whether or not the custom name should be displayed in a nametag.
+	 * @return Whether or not the custom name should be displayed in a nametag.
+	 */
+	public boolean NametagVisible()
+	{
+		return customnamevisible;
+	}
+	/**
+	 * Sets whether or not the custom name should be displayed in a nametag.
+	 * @param visible Whether or not the custom name should be displayed in a nametag.
+	 */
+	public void NametagVisible(boolean visible)
+	{
+		customnamevisible = visible;
+	}
+
+	/**
+	 * Returns the health in floating-point form. Not automatically synced with the integer health.
+	 * @return The health in floating-point form.
+	 */
+	public float PreciseHealth()
+	{
+		return healf;
+	}
+	/**
+	 * Sets the health in floating-point form. Not automatically synced with the integer health.
+	 * @param health The health in floating-point form.
+	 */
+	public void PreciseHealth(float health)
+	{
+		healf = health;
+	}
+
+	/**
+	 * Returns the leash for this mob, null if there is no leash.
+	 * @return The leash for this mob, null if there is no leash.
+	 */
+	public Leash Leash()
+	{
+		return leash;
+	}
+	/**
+	 * Sets or removes the leash for this mob.
+	 * @param l The leash for this mob, null to remove the leash.
+	 */
+	public void Leash(Leash l)
+	{
+		leash = l;
+	}
+
+	/**
 	 * Returns the tag for this mob entity.
 	 * @param name The name the compound tag should have, or null if the compound tag should not have a name.
 	 * @return The tag for this mob entity.
@@ -384,18 +819,53 @@ public abstract class Mob extends Entity
 	{
 		Tag.Compound t = super.ToNBT(name);
 		Tag.List effects;
+		Tag.List equip, drops;
 		t.Add(new Tag.Short("Health", health),
-			  new Tag.Short("AttackTime", attacktime),
-			  new Tag.Short("HurtTime", hurttime),
-			  new Tag.Short("DeathTime", deathtime),
-			  effects = new Tag.List("ActiveEffects", Tag.Type.COMPOUND));
+		      new Tag.Short("AttackTime", attacktime),
+		      new Tag.Short("HurtTime", hurttime),
+		      new Tag.Short("DeathTime", deathtime),
+		      effects = new Tag.List("ActiveEffects", Tag.Type.COMPOUND),
+			  equip =   new Tag.List("Equipment", Tag.Type.COMPOUND),
+		      drops =   new Tag.List("DropChances", Tag.Type.FLOAT),
+		      new Tag.Byte("CanPickUpLoot", (byte)(canpickuploot ? 1 : 0)),
+		      new Tag.Byte("PersistenceRequired", (byte)(persistencerequired ? 1 : 0)),
+		      new Tag.Byte("CustomNameVisible", (byte)(customnamevisible ? 1 : 0)),
+		      new Tag.Byte("Leashed", (byte)(leash != null ? 1 : 0)),
+		      new Tag.Float("HealF", healf));
+		if(customname != null)
+		{
+			t.Add(new Tag.String("CustomName", customname));
+		}
+		if(leash != null)
+		{
+			t.Add(leash.ToNBT("Leash"));
+		}
 		try
 		{
 			for(Map.Entry<Effect, EffectInfo> effect : activeeffects.entrySet())
 			{
 				effects.Add(new Tag.Compound(null, new Tag.Byte("Id", effect.getKey().ID()),
-												   new Tag.Byte("Amplifier", effect.getValue().amplifier),
-												   new Tag.Int("Duration", effect.getValue().duration)));
+				                                   new Tag.Byte("Amplifier", effect.getValue().amplifier),
+				                                   new Tag.Int("Duration", effect.getValue().duration),
+				                                   new Tag.Byte("ambient", (byte)(effect.getValue().ambient ? 1 : 0))));
+			}
+			equip.Add(new Tag.Compound(null),
+			          new Tag.Compound(null),
+			          new Tag.Compound(null),
+			          new Tag.Compound(null),
+			          new Tag.Compound(null));
+			for(Map.Entry<EquipmentSlot, Inventory.Item> e : equipment.entrySet())
+			{
+				equip.Set(e.getKey().ID(), e.getValue().ToNBT(null));
+			}
+			drops.Add(new Tag.Compound(null),
+			          new Tag.Compound(null),
+			          new Tag.Compound(null),
+			          new Tag.Compound(null),
+			          new Tag.Compound(null));
+			for(Map.Entry<EquipmentSlot, Float> e : dropchances.entrySet())
+			{
+				drops.Set(e.getKey().ID(), new Tag.Float(null, e.getValue()));
 			}
 		}
 		catch(Tag.Type.MismatchException e)
