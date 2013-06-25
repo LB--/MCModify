@@ -1,0 +1,2 @@
+- [ ] Update for the latest versions of Minecraft
+- [ ] Make implementation use `NBTSerializeable` instead of manually implementing `ToNBT`
