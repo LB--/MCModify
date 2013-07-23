@@ -42,10 +42,10 @@ namespace NBT
 			os.write(reinterpret_cast<char const *>(name.data()), len*sizeof(Name_t::value_type));
 			return writePayload(os);
 		}
-//		static std::unique_ptr<Tag> read(std::istream &is)
-//		{
-//			//
-//		}
+		static std::unique_ptr<Tag> read(std::istream &is)
+		{
+			//
+		}
 
 		struct End;
 		struct Byte;
@@ -60,11 +60,12 @@ namespace NBT
 		struct List;
 		struct Compound;
 		struct IntArray;
+
+		static std::map<ID_t, std::function<std::unique_ptr<Tag> (Name_t const &name, std::istream &)>> const readers;
 	};
 	struct Tag::End : Tag
 	{
 		static ID_t const ID = 0;
-		using t = void;
 
 		static End const END;
 
@@ -86,7 +87,6 @@ namespace NBT
 		{
 		}
 	};
-	Tag::End const Tag::End::END;
 	struct Tag::Byte : Tag
 	{
 		static ID_t const ID = 1;
@@ -113,6 +113,11 @@ namespace NBT
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
 			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
+		}
+		Byte(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			is.read(reinterpret_cast<char *>(&v), sizeof(t));
 		}
 	};
 	struct Tag::Short : Tag
@@ -142,6 +147,11 @@ namespace NBT
 		{
 			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
 		}
+		Short(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			is.read(reinterpret_cast<char *>(&v), sizeof(t));
+		}
 	};
 	struct Tag::Int : Tag
 	{
@@ -169,6 +179,11 @@ namespace NBT
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
 			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
+		}
+		Int(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			is.read(reinterpret_cast<char *>(&v), sizeof(t));
 		}
 	};
 	struct Tag::Long : Tag
@@ -198,6 +213,11 @@ namespace NBT
 		{
 			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
 		}
+		Long(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			is.read(reinterpret_cast<char *>(&v), sizeof(t));
+		}
 	};
 	struct Tag::Float : Tag
 	{
@@ -226,6 +246,11 @@ namespace NBT
 		{
 			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
 		}
+		Float(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			is.read(reinterpret_cast<char *>(&v), sizeof(t));
+		}
 	};
 	struct Tag::Double : Tag
 	{
@@ -253,6 +278,11 @@ namespace NBT
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
 			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
+		}
+		Double(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			is.read(reinterpret_cast<char *>(&v), sizeof(t));
 		}
 	};
 	struct Tag::ByteArray : Tag
@@ -296,6 +326,15 @@ namespace NBT
 			}
 			return os;
 		}
+		ByteArray(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			t::size_type size {Int("", is).v};
+			for(auto i = t::size_type(); i < size; ++i)
+			{
+				v.push_back(Byte("", is).v);
+			}
+		}
 	};
 	struct Tag::String : Tag
 	{
@@ -333,6 +372,15 @@ namespace NBT
 		{
 			Short(static_cast<Short::t>(v.length())).writePayload(os);
 			return os.write(reinterpret_cast<char const *>(v.data()), v.length()*sizeof(t::value_type));
+		}
+		String(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			t::size_type size {Short("", is).v};
+			std::unique_ptr<t::value_type[]> str {new t::value_type[size+1]};
+			str[size] = L'\0';
+			is.read(reinterpret_cast<char *>(&(str[0])), size*sizeof(t::value_type));
+			v = str.get();
 		}
 	};
 	template<typename T>
@@ -380,6 +428,16 @@ namespace NBT
 			}
 			return os;
 		}
+		List(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			//
+		}
+	};
+	template<>
+	Tag::List<End>
+	{
+		static ID_t const ID = 9;
 	};
 	struct Tag::Compound : Tag
 	{
@@ -420,6 +478,11 @@ namespace NBT
 				e.second->write(os);
 			}
 			return End::END.write(os);
+		}
+		Compound(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			//
 		}
 	};
 	struct Tag::IntArray : Tag
@@ -462,6 +525,15 @@ namespace NBT
 				os.write(reinterpret_cast<char const *>(&i), sizeof(i));
 			}
 			return os;
+		}
+		IntArray(Name_t const &name, std::istream &is)
+		: Tag(name)
+		{
+			t::size_type size {Int("", is).v};
+			for(auto i = t::size_type(); i < size; ++i)
+			{
+				v.push_back(Int("", is).v);
+			}
 		}
 	};
 }
