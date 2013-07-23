@@ -56,6 +56,10 @@ public class Chunk
 	 */
 	private boolean terrainpopulated;
 	/**
+	 * Total number of ticks this chunk has been inhabited by players.
+	 */
+	private long inhabitedtime;
+	/**
 	 * Biome data, 16x16.
 	 */
 	private byte[] biomes;
@@ -334,6 +338,7 @@ public class Chunk
 		xpos = ((Tag.Int)chunk.Find(Tag.Type.INT, "xPos")).v;
 		zpos = ((Tag.Int)chunk.Find(Tag.Type.INT, "zPos")).v;
 		lastupdate = ((Tag.Long)chunk.Find(Tag.Type.LONG, "LastUpdate")).v;
+		inhabitedtime = ((Tag.Long)chunk.Find(Tag.Type.LONG, "InhabitedTime")).v;
 		try
 		{
 			terrainpopulated = ((Tag.Byte)chunk.Find(Tag.Type.BYTE, "TerrainPopulated")).v != 0 ? true : false;
@@ -755,6 +760,23 @@ public class Chunk
 	}
 
 	/**
+	 * Returns how many ticks the chunk has been inhabited by players.
+	 * @return how many ticks the chunk has been inhabited by players.
+	 */
+	public long InhabitedTime()
+	{
+		return inhabitedtime;
+	}
+	/**
+	 * Sets the number of ticks this chunk has been inhabited by players.
+	 * @param ticks the number of ticks this chunk has been inhabited by players. May be negative.
+	 */
+	public void InhabitedTime(long ticks)
+	{
+		inhabitedtime = ticks;
+	}
+
+	/**
 	 * Returns the Biome ID at the given column coordinates.
 	 * <br/>
 	 * <br/>-1	(Uncalculated)
@@ -956,6 +978,7 @@ public class Chunk
 		Tag.Compound t = new Tag.Compound("Level", new Tag.Int("xPos", xpos),
 												   new Tag.Int("zPos", zpos),
 												   new Tag.Long("LastUpdate", lastupdate),
+		                                           new Tag.Long("InhabitedTime", inhabitedtime),
 												   new Tag.Byte("TerrainPopulated", (byte)(terrainpopulated?1:0)),
 												   new Tag.IntArray("HeightMap", heightmap),
 												   sectionlist,
