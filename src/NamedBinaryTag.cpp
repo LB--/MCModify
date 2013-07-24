@@ -45,23 +45,10 @@ namespace NBT
 				return new String(name, is);
 			}
 		},
-		{ List<End>::ID, [](Name_t const &name, std::istream &is) -> std::unique_ptr<Tag>
+		{ List::ID, [](Name_t const &name, std::istream &is) -> std::unique_ptr<Tag>
 			{
-				ID_t Id {Byte("", is).v};
-				switch(Id)
-				{
-				case Byte::ID:      return new List<Byte>(name, is);
-				case Short::ID:     return new List<Short>(name, is);
-				case Int::ID:       return new List<Int>(name, is);
-				case Long::ID:      return new List<Long>(name, is);
-				case Float::ID:     return new List<Float>(name, is);
-				case Double::ID:    return new List<Double>(name, is);
-				case ByteArray::ID: return new List<BteArray>(name, is);
-				case String::ID:    return new List<String>(name, is);
-				case List<End>::ID: return ;
-				case Compound::ID:  return new List<Compound>(name, is);
-				case IntArray::ID:  return new List<IntArray>(name, is);
-				}
+				ID_t type {Byte("", is).v};
+				return new List(name, type, is);
 			}
 		},
 		{ Compound::ID, [](Name_t const &name, std::istream &is) -> std::unique_ptr<Tag>

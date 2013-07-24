@@ -8,6 +8,7 @@
 #include <memory>
 #include <iostream>
 #include <functional>
+#include <initializer_list>
 
 namespace NBT
 {
@@ -44,7 +45,9 @@ namespace NBT
 		}
 		static std::unique_ptr<Tag> read(std::istream &is)
 		{
-			//
+			ID_t type {Byte("", is).v};
+			Name_t name {String("", is).v};
+			return readers[type](name, is);
 		}
 
 		struct End;
@@ -56,7 +59,6 @@ namespace NBT
 		struct Double;
 		struct ByteArray;
 		struct String;
-		template<typename T>
 		struct List;
 		struct Compound;
 		struct IntArray;
@@ -383,33 +385,27 @@ namespace NBT
 			v = str.get();
 		}
 	};
-	template<typename T>
 	struct Tag::List : Tag
 	{
-		static_assert(std::is_base_of<Tag, T>::value,
-					  "Template parameter must be a Tag type");
 		static ID_t const ID = 9;
-		using t = std::vector<T>;
+		ID_t of;
+		using t = std::vector<std::unique_ptr<Tag>>;
 		t v;
 
-		using Tag::Tag;
+		List(List const &) = default;
+		List(List &&) = default;
+		List &operator=(List const &from) = default;
+		List &operator=(List &&) = default;
 
-		List(t const &v)
-		: v(v)
+		List(ID_t type, std::initializer_list<t::value_type> init = {})
+		: of(type)
+		, v(init)
 		{
 		}
-		List(t &&v)
-		: v(v)
-		{
-		}
-		List(Name_t const &name, t const &v)
+		List(Name_t const &name, ID_t type, std::initializer_list<t::value_type> init = {})
 		: Tag(name)
-		, v(v)
-		{
-		}
-		List(Name_t const &name, t &&v)
-		: Tag(name)
-		, v(v)
+		, of(type)
+		, v(init)
 		{
 		}
 
@@ -428,16 +424,16 @@ namespace NBT
 			}
 			return os;
 		}
-		List(Name_t const &name, std::istream &is)
+		List(Name_t const &name, ID_t type, std::istream &is)
 		: Tag(name)
+		, of(type)
 		{
-			//
+			t::size_type size {Int("", is).v};
+			for(auto i = t::size_type(); i < size; ++i)
+			{
+				v.push_back(readers[of]("", is));
+			}
 		}
-	};
-	template<>
-	Tag::List<End>
-	{
-		static ID_t const ID = 9;
 	};
 	struct Tag::Compound : Tag
 	{
@@ -447,22 +443,16 @@ namespace NBT
 
 		using Tag::Tag;
 
-		Compound(t const &v)
-		: v(v)
+		Compound(std::initializer_list<t::mapped_type> init)
 		{
+			for(auto &tag : init)
+			{
+				v[tag->name] = tag;
+			}
 		}
-		Compound(t &&v)
-		: v(v)
-		{
-		}
-		Compound(Name_t const &name, t const &v)
+		Compound(Name_t const &name, std::initializer_list<t::mapped_type> init)
 		: Tag(name)
-		, v(v)
-		{
-		}
-		Compound(Name_t const &name, t &&v)
-		: Tag(name)
-		, v(v)
+		, Compound(init)
 		{
 		}
 
@@ -482,7 +472,12 @@ namespace NBT
 		Compound(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			//
+			while(is.peek() != End::ID)
+			{
+				auto tag = read(is);
+				v[tag->name] = tag;
+			}
+			is.ignore();
 		}
 	};
 	struct Tag::IntArray : Tag
