@@ -34,21 +34,8 @@ namespace NBT
 		virtual ID_t id() const = 0;
 
 		virtual std::ostream &writePayload(std::ostream &) const = 0;
-		virtual std::ostream &write(std::ostream &os) const
-		{
-			ID_t Id {id()};
-			os.write(reinterpret_cast<char const *>(&Id), sizeof(ID_t));
-			std::int16_t len {static_cast<std::int16_t>(name.length())};
-			os.write(reinterpret_cast<char const *>(&len), sizeof(std::int16_t));
-			os.write(reinterpret_cast<char const *>(name.data()), len*sizeof(Name_t::value_type));
-			return writePayload(os);
-		}
-		static std::unique_ptr<Tag> read(std::istream &is)
-		{
-			ID_t type {Byte("", is).v};
-			Name_t name {String("", is).v};
-			return readers[type](name, is);
-		}
+		virtual std::ostream &write(std::ostream &os) const;
+		static std::unique_ptr<Tag> read(std::istream &is);
 
 		struct End;
 		struct Byte;
@@ -331,10 +318,10 @@ namespace NBT
 		ByteArray(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			t::size_type size {Int("", is).v};
+			t::size_type size = Int(L"", is).v;
 			for(auto i = t::size_type(); i < size; ++i)
 			{
-				v.push_back(Byte("", is).v);
+				v.push_back(Byte(L"", is).v);
 			}
 		}
 	};
@@ -378,7 +365,7 @@ namespace NBT
 		String(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			t::size_type size {Short("", is).v};
+			t::size_type size = Short(L"", is).v;
 			std::unique_ptr<t::value_type[]> str {new t::value_type[size+1]};
 			str[size] = L'\0';
 			is.read(reinterpret_cast<char *>(&(str[0])), size*sizeof(t::value_type));
@@ -398,8 +385,7 @@ namespace NBT
 		List &operator=(List &&) = default;
 
 		List(ID_t type, std::initializer_list<t::value_type> init = {})
-		: of(type)
-		, v(init)
+		: List(Name_t(), of, init)
 		{
 		}
 		List(Name_t const &name, ID_t type, std::initializer_list<t::value_type> init = {})
@@ -416,11 +402,11 @@ namespace NBT
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
-			os.write(&T::ID, sizeof(ID_t));
+			Byte(of).writePayload(os);
 			Int(static_cast<Int::t>(v.size())).writePayload(os);
 			for(auto const &tag : v)
 			{
-				tag.writePayload(os);
+				tag->writePayload(os);
 			}
 			return os;
 		}
@@ -428,10 +414,10 @@ namespace NBT
 		: Tag(name)
 		, of(type)
 		{
-			t::size_type size {Int("", is).v};
+			t::size_type size = Int(L"", is).v;
 			for(auto i = t::size_type(); i < size; ++i)
 			{
-				v.push_back(readers[of]("", is));
+				v.push_back(readers.at(of)(L"", is));
 			}
 		}
 	};
@@ -444,16 +430,16 @@ namespace NBT
 		using Tag::Tag;
 
 		Compound(std::initializer_list<t::mapped_type> init)
+		: Compound(Name_t())
 		{
-			for(auto &tag : init)
-			{
-				v[tag->name] = tag;
-			}
 		}
 		Compound(Name_t const &name, std::initializer_list<t::mapped_type> init)
 		: Tag(name)
-		, Compound(init)
 		{
+			for(auto &tag : init)
+			{
+				v.emplace(tag->name, tag);
+			}
 		}
 
 		virtual ID_t id() const
@@ -475,7 +461,7 @@ namespace NBT
 			while(is.peek() != End::ID)
 			{
 				auto tag = read(is);
-				v[tag->name] = tag;
+				v.emplace(tag->name, tag);
 			}
 			is.ignore();
 		}
@@ -524,13 +510,25 @@ namespace NBT
 		IntArray(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			t::size_type size {Int("", is).v};
+			t::size_type size = Int(L"", is).v;
 			for(auto i = t::size_type(); i < size; ++i)
 			{
-				v.push_back(Int("", is).v);
+				v.push_back(Int(L"", is).v);
 			}
 		}
 	};
+	inline std::ostream &Tag::write(std::ostream &os) const
+	{
+		Byte(id()).writePayload(os);
+		String(name).writePayload(os);
+		return writePayload(os);
+	}
+	inline std::unique_ptr<Tag> Tag::read(std::istream &is)
+	{
+		ID_t type {Byte(L"", is).v};
+		Name_t name {String(L"", is).v};
+		return readers.at(type)(name, is);
+	}
 }
 
 #endif
