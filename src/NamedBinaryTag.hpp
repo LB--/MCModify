@@ -32,6 +32,7 @@ namespace NBT
 		virtual ~Tag() = default;
 
 		virtual ID_t id() const = 0;
+		virtual std::unique_ptr<Tag> clone() const = 0;
 
 		virtual std::ostream &writePayload(std::ostream &) const = 0;
 		virtual std::ostream &write(std::ostream &os) const;
@@ -61,6 +62,10 @@ namespace NBT
 		virtual ID_t id() const
 		{
 			return ID;
+		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>();
 		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
@@ -98,6 +103,10 @@ namespace NBT
 		{
 			return ID;
 		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new Byte(*this));
+		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
@@ -130,6 +139,10 @@ namespace NBT
 		virtual ID_t id() const
 		{
 			return ID;
+		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new Short(*this));
 		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
@@ -164,6 +177,10 @@ namespace NBT
 		{
 			return ID;
 		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new Int(*this));
+		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
@@ -196,6 +213,10 @@ namespace NBT
 		virtual ID_t id() const
 		{
 			return ID;
+		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new Long(*this));
 		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
@@ -230,6 +251,10 @@ namespace NBT
 		{
 			return ID;
 		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new Float(*this));
+		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
@@ -262,6 +287,10 @@ namespace NBT
 		virtual ID_t id() const
 		{
 			return ID;
+		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new Double(*this));
 		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
@@ -304,6 +333,10 @@ namespace NBT
 		virtual ID_t id() const
 		{
 			return ID;
+		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new ByteArray(*this));
 		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
@@ -356,6 +389,10 @@ namespace NBT
 		{
 			return ID;
 		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new String(*this));
+		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
@@ -379,7 +416,16 @@ namespace NBT
 		using t = std::vector<std::unique_ptr<Tag>>;
 		t v;
 
-		List(List const &) = default;
+		List(List const &from)
+		: Tag(from.name)
+		, of(from.of)
+		{
+			v.reserve(from.v.size());
+			for(auto const &tag : from.v)
+			{
+				v.push_back(tag->clone());
+			}
+		}
 		List(List &&) = default;
 		List &operator=(List const &from) = default;
 		List &operator=(List &&) = default;
@@ -398,6 +444,10 @@ namespace NBT
 		virtual ID_t id() const
 		{
 			return ID;
+		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new List(*this));
 		}
 
 		void purge()
@@ -460,6 +510,10 @@ namespace NBT
 		{
 			return ID;
 		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new Compound(*this));
+		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
@@ -510,6 +564,10 @@ namespace NBT
 		virtual ID_t id() const
 		{
 			return ID;
+		}
+		virtual std::unique_ptr<Tag> clone() const
+		{
+			return std::unique_ptr<Tag>(new IntArray(*this));
 		}
 
 		virtual std::ostream &writePayload(std::ostream &os) const
