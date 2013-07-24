@@ -400,11 +400,25 @@ namespace NBT
 			return ID;
 		}
 
+		void purge()
+		{
+			for(auto it = v.begin(); it != v.end();)
+			{
+				if((*it)->id() != of)
+				{
+					it = v.erase(it);
+				}
+				else ++it;
+			}
+		}
+
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
+			List temp {*this};
+			temp.purge();
 			Byte(of).writePayload(os);
-			Int(static_cast<Int::t>(v.size())).writePayload(os);
-			for(auto const &tag : v)
+			Int(static_cast<Int::t>(temp.v.size())).writePayload(os);
+			for(auto const &tag : temp.v)
 			{
 				tag->writePayload(os);
 			}
