@@ -55,7 +55,7 @@ namespace NBT
 	};
 	struct Tag::End : Tag
 	{
-		static ID_t const ID = 0;
+		static ID_t const ID;
 
 		static End const END;
 
@@ -83,7 +83,7 @@ namespace NBT
 	};
 	struct Tag::Byte : Tag
 	{
-		static ID_t const ID = 1;
+		static ID_t const ID;
 		using t = std::int8_t;
 		t v;
 
@@ -127,7 +127,7 @@ namespace NBT
 	};
 	struct Tag::Short : Tag
 	{
-		static ID_t const ID = 2;
+		static ID_t const ID;
 		using t = std::int16_t;
 		t v;
 
@@ -171,7 +171,7 @@ namespace NBT
 	};
 	struct Tag::Int : Tag
 	{
-		static ID_t const ID = 3;
+		static ID_t const ID;
 		using t = std::int32_t;
 		t v;
 
@@ -215,7 +215,7 @@ namespace NBT
 	};
 	struct Tag::Long : Tag
 	{
-		static ID_t const ID = 4;
+		static ID_t const ID;
 		using t = std::int64_t;
 		t v;
 
@@ -259,7 +259,7 @@ namespace NBT
 	};
 	struct Tag::Float : Tag
 	{
-		static ID_t const ID = 5;
+		static ID_t const ID;
 		using t = float;
 		t v;
 
@@ -303,7 +303,7 @@ namespace NBT
 	};
 	struct Tag::Double : Tag
 	{
-		static ID_t const ID = 6;
+		static ID_t const ID;
 		using t = double;
 		t v;
 
@@ -347,7 +347,7 @@ namespace NBT
 	};
 	struct Tag::ByteArray : Tag
 	{
-		static ID_t const ID = 7;
+		static ID_t const ID;
 		using t = std::vector<Byte::t>;
 		t v;
 
@@ -409,7 +409,7 @@ namespace NBT
 	};
 	struct Tag::String : Tag
 	{
-		static ID_t const ID = 8;
+		static ID_t const ID;
 		using t = std::wstring;
 		t v;
 
@@ -459,7 +459,7 @@ namespace NBT
 	};
 	struct Tag::List : Tag
 	{
-		static ID_t const ID = 9;
+		static ID_t const ID;
 		ID_t of;
 		using t = std::vector<std::unique_ptr<Tag>>;
 		t v;
@@ -539,7 +539,7 @@ namespace NBT
 	};
 	struct Tag::Compound : Tag
 	{
-		static ID_t const ID = 10;
+		static ID_t const ID;
 	private:
 		template<typename T>
 		struct refwrapcomp
@@ -611,7 +611,7 @@ namespace NBT
 	};
 	struct Tag::IntArray : Tag
 	{
-		static ID_t const ID = 11;
+		static ID_t const ID;
 		using t = std::vector<Int::t>;
 		t v;
 

@@ -3,6 +3,18 @@
 namespace NBT
 {
 	Tag::End const Tag::End::END;
+	Tag::ID_t const Tag::End::ID = 0;
+	Tag::ID_t const Tag::Byte::ID = 1;
+	Tag::ID_t const Tag::Short::ID = 2;
+	Tag::ID_t const Tag::Int::ID = 3;
+	Tag::ID_t const Tag::Long::ID = 4;
+	Tag::ID_t const Tag::Float::ID = 5;
+	Tag::ID_t const Tag::Double::ID = 6;
+	Tag::ID_t const Tag::ByteArray::ID = 7;
+	Tag::ID_t const Tag::String::ID = 8;
+	Tag::ID_t const Tag::List::ID = 9;
+	Tag::ID_t const Tag::Compound::ID = 10;
+	Tag::ID_t const Tag::IntArray::ID = 11;
 	std::map<Tag::ID_t, std::function<std::unique_ptr<Tag> (Tag::Name_t const &name, std::istream &)>> const Tag::readers
 	{
 		{ Byte::ID, [](Name_t const &name, std::istream &is) -> std::unique_ptr<Tag>
