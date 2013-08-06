@@ -27,7 +27,7 @@ namespace NBT
 		}
 		Tag(Tag const &) = default;
 		Tag(Tag &&) = default;
-		Tag &operator=(Tag const &) = default;
+		Tag &operator=(Tag const &) = delete;
 		Tag &operator=(Tag &&) = default;
 		virtual ~Tag() = default;
 
@@ -87,7 +87,14 @@ namespace NBT
 		using t = std::int8_t;
 		t v;
 
-		using Tag::Tag;
+		//using Tag::Tag;
+		Byte() = default;
+		Byte(Name_t const &name)
+		: Tag(name)
+		{
+		}
+		Byte(Byte const &) = default;
+		Byte(Byte &&) = default;
 
 		Byte(t v)
 		: v(v)
@@ -124,7 +131,14 @@ namespace NBT
 		using t = std::int16_t;
 		t v;
 
-		using Tag::Tag;
+		//using Tag::Tag;
+		Short() = default;
+		Short(Name_t const &name)
+		: Tag(name)
+		{
+		}
+		Short(Short const &) = default;
+		Short(Short &&) = default;
 
 		Short(t v)
 		: v(v)
@@ -161,7 +175,14 @@ namespace NBT
 		using t = std::int32_t;
 		t v;
 
-		using Tag::Tag;
+		//using Tag::Tag;
+		Int() = default;
+		Int(Name_t const &name)
+		: Tag(name)
+		{
+		}
+		Int(Int const &) = default;
+		Int(Int &&) = default;
 
 		Int(t v)
 		: v(v)
@@ -198,7 +219,14 @@ namespace NBT
 		using t = std::int64_t;
 		t v;
 
-		using Tag::Tag;
+		//using Tag::Tag;
+		Long() = default;
+		Long(Name_t const &name)
+		: Tag(name)
+		{
+		}
+		Long(Long const &) = default;
+		Long(Long &&) = default;
 
 		Long(t v)
 		: v(v)
@@ -235,7 +263,14 @@ namespace NBT
 		using t = float;
 		t v;
 
-		using Tag::Tag;
+		//using Tag::Tag;
+		Float() = default;
+		Float(Name_t const &name)
+		: Tag(name)
+		{
+		}
+		Float(Float const &) = default;
+		Float(Float &&) = default;
 
 		Float(t v)
 		: v(v)
@@ -272,7 +307,14 @@ namespace NBT
 		using t = double;
 		t v;
 
-		using Tag::Tag;
+		//using Tag::Tag;
+		Double() = default;
+		Double(Name_t const &name)
+		: Tag(name)
+		{
+		}
+		Double(Double const &) = default;
+		Double(Double &&) = default;
 
 		Double(t v)
 		: v(v)
@@ -309,7 +351,14 @@ namespace NBT
 		using t = std::vector<Byte::t>;
 		t v;
 
-		using Tag::Tag;
+		//using Tag::Tag;
+		ByteArray() = default;
+		ByteArray(Name_t const &name)
+		: Tag(name)
+		{
+		}
+		ByteArray(ByteArray const &) = default;
+		ByteArray(ByteArray &&) = default;
 
 		ByteArray(t const &v)
 		: v(v)
@@ -364,16 +413,15 @@ namespace NBT
 		using t = std::wstring;
 		t v;
 
-		using Tag::Tag;
+		//using Tag::Tag;
+		String() = default;
+		String(Name_t const &name)
+		: Tag(name)
+		{
+		}
+		String(String const &) = default;
+		String(String &&) = default;
 
-		String(t const &v)
-		: v(v)
-		{
-		}
-		String(t &&v)
-		: v(v)
-		{
-		}
 		String(Name_t const &name, t const &v)
 		: Tag(name)
 		, v(v)
@@ -430,15 +478,19 @@ namespace NBT
 		List &operator=(List const &from) = default;
 		List &operator=(List &&) = default;
 
-		List(ID_t type, std::initializer_list<t::value_type> init = {})
+		List(ID_t type, std::initializer_list<t::value_type::pointer> init = {})
 		: List(Name_t(), of, init)
 		{
 		}
-		List(Name_t const &name, ID_t type, std::initializer_list<t::value_type> init = {})
+		List(Name_t const &name, ID_t type, std::initializer_list<t::value_type::pointer> init = {})
 		: Tag(name)
 		, of(type)
-		, v(init)
 		{
+			v.reserve(init.size());
+			for(auto tag : init)
+			{
+				v.push_back(t::value_type(tag));
+			}
 		}
 
 		virtual ID_t id() const
@@ -488,21 +540,44 @@ namespace NBT
 	struct Tag::Compound : Tag
 	{
 		static ID_t const ID = 10;
-		using t = std::map<std::reference_wrapper<Name_t const>, std::unique_ptr<Tag>>;
+	private:
+		template<typename T>
+		struct refwrapcomp
+		{
+			bool operator()(std::reference_wrapper<T> const &a, std::reference_wrapper<T> const &b) const
+			{
+				return a.get() < b.get();
+			}
+		};
+	public:
+		using t = std::map<std::reference_wrapper<Name_t const>, std::unique_ptr<Tag>, refwrapcomp<Name_t const>>;
 		t v;
 
-		using Tag::Tag;
-
-		Compound(std::initializer_list<t::mapped_type> init)
-		: Compound(Name_t())
-		{
-		}
-		Compound(Name_t const &name, std::initializer_list<t::mapped_type> init)
+		Compound() = default;
+		Compound(Name_t const &name)
 		: Tag(name)
 		{
-			for(auto &tag : init)
+		}
+		Compound(Compound const &from)
+		{
+			for(auto const &elem : from.v)
 			{
-				v.emplace(tag->name, tag);
+				auto tag = elem.second->clone();
+				v[tag->name] = std::move(tag);
+			}
+		}
+		Compound(Compound &&) = default;
+
+		Compound(std::initializer_list<t::mapped_type::pointer> init)
+		: Compound(Name_t(), init)
+		{
+		}
+		Compound(Name_t const &name, std::initializer_list<t::mapped_type::pointer> init)
+		: Tag(name)
+		{
+			for(auto tag : init)
+			{
+				v[tag->name] = t::mapped_type(tag);
 			}
 		}
 
@@ -529,7 +604,7 @@ namespace NBT
 			while(is.peek() != End::ID)
 			{
 				auto tag = read(is);
-				v.emplace(tag->name, tag);
+				v[tag->name] = std::move(tag);
 			}
 			is.ignore();
 		}
@@ -540,7 +615,14 @@ namespace NBT
 		using t = std::vector<Int::t>;
 		t v;
 
-		using Tag::Tag;
+		//using Tag::Tag;
+		IntArray() = default;
+		IntArray(Name_t const &name)
+		: Tag(name)
+		{
+		}
+		IntArray(IntArray const &) = default;
+		IntArray(IntArray &&) = default;
 
 		IntArray(t const &v)
 		: v(v)
