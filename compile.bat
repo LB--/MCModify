@@ -1,1 +1,1 @@
-clang++ -std=c++11 src/*.cpp -LC:/Users/Nicholas/Desktop/Boost/stage/lib -lboost_iostreams-mgw47-mt-1_54 -o test.exe
+g++ -std=c++11 src/*.cpp -lboost_iostreams -lz -o test.exe

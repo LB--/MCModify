@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <limits>
+#include <exception>
 
 #include "NamedBinaryTag.hpp"
 
@@ -21,7 +22,15 @@ int main(int nargs, char const *const *args)
 	fis.push(compressed);
 	boost::iostreams::copy(fis, decompressed);
 	decompressed.seekg(std::ios::beg);
-	auto nbt = NBT::Tag::read(decompressed);
+	std::cout << "Reading " << args[1] << std::endl;
+	try
+	{
+		auto nbt = NBT::Tag::read(decompressed);
+	}
+	catch(std::exception const &e)
+	{
+		std::cerr << "Exception caught: " << e.what() << std::endl;
+	}
 
 	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
