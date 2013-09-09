@@ -162,7 +162,11 @@ namespace NBT
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
-			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
+			for(auto start = reinterpret_cast<char const *>(&v), it = start+sizeof(t)-1; it != start-1; --it)
+			{
+				os.write(it, 1);
+			}
+			return os;
 		}
 		Short(Name_t const &name, std::istream &is)
 		: Tag(name), v()
@@ -211,7 +215,11 @@ namespace NBT
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
-			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
+			for(auto start = reinterpret_cast<char const *>(&v), it = start+sizeof(t)-1; it != start-1; --it)
+			{
+				os.write(it, 1);
+			}
+			return os;
 		}
 		Int(Name_t const &name, std::istream &is)
 		: Tag(name), v()
@@ -260,7 +268,11 @@ namespace NBT
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
-			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
+			for(auto start = reinterpret_cast<char const *>(&v), it = start+sizeof(t)-1; it != start-1; --it)
+			{
+				os.write(it, 1);
+			}
+			return os;
 		}
 		Long(Name_t const &name, std::istream &is)
 		: Tag(name), v()
@@ -309,7 +321,11 @@ namespace NBT
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
-			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
+			for(auto start = reinterpret_cast<char const *>(&v), it = start+sizeof(t)-1; it != start-1; --it)
+			{
+				os.write(it, 1);
+			}
+			return os;
 		}
 		Float(Name_t const &name, std::istream &is)
 		: Tag(name)
@@ -358,7 +374,11 @@ namespace NBT
 
 		virtual std::ostream &writePayload(std::ostream &os) const
 		{
-			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
+			for(auto start = reinterpret_cast<char const *>(&v), it = start+sizeof(t)-1; it != start-1; --it)
+			{
+				os.write(it, 1);
+			}
+			return os;
 		}
 		Double(Name_t const &name, std::istream &is)
 		: Tag(name)
@@ -700,7 +720,7 @@ namespace NBT
 	inline std::ostream &Tag::write(std::ostream &os) const
 	{
 		Byte(id()).writePayload(os);
-		String(name).writePayload(os);
+		String(u8"", name).writePayload(os);
 		return writePayload(os);
 	}
 	inline std::unique_ptr<Tag> Tag::read(std::istream &is)
