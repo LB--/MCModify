@@ -171,11 +171,11 @@ namespace NBT
 		Short(Name_t const &name, std::istream &is)
 		: Tag(name), v()
 		{
-			char arr[sizeof(t)];
-			is.read(arr, sizeof(t));
+			unsigned char arr[sizeof(t)];
+			is.read(reinterpret_cast<char *>(arr), sizeof(t));
 			for(auto it = arr+sizeof(t)-1, start = it; it != arr-1; --it)
 			{
-				v += (*it) << (8*(start-it));
+				v += static_cast<std::make_unsigned<t>::type>(*it) << (8*(start-it));
 			}
 		}
 	};
@@ -224,11 +224,11 @@ namespace NBT
 		Int(Name_t const &name, std::istream &is)
 		: Tag(name), v()
 		{
-			char arr[sizeof(t)];
-			is.read(arr, sizeof(t));
+			unsigned char arr[sizeof(t)];
+			is.read(reinterpret_cast<char *>(arr), sizeof(t));
 			for(auto it = arr+sizeof(t)-1, start = it; it != arr-1; --it)
 			{
-				v += (*it) << (8*(start-it));
+				v += static_cast<std::make_unsigned<t>::type>(*it) << (8*(start-it));
 			}
 		}
 	};
@@ -277,11 +277,11 @@ namespace NBT
 		Long(Name_t const &name, std::istream &is)
 		: Tag(name), v()
 		{
-			char arr[sizeof(t)];
-			is.read(arr, sizeof(t));
+			unsigned char arr[sizeof(t)];
+			is.read(reinterpret_cast<char *>(arr), sizeof(t));
 			for(auto it = arr+sizeof(t)-1, start = it; it != arr-1; --it)
 			{
-				v += (*it) << (8*(start-it));
+				v += static_cast<std::make_unsigned<t>::type>(*it) << (8*(start-it));
 			}
 		}
 	};
