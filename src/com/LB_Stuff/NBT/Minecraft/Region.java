@@ -26,9 +26,9 @@
 |* SUCH DAMAGE.                                                               *|
 \******************************************************************************/
 
-package NBT.Minecraft;
+package com.LB_Stuff.NBT.Minecraft;
 
-import NBT.FormatException;
+import com.LB_Stuff.NBT.FormatException;
 import static java.util.Map.Entry;
 import static java.util.AbstractMap.SimpleEntry;
 import java.nio.ByteBuffer;
@@ -176,13 +176,13 @@ public final class Region
 				{
 					if(compression == GZip_Compression)
 					{
-						return new Chunk(NBT.IO.Read(chunkin));
+						return new Chunk(com.LB_Stuff.NBT.IO.Read(chunkin));
 					}
 					else if(compression == Zlib_Compression)
 					{
 						try(InflaterInputStream ci = new InflaterInputStream(chunkin))
 						{
-							return new Chunk(NBT.IO.ReadUncompressed(ci));
+							return new Chunk(com.LB_Stuff.NBT.IO.ReadUncompressed(ci));
 						}
 					}
 				}
@@ -230,7 +230,7 @@ public final class Region
 			ByteBuffer chunkbytes;
 			try(ByteArrayOutputStream baos = new ByteArrayOutputStream(0))
 			{
-				NBT.IO.Write(c.ToNBT(""), baos);
+				com.LB_Stuff.NBT.IO.Write(c.ToNBT(""), baos);
 				chunksize = baos.size();
 				newsectors = (chunksize+5)/SectorSize+1;
 				chunkbytes = ByteBuffer.allocate(newsectors*SectorSize);

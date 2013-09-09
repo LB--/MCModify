@@ -26,10 +26,10 @@
 |* SUCH DAMAGE.                                                               *|
 \******************************************************************************/
 
-package NBT.Minecraft;
+package com.LB_Stuff.NBT.Minecraft;
 
-import NBT.Tag;
-import NBT.FormatException;
+import com.LB_Stuff.NBT.Tag;
+import com.LB_Stuff.NBT.FormatException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 

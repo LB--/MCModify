@@ -26,12 +26,69 @@
 |* SUCH DAMAGE.                                                               *|
 \******************************************************************************/
 
-package NBT.Serialization;
+package com.LB_Stuff.NBT;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
- * Classes that implement this interface state that they are eligible for automatic reflective serialization to NBT structures. Only data members not marked transient that implement this interface will be serialized to the NBT structure or deserialized from it.
+ * The generic "this data is wonky" exception.
  * @author LB
  */
-public interface NBTable
+public class FormatException extends Exception
 {
+	/**
+	 * The tag(s) that caused the problem, if any.
+	 */
+	List<Tag> t = new ArrayList<>();
+
+	/**
+	 * Instantiates this exception with the given message.
+	 * @param msg The message to be seen with this exception.
+	 * @param tags The tag(s) (if any) that were malformed.
+	 */
+	public FormatException(String msg, Tag... tags)
+	{
+		super(msg);
+		t.addAll(Arrays.asList(tags));
+	}
+	/**
+	 * Instantiates this exception with the given message and cause.
+	 * @param msg The message to be seen with this exception.
+	 * @param cause The exception that caused the trouble in the first place.
+	 * @param tags The tag(s) (if any) that were malformed.
+	 */
+	public FormatException(String msg, Throwable cause, Tag... tags)
+	{
+		super(msg, cause);
+		t.addAll(Arrays.asList(tags));
+	}
+	/**
+	 * Instantiates this exception with just the causing exception.
+	 * @param cause The exception that caused the trouble in the first place.
+	 * @param tags The tag(s) (if any) that were malformed.
+	 */
+	public FormatException(Throwable cause, Tag... tags)
+	{
+		super(cause);
+		t.addAll(Arrays.asList(tags));
+	}
+
+	/**
+	 * Returns the tag(s) (if any) that were malformed.
+	 * @return The tag(s) (if any) that were malformed.
+	 */
+	public Tag[] Tags()
+	{
+		return t.toArray(new Tag[0]);
+	}
+	/**
+	 * Adds tags to the list of the malformed tags.
+	 * @param tags The tags that were malformed.
+	 */
+	public void Add(Tag... tags)
+	{
+		t.addAll(Arrays.asList(tags));
+	}
 }

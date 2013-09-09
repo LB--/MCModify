@@ -26,10 +26,10 @@
 |* SUCH DAMAGE.                                                               *|
 \******************************************************************************/
 
-package NBT.Serialization;
+package com.LB_Stuff.NBT.Serialization;
 
-import NBT.FormatException;
-import NBT.Tag;
+import com.LB_Stuff.NBT.FormatException;
+import com.LB_Stuff.NBT.Tag;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

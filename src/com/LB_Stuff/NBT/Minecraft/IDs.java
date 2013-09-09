@@ -26,7 +26,7 @@
 |* SUCH DAMAGE.                                                               *|
 \******************************************************************************/
 
-package NBT.Minecraft;
+package com.LB_Stuff.NBT.Minecraft;
 
 /**
  * Block & Item ID constants, provided as convenience.
