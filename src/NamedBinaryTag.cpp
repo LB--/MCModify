@@ -59,7 +59,7 @@ namespace NBT
 		},
 		{ List::ID, [](Name_t const &name, std::istream &is) -> std::unique_ptr<Tag>
 			{
-				ID_t type {Byte(L"", is).v};
+				ID_t type {Byte(u8"", is).v};
 				return std::unique_ptr<Tag>(new List(name, type, is));
 			}
 		},

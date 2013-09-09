@@ -22,10 +22,11 @@ int main(int nargs, char const *const *args)
 	fis.push(compressed);
 	boost::iostreams::copy(fis, decompressed);
 	decompressed.seekg(std::ios::beg);
-	std::cout << "Reading " << args[1] << std::endl;
 	try
 	{
+		std::cout << "Reading " << args[1] << std::endl;
 		auto nbt = NBT::Tag::read(decompressed);
+		std::cout << "Done" << std::endl;
 	}
 	catch(std::exception const &e)
 	{

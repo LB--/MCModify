@@ -16,7 +16,7 @@ namespace NBT
 	{
 		static std::int32_t const NBT_VERSION = 19133;
 
-		using Name_t = std::wstring;
+		using Name_t = std::string;
 		Name_t const name;
 		using ID_t = std::int8_t;
 
@@ -166,7 +166,9 @@ namespace NBT
 		Short(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			is.read(reinterpret_cast<char *>(&v), sizeof(t));
+			char arr[sizeof(t)];
+			is.read(arr, sizeof(t));
+			v = arr[1] + (arr[0]<<8); /*HACK*/
 		}
 	};
 	struct Tag::Int : Tag
@@ -210,7 +212,9 @@ namespace NBT
 		Int(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			is.read(reinterpret_cast<char *>(&v), sizeof(t));
+			char arr[sizeof(t)];
+			is.read(arr, sizeof(t));
+			v = arr[3] + (arr[2]<<8) + (arr[1]<<16) + (arr[0]<<24); /*HACK*/
 		}
 	};
 	struct Tag::Long : Tag
@@ -254,7 +258,9 @@ namespace NBT
 		Long(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			is.read(reinterpret_cast<char *>(&v), sizeof(t));
+			char arr[sizeof(t)];
+			is.read(arr, sizeof(t));
+			v = arr[7] + (arr[6]<<8) + (arr[5]<<16) + (arr[4]<<24) + (t(arr[3])<<32) + (t(arr[2])<<40) + (t(arr[1])<<48) + (t(arr[0])<<56); /*HACK*/
 		}
 	};
 	struct Tag::Float : Tag
@@ -400,17 +406,17 @@ namespace NBT
 		ByteArray(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			t::size_type size = Int(L"", is).v;
+			t::size_type size = Int(u8"", is).v;
 			for(auto i = t::size_type(); i < size; ++i)
 			{
-				v.push_back(Byte(L"", is).v);
+				v.push_back(Byte(u8"", is).v);
 			}
 		}
 	};
 	struct Tag::String : Tag
 	{
 		static ID_t const ID;
-		using t = std::wstring;
+		using t = std::string;
 		t v;
 
 		//using Tag::Tag;
@@ -450,9 +456,9 @@ namespace NBT
 		String(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			t::size_type size = Short(L"", is).v;
+			t::size_type size = Short(u8"", is).v;
 			std::unique_ptr<t::value_type[]> str {new t::value_type[size+1]};
-			str[size] = L'\0';
+			str[size] = '\0';
 			is.read(reinterpret_cast<char *>(&(str[0])), size*sizeof(t::value_type));
 			v = str.get();
 		}
@@ -530,10 +536,10 @@ namespace NBT
 		: Tag(name)
 		, of(type)
 		{
-			t::size_type size = Int(L"", is).v;
+			t::size_type size = Int(u8"", is).v;
 			for(auto i = t::size_type(); i < size; ++i)
 			{
-				v.push_back(readers.at(of)(L"", is));
+				v.push_back(readers.at(of)(u8"", is));
 			}
 		}
 	};
@@ -664,10 +670,10 @@ namespace NBT
 		IntArray(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			t::size_type size = Int(L"", is).v;
+			t::size_type size = Int(u8"", is).v;
 			for(auto i = t::size_type(); i < size; ++i)
 			{
-				v.push_back(Int(L"", is).v);
+				v.push_back(Int(u8"", is).v);
 			}
 		}
 	};
@@ -679,8 +685,8 @@ namespace NBT
 	}
 	inline std::unique_ptr<Tag> Tag::read(std::istream &is)
 	{
-		ID_t type {Byte(L"", is).v};
-		Name_t name {String(L"", is).v};
+		ID_t type {Byte(u8"", is).v};
+		Name_t name {String(u8"", is).v};
 		return readers.at(type)(name, is);
 	}
 }
