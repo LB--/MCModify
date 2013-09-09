@@ -2,6 +2,7 @@
 #define MinecraftNamedBinaryTagClasses_HeaderPlusPlus
 #include <string>
 #include <cstdint>
+#include <cstddef>
 #include <vector>
 #include <type_traits>
 #include <map>
@@ -164,11 +165,14 @@ namespace NBT
 			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
 		}
 		Short(Name_t const &name, std::istream &is)
-		: Tag(name)
+		: Tag(name), v()
 		{
 			char arr[sizeof(t)];
 			is.read(arr, sizeof(t));
-			v = arr[1] + (arr[0]<<8); /*HACK*/
+			for(auto it = arr+sizeof(t)-1, start = it; it != arr-1; --it)
+			{
+				v += (*it) << (8*(start-it));
+			}
 		}
 	};
 	struct Tag::Int : Tag
@@ -210,11 +214,14 @@ namespace NBT
 			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
 		}
 		Int(Name_t const &name, std::istream &is)
-		: Tag(name)
+		: Tag(name), v()
 		{
 			char arr[sizeof(t)];
 			is.read(arr, sizeof(t));
-			v = arr[3] + (arr[2]<<8) + (arr[1]<<16) + (arr[0]<<24); /*HACK*/
+			for(auto it = arr+sizeof(t)-1, start = it; it != arr-1; --it)
+			{
+				v += (*it) << (8*(start-it));
+			}
 		}
 	};
 	struct Tag::Long : Tag
@@ -256,11 +263,14 @@ namespace NBT
 			return os.write(reinterpret_cast<char const *>(&v), sizeof(t));
 		}
 		Long(Name_t const &name, std::istream &is)
-		: Tag(name)
+		: Tag(name), v()
 		{
 			char arr[sizeof(t)];
 			is.read(arr, sizeof(t));
-			v = arr[7] + (arr[6]<<8) + (arr[5]<<16) + (arr[4]<<24) + (t(arr[3])<<32) + (t(arr[2])<<40) + (t(arr[1])<<48) + (t(arr[0])<<56); /*HACK*/
+			for(auto it = arr+sizeof(t)-1, start = it; it != arr-1; --it)
+			{
+				v += (*it) << (8*(start-it));
+			}
 		}
 	};
 	struct Tag::Float : Tag
@@ -304,7 +314,12 @@ namespace NBT
 		Float(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			is.read(reinterpret_cast<char *>(&v), sizeof(t));
+			auto start = reinterpret_cast<char *>(&v);
+			is.read(start, sizeof(t));
+			for(std::ptrdiff_t i = 0; i < sizeof(t)/2; ++i)
+			{
+				std::swap(*(start+i), *(start+sizeof(t)-i-1));
+			}
 		}
 	};
 	struct Tag::Double : Tag
@@ -348,7 +363,12 @@ namespace NBT
 		Double(Name_t const &name, std::istream &is)
 		: Tag(name)
 		{
-			is.read(reinterpret_cast<char *>(&v), sizeof(t));
+			auto start = reinterpret_cast<char *>(&v);
+			is.read(start, sizeof(t));
+			for(std::ptrdiff_t i = 0; i < sizeof(t)/2; ++i)
+			{
+				std::swap(*(start+i), *(start+sizeof(t)-i-1));
+			}
 		}
 	};
 	struct Tag::ByteArray : Tag
