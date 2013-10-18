@@ -520,22 +520,29 @@ public abstract class Mob extends Entity
 			}
 		}
 
-		Tag.List equip = (Tag.List)mob.Find(Tag.Type.LIST, "Equipment");
-		equipment.put(EquipmentSlot.Hand,     new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Hand.    ID())));
-		equipment.put(EquipmentSlot.Boots,    new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Boots.   ID())));
-		equipment.put(EquipmentSlot.Leggings, new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Leggings.ID())));
-		equipment.put(EquipmentSlot.Chest,    new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Chest.   ID())));
-		equipment.put(EquipmentSlot.Helmet,   new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Helmet.  ID())));
+		try
+		{
+			Tag.List equip = (Tag.List)mob.Find(Tag.Type.LIST, "Equipment");
+			equipment.put(EquipmentSlot.Hand,     new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Hand.    ID())));
+			equipment.put(EquipmentSlot.Boots,    new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Boots.   ID())));
+			equipment.put(EquipmentSlot.Leggings, new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Leggings.ID())));
+			equipment.put(EquipmentSlot.Chest,    new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Chest.   ID())));
+			equipment.put(EquipmentSlot.Helmet,   new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Helmet.  ID())));
 
-		Tag.List drops = (Tag.List)mob.Find(Tag.Type.LIST, "DropChances");
-		dropchances.put(EquipmentSlot.Hand,     ((Tag.Float)equip.Get(EquipmentSlot.Hand.    ID())).v);
-		dropchances.put(EquipmentSlot.Boots,    ((Tag.Float)equip.Get(EquipmentSlot.Boots.   ID())).v);
-		dropchances.put(EquipmentSlot.Leggings, ((Tag.Float)equip.Get(EquipmentSlot.Leggings.ID())).v);
-		dropchances.put(EquipmentSlot.Chest,    ((Tag.Float)equip.Get(EquipmentSlot.Chest.   ID())).v);
-		dropchances.put(EquipmentSlot.Helmet,   ((Tag.Float)equip.Get(EquipmentSlot.Helmet.  ID())).v);
+			Tag.List drops = (Tag.List)mob.Find(Tag.Type.LIST, "DropChances");
+			dropchances.put(EquipmentSlot.Hand,     ((Tag.Float)equip.Get(EquipmentSlot.Hand.    ID())).v);
+			dropchances.put(EquipmentSlot.Boots,    ((Tag.Float)equip.Get(EquipmentSlot.Boots.   ID())).v);
+			dropchances.put(EquipmentSlot.Leggings, ((Tag.Float)equip.Get(EquipmentSlot.Leggings.ID())).v);
+			dropchances.put(EquipmentSlot.Chest,    ((Tag.Float)equip.Get(EquipmentSlot.Chest.   ID())).v);
+			dropchances.put(EquipmentSlot.Helmet,   ((Tag.Float)equip.Get(EquipmentSlot.Helmet.  ID())).v);
 
-		canpickuploot = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "CanPickUpLoot")).v == 1 ? true : false;
-		persistencerequired = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "PersistenceRequired")).v == 1 ? true : false;
+			canpickuploot = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "CanPickUpLoot")).v == 1 ? true : false;
+			persistencerequired = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "PersistenceRequired")).v == 1 ? true : false;
+		}
+		catch(FormatException e)
+		{
+		}
+
 		try
 		{
 			customname = ((Tag.String)mob.Find(Tag.Type.STRING, "CustomName")).v;
@@ -552,12 +559,26 @@ public abstract class Mob extends Entity
 		{
 			customnamevisible = false;
 		}
-		healf = ((Tag.Float)mob.Find(Tag.Type.FLOAT, "HealF")).v;
-		if(((Tag.Byte)mob.Find(Tag.Type.BYTE, "Leashed")).v == 1)
+		try
 		{
-			leash = Leash.FromNBT((Tag.Compound)mob.Find(Tag.Type.COMPOUND, "Leash"));
+			healf = ((Tag.Float)mob.Find(Tag.Type.FLOAT, "HealF")).v;
 		}
-		else
+		catch(FormatException e)
+		{
+			healf = health;
+		}
+		try
+		{
+			if(((Tag.Byte)mob.Find(Tag.Type.BYTE, "Leashed")).v == 1)
+			{
+				leash = Leash.FromNBT((Tag.Compound)mob.Find(Tag.Type.COMPOUND, "Leash"));
+			}
+			else
+			{
+				leash = null;
+			}
+		}
+		catch(FormatException e)
 		{
 			leash = null;
 		}

@@ -338,7 +338,14 @@ public class Chunk
 		xpos = ((Tag.Int)chunk.Find(Tag.Type.INT, "xPos")).v;
 		zpos = ((Tag.Int)chunk.Find(Tag.Type.INT, "zPos")).v;
 		lastupdate = ((Tag.Long)chunk.Find(Tag.Type.LONG, "LastUpdate")).v;
-		inhabitedtime = ((Tag.Long)chunk.Find(Tag.Type.LONG, "InhabitedTime")).v;
+		try
+		{
+			inhabitedtime = ((Tag.Long)chunk.Find(Tag.Type.LONG, "InhabitedTime")).v;
+		}
+		catch(FormatException e)
+		{
+			inhabitedtime = 0;
+		}
 		try
 		{
 			terrainpopulated = ((Tag.Byte)chunk.Find(Tag.Type.BYTE, "TerrainPopulated")).v != 0 ? true : false;
