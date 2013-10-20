@@ -82,8 +82,8 @@ public class Map
 			new Color(112, 112, 112),
 			new Color(64, 64, 255),
 			new Color(104, 83, 50),
-			//new 1.7 colors (13w42a)
-			new Color(255, 255, 255),
+			//new 1.7 colors (13w42a/13w42b)
+			new Color(255, 252, 245),
 			new Color(216, 127, 51),
 			new Color(178, 76, 216),
 			new Color(102, 153, 216),
@@ -111,8 +111,9 @@ public class Map
 		{
 			Color bc = BaseMapColors[i];
 			MapColors[i*4 +0] = new Color((int)(bc.getRed()*180.0/255.0+0.5), (int)(bc.getGreen()*180.0/255.0+0.5), (int)(bc.getBlue()*180.0/255.0+0.5), bc.getAlpha());
+			MapColors[i*4 +1] = new Color((int)(bc.getRed()*220.0/255.0+0.5), (int)(bc.getGreen()*220.0/255.0+0.5), (int)(bc.getBlue()*220.0/255.0+0.5), bc.getAlpha());
 			MapColors[i*4 +2] = bc;
-			MapColors[i*4 +1] = MapColors[i*4 +3] = new Color((int)(bc.getRed()*220.0/255.0+0.5), (int)(bc.getGreen()*220.0/255.0+0.5), (int)(bc.getBlue()*220.0/255.0+0.5), bc.getAlpha());
+			MapColors[i*4 +3] = new Color((int)(bc.getRed()*135.0/255.0+0.5), (int)(bc.getGreen()*135.0/255.0+0.5), (int)(bc.getBlue()*135.0/255.0+0.5), bc.getAlpha());
 		}
 		byte[] r = new byte[MapColors.length],
 			   g = new byte[MapColors.length],
