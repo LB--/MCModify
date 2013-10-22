@@ -515,6 +515,7 @@ public class Chunk
 			return 0;
 		}
 		Section s = sections.get((byte)(y/16));
+		y %= 16;
 		return (short)(s.blocks[y*16*16 + z*16 + x] + (Nibble4(s.add, y*16*16 + z*16 + x)<<8));
 	}
 	/**
