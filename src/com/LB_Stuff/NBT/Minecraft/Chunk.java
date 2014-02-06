@@ -66,7 +66,7 @@ public class Chunk
 	/**
 	 * Used for sky light calculation, 16x16.
 	 */
-	private int[] heightmap;
+	private int[] heightmap = new int[256];
 	/**
 	 * Section
 	 */
