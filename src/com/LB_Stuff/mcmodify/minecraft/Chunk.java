@@ -40,7 +40,7 @@ public class Chunk
 	/**
 	 * Used for sky light calculation, 16x16.
 	 */
-	private int[] heightmap;
+	private int[] heightmap = new int[256];
 	/**
 	 * Section
 	 */
@@ -930,7 +930,7 @@ public class Chunk
 		Tag.List sectionlist = new Tag.List("Sections", Tag.Type.COMPOUND),
 				 entitylist = new Tag.List("Entities", Tag.Type.COMPOUND),
 				 tileentitylist = new Tag.List("TileEntities", Tag.Type.COMPOUND),
-				 tileticklist = new Tag.List("TileEntities", Tag.Type.COMPOUND);
+				 tileticklist = new Tag.List("TileTicks", Tag.Type.COMPOUND);
 		try
 		{
 			for(Map.Entry<Byte, Section> s : sections.entrySet())

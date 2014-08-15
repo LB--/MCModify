@@ -866,28 +866,27 @@ public abstract class Tag implements Cloneable
 		public List(java.lang.String name, Type _type, Tag... tags) throws IllegalArgumentException
 		{
 			super(name);
-			if(_type == Type.END)
-			{
-				throw new IllegalArgumentException("Can't have a list of TAG_End");
-			}
-			else if(_type == null)
+			if(_type == null)
 			{
 				throw new IllegalArgumentException("The tag type was null");
 			}
 			type = _type;
-			for(Tag t : tags)
+			if(type != Type.END)
 			{
-				if(t.Name() != null)
+				for(Tag t : tags)
 				{
-					throw new IllegalArgumentException("Tags in Lists must have null names; given tag had name: \""+t.Name()+"\"");
-				}
-				else if(t.Type() == type)
-				{
-					list.add(t);
-				}
-				else
-				{
-					throw new IllegalArgumentException(new Type.MismatchException(type+" required, given "+t.Type()));
+					if(t.Name() != null)
+					{
+						throw new IllegalArgumentException("Tags in Lists must have null names; given tag had name: \""+t.Name()+"\"");
+					}
+					else if(t.Type() == type)
+					{
+						list.add(t);
+					}
+					else
+					{
+						throw new IllegalArgumentException(new Type.MismatchException(type+" required, given "+t.Type()));
+					}
 				}
 			}
 		}
@@ -901,12 +900,7 @@ public abstract class Tag implements Cloneable
 		public List(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
 			super(name);
-			Type _type = Type.FromID(i.read());
-			if(_type == Type.END)
-			{
-				throw new FormatException("Found a list of TAG_End");
-			}
-			type = _type;
+			type = Type.FromID(i.read());
 			int size = new DataInputStream(i).readInt();
 			if(size < 0)
 			{
