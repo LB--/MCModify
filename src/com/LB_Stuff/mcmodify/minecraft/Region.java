@@ -1,47 +1,20 @@
-/******************************************************************************\
-|* Copyright © 2013 LB-Stuff                                                  *|
-|* All rights reserved.                                                       *|
-|*                                                                            *|
-|* Redistribution and use in source and binary forms, with or without         *|
-|* modification, are permitted provided that the following conditions         *|
-|* are met:                                                                   *|
-|*                                                                            *|
-|*  1. Redistributions of source code must retain the above copyright         *|
-|*     notice, this list of conditions and the following disclaimer.          *|
-|*                                                                            *|
-|*  2. Redistributions in binary form must reproduce the above copyright      *|
-|*     notice, this list of conditions and the following disclaimer in the    *|
-|*     documentation and/or other materials provided with the distribution.   *|
-|*                                                                            *|
-|* THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND       *|
-|* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE      *|
-|* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE *|
-|* ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE    *|
-|* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL *|
-|* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS    *|
-|* OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)      *|
-|* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT *|
-|* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY  *|
-|* OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF     *|
-|* SUCH DAMAGE.                                                               *|
-\******************************************************************************/
+package com.lb_stuff.mcmodify.minecraft;
 
-package com.LB_Stuff.NBT.Minecraft;
+import com.lb_stuff.mcmodify.nbt.FormatException;
 
-import com.LB_Stuff.NBT.FormatException;
-import static java.util.Map.Entry;
-import static java.util.AbstractMap.SimpleEntry;
-import java.nio.ByteBuffer;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.RandomAccessFile;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.zip.InflaterInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map.Entry;
+import java.util.zip.InflaterInputStream;
 
 /**
  * Region file reader/writer
@@ -176,13 +149,13 @@ public final class Region
 				{
 					if(compression == GZip_Compression)
 					{
-						return new Chunk(com.LB_Stuff.NBT.IO.Read(chunkin));
+						return new Chunk(com.lb_stuff.mcmodify.nbt.IO.Read(chunkin));
 					}
 					else if(compression == Zlib_Compression)
 					{
 						try(InflaterInputStream ci = new InflaterInputStream(chunkin))
 						{
-							return new Chunk(com.LB_Stuff.NBT.IO.ReadUncompressed(ci));
+							return new Chunk(com.lb_stuff.mcmodify.nbt.IO.ReadUncompressed(ci));
 						}
 					}
 				}
@@ -230,7 +203,7 @@ public final class Region
 			ByteBuffer chunkbytes;
 			try(ByteArrayOutputStream baos = new ByteArrayOutputStream(0))
 			{
-				com.LB_Stuff.NBT.IO.Write(c.ToNBT(""), baos);
+				com.lb_stuff.mcmodify.nbt.IO.Write(c.ToNBT(""), baos);
 				chunksize = baos.size();
 				newsectors = (chunksize+5)/SectorSize+1;
 				chunkbytes = ByteBuffer.allocate(newsectors*SectorSize);

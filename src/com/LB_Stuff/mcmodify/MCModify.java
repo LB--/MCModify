@@ -1,48 +1,23 @@
-/******************************************************************************\
-|* Copyright © 2013 LB-Stuff                                                  *|
-|* All rights reserved.                                                       *|
-|*                                                                            *|
-|* Redistribution and use in source and binary forms, with or without         *|
-|* modification, are permitted provided that the following conditions         *|
-|* are met:                                                                   *|
-|*                                                                            *|
-|*  1. Redistributions of source code must retain the above copyright         *|
-|*     notice, this list of conditions and the following disclaimer.          *|
-|*                                                                            *|
-|*  2. Redistributions in binary form must reproduce the above copyright      *|
-|*     notice, this list of conditions and the following disclaimer in the    *|
-|*     documentation and/or other materials provided with the distribution.   *|
-|*                                                                            *|
-|* THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND       *|
-|* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE      *|
-|* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE *|
-|* ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE    *|
-|* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL *|
-|* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS    *|
-|* OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)      *|
-|* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT *|
-|* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY  *|
-|* OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF     *|
-|* SUCH DAMAGE.                                                               *|
-\******************************************************************************/
+package com.lb_stuff.mcmodify;
 
-package com.LB_Stuff;
+import com.lb_stuff.mcmodify.minecraft.Chunk;
+import com.lb_stuff.mcmodify.minecraft.Inventory;
+import com.lb_stuff.mcmodify.minecraft.Level;
+import com.lb_stuff.mcmodify.minecraft.Map;
+import com.lb_stuff.mcmodify.minecraft.Region;
+import com.lb_stuff.mcmodify.nbt.Tag;
+import com.lb_stuff.mcmodify.serialization.NBTable;
 
+import static com.lb_stuff.mcmodify.minecraft.IDs.*;
+
+import javax.imageio.ImageIO;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import com.LB_Stuff.NBT.Tag;
-import com.LB_Stuff.NBT.Serialization.NBTable;
-import com.LB_Stuff.NBT.Minecraft.Map;
-import java.awt.Graphics2D;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.io.File;
-import com.LB_Stuff.NBT.Minecraft.Level;
-import com.LB_Stuff.NBT.Minecraft.Inventory;
-import static com.LB_Stuff.NBT.Minecraft.IDs.*;
-import com.LB_Stuff.NBT.Minecraft.Region;
-import com.LB_Stuff.NBT.Minecraft.Chunk;
 
 /**
  * Main (test) Class
@@ -62,7 +37,7 @@ public class MCModify
 			Tag.Compound level;
 			try(FileInputStream fis = new FileInputStream("level.dat"))
 			{
-				level = com.LB_Stuff.NBT.IO.Read(fis); //Read it from any Input stream!
+				level = com.lb_stuff.mcmodify.nbt.IO.Read(fis); //Read it from any Input stream!
 			}
 
 			System.out.println(level); //See the pretty structure!
@@ -73,7 +48,7 @@ public class MCModify
 
 			try(FileOutputStream fos = new FileOutputStream("level.dat_mca")) //Save it back...in the future!
 			{
-				com.LB_Stuff.NBT.IO.Write(level, fos); //Write it to any Output stream!
+				com.lb_stuff.mcmodify.nbt.IO.Write(level, fos); //Write it to any Output stream!
 			}
 		}
 
@@ -84,7 +59,7 @@ public class MCModify
 			Tag.Compound idcounts;
 			try(FileInputStream fis = new FileInputStream("idcounts.dat"))
 			{
-				idcounts = com.LB_Stuff.NBT.IO.ReadUncompressed(fis); //Also works for servers.dat!
+				idcounts = com.lb_stuff.mcmodify.nbt.IO.ReadUncompressed(fis); //Also works for servers.dat!
 			}
 			System.out.println("Last created map number: "+((Tag.Short)idcounts.Find(Tag.Type.SHORT, "map")).v);
 		}
@@ -93,12 +68,12 @@ public class MCModify
 
 		{
 			System.out.println(">>>TEST 2: Serialize an NBTable class to a compound tag and load it back again.");
-			Tag.Compound serializationTest = com.LB_Stuff.NBT.Serialization.IO.Serialize("Test", new TestClass(), false); //Serialize it!
+			Tag.Compound serializationTest = com.lb_stuff.mcmodify.serialization.IO.Serialize("Test", new TestClass(), false); //Serialize it!
 			System.out.println(serializationTest); //Print it!
 
 			System.out.println();
 
-			TestClass tc = (TestClass)com.LB_Stuff.NBT.Serialization.IO.Deserialize(TestClass.class, null, serializationTest); //Deserialize it!
+			TestClass tc = (TestClass)com.lb_stuff.mcmodify.serialization.IO.Deserialize(TestClass.class, null, serializationTest); //Deserialize it!
 			System.out.println(tc); //Print the other it!
 		}
 
@@ -109,7 +84,7 @@ public class MCModify
 			Map map;
 			try(FileInputStream fis = new FileInputStream("map.dat"))
 			{
-				map = new Map(com.LB_Stuff.NBT.IO.Read(fis));
+				map = new Map(com.lb_stuff.mcmodify.nbt.IO.Read(fis));
 			}
 
 			BufferedImage mapimage = map.Image(); //Yep, Images!
@@ -121,7 +96,7 @@ public class MCModify
 
 			try(FileOutputStream fos = new FileOutputStream("map_.dat"))
 			{
-				com.LB_Stuff.NBT.IO.Write(map.ToNBT(""), fos);
+				com.lb_stuff.mcmodify.nbt.IO.Write(map.ToNBT(""), fos);
 			}
 		}
 
@@ -132,7 +107,7 @@ public class MCModify
 			Level level;
 			try(FileInputStream fis = new FileInputStream("level.dat_mca"))
 			{
-				level = new Level(com.LB_Stuff.NBT.IO.Read(fis));
+				level = new Level(com.lb_stuff.mcmodify.nbt.IO.Read(fis));
 			}
 
 			Level.Player player = level.Player(); //Edit the singplayer player!
@@ -146,7 +121,7 @@ public class MCModify
 
 			try(FileOutputStream fos = new FileOutputStream("level.dat_mca"))
 			{
-				com.LB_Stuff.NBT.IO.Write(level.ToNBT(""), fos);
+				com.lb_stuff.mcmodify.nbt.IO.Write(level.ToNBT(""), fos);
 			}
 		}
 
@@ -163,7 +138,7 @@ public class MCModify
 					Chunk chunk = region.ReadChunk(x, z); //Simple as that!
 					if(chunk != null)
 					{
-						chunk.Entities().add(new com.LB_Stuff.NBT.Minecraft.Mob.EnderDragon(x*16+8, 96, z*16+8)); //Entity lists!
+						chunk.Entities().add(new com.lb_stuff.mcmodify.minecraft.Mob.EnderDragon(x*16+8, 96, z*16+8)); //Entity lists!
 					}
 					newregion.WriteChunk(x, z, chunk); //Deletes the chunk if it is null!
 				}
