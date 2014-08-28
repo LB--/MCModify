@@ -21,7 +21,7 @@ import java.io.FileOutputStream;
 
 /**
  * Main (test) Class
- * @author LB
+ * TODO: Switch to maven test suite instead
  */
 public class MCModify
 {

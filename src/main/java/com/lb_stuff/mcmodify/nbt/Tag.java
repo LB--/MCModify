@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * The main class used by this NBT package, its static subclasses extend and implement it. The equals() and hashCode() methods are based entirely on the name of the tag.
  * I am aware that this means you can do nonsensical things such as Tag.Byte.Compound.Short.List...
- * @author LB
  * @version 19133
  */
 public abstract class Tag implements Cloneable

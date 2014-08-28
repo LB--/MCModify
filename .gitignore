@@ -3,6 +3,9 @@ level.dat_mca
 map_.dat
 r.0.1.mca
 target/
+*.class
+*.jar
+dependency-reduced-pom.xml
 
 #################
 ## Eclipse

@@ -11,7 +11,6 @@ import java.util.Set;
 
 /**
  * The class used for various inventories.
- * @author LB
  */
 public class Inventory
 {

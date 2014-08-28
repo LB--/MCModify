@@ -8,7 +8,6 @@ import java.util.Map;
 
 /**
  * The class extended by the various entity classes in Minecraft.
- * @author LB
  */
 public abstract class Entity
 {

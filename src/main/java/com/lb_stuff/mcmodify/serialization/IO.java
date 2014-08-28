@@ -14,7 +14,6 @@ import java.lang.reflect.Modifier;
 
 /**
  * This class can serialize and deserialize classes that implement <code>NBTable</code> to/from NBT structures.
- * @author LB
  */
 public final class IO
 {

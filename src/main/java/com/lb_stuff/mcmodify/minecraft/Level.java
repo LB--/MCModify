@@ -5,7 +5,6 @@ import com.lb_stuff.mcmodify.nbt.Tag;
 
 /**
  * Represents a level.dat file
- * @author LB
  */
 public class Level
 {

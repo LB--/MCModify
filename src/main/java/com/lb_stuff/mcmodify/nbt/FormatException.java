@@ -6,7 +6,6 @@ import java.util.List;
 
 /**
  * The generic "this data is wonky" exception.
- * @author LB
  */
 public class FormatException extends Exception
 {

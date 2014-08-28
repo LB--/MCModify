@@ -13,7 +13,6 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  *
- * @author LB
  */
 public class Chunk
 {
@@ -760,31 +759,31 @@ public class Chunk
 
 	/**
 	 * Returns the Biome ID at the given column coordinates.
-	 * <br/>
-	 * <br/>-1	(Uncalculated)
-	 * <br/>0	Ocean
-	 * <br/>1	Plains
-	 * <br/>2	Desert
-	 * <br/>3	Extreme Hills
-	 * <br/>4	Forest
-	 * <br/>5	Taiga
-	 * <br/>6	Swampland
-	 * <br/>7	River
-	 * <br/>8	Hell
-	 * <br/>9	Sky
-	 * <br/>10	Frozen Ocean
-	 * <br/>11	Frozen River
-	 * <br/>12	Ice Plains
-	 * <br/>13	Ice Mountains
-	 * <br/>14	Mushroom Island
-	 * <br/>15	Mushroom Island Shore
-	 * <br/>16	Beach
-	 * <br/>17	Desert Hills
-	 * <br/>18	Forest Hills
-	 * <br/>19	Taiga Hills
-	 * <br/>20	Extreme Hills Edge
-	 * <br/>21	Jungle
-	 * <br/>22	Jungle Hills
+	 * <br>
+	 * <br>-1	(Uncalculated)
+	 * <br>0	Ocean
+	 * <br>1	Plains
+	 * <br>2	Desert
+	 * <br>3	Extreme Hills
+	 * <br>4	Forest
+	 * <br>5	Taiga
+	 * <br>6	Swampland
+	 * <br>7	River
+	 * <br>8	Hell
+	 * <br>9	Sky
+	 * <br>10	Frozen Ocean
+	 * <br>11	Frozen River
+	 * <br>12	Ice Plains
+	 * <br>13	Ice Mountains
+	 * <br>14	Mushroom Island
+	 * <br>15	Mushroom Island Shore
+	 * <br>16	Beach
+	 * <br>17	Desert Hills
+	 * <br>18	Forest Hills
+	 * <br>19	Taiga Hills
+	 * <br>20	Extreme Hills Edge
+	 * <br>21	Jungle
+	 * <br>22	Jungle Hills
 	 * @param x The X coordinate of the column.
 	 * @param z The Z coordinate of the column.
 	 * @return The Biome ID at the given column coordinates.
@@ -801,31 +800,31 @@ public class Chunk
 	}
 	/**
 	 * Sets the Biome ID at the given column coordinates.
-	 * <br/>
-	 * <br/>-1	(Uncalculated)
-	 * <br/>0	Ocean
-	 * <br/>1	Plains
-	 * <br/>2	Desert
-	 * <br/>3	Extreme Hills
-	 * <br/>4	Forest
-	 * <br/>5	Taiga
-	 * <br/>6	Swampland
-	 * <br/>7	River
-	 * <br/>8	Hell
-	 * <br/>9	Sky
-	 * <br/>10	Frozen Ocean
-	 * <br/>11	Frozen River
-	 * <br/>12	Ice Plains
-	 * <br/>13	Ice Mountains
-	 * <br/>14	Mushroom Island
-	 * <br/>15	Mushroom Island Shore
-	 * <br/>16	Beach
-	 * <br/>17	Desert Hills
-	 * <br/>18	Forest Hills
-	 * <br/>19	Taiga Hills
-	 * <br/>20	Extreme Hills Edge
-	 * <br/>21	Jungle
-	 * <br/>22	Jungle Hills
+	 * <br>
+	 * <br>-1	(Uncalculated)
+	 * <br>0	Ocean
+	 * <br>1	Plains
+	 * <br>2	Desert
+	 * <br>3	Extreme Hills
+	 * <br>4	Forest
+	 * <br>5	Taiga
+	 * <br>6	Swampland
+	 * <br>7	River
+	 * <br>8	Hell
+	 * <br>9	Sky
+	 * <br>10	Frozen Ocean
+	 * <br>11	Frozen River
+	 * <br>12	Ice Plains
+	 * <br>13	Ice Mountains
+	 * <br>14	Mushroom Island
+	 * <br>15	Mushroom Island Shore
+	 * <br>16	Beach
+	 * <br>17	Desert Hills
+	 * <br>18	Forest Hills
+	 * <br>19	Taiga Hills
+	 * <br>20	Extreme Hills Edge
+	 * <br>21	Jungle
+	 * <br>22	Jungle Hills
 	 * @param x The X coordinate of the column.
 	 * @param z The Z coordinate of the column.
 	 * @param id The Biome ID.

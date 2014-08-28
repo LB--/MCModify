@@ -18,7 +18,6 @@ import java.util.zip.InflaterInputStream;
 
 /**
  * Region file reader/writer
- * @author LB
  */
 public final class Region
 {

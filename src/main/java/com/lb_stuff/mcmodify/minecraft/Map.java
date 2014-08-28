@@ -9,7 +9,6 @@ import java.awt.image.IndexColorModel;
 
 /**
  * Maps - the in-game item
- * @author LB
  */
 public class Map
 {

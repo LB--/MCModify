@@ -5,7 +5,6 @@ import com.lb_stuff.mcmodify.nbt.Tag;
 
 /**
  * The Tile Entity class.
- * @author LB
  */
 public abstract class TileEntity
 {
