@@ -18,6 +18,7 @@ import java.util.zip.InflaterInputStream;
 
 /**
  * Region file reader/writer
+ * @see <a href="http://minecraft.gamepedia.com/Region_file_format">Region file format</a> on the Minecraft Wiki
  */
 public final class Region
 {

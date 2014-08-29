@@ -12,7 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- *
+ * @see <a href="http://minecraft.gamepedia.com/Chunk_format">Chunk format</a> on the Minecraft Wiki
  */
 public class Chunk
 {
