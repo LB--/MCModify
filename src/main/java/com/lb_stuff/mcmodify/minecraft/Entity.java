@@ -68,7 +68,7 @@ public abstract class Entity
 	 * Given an Entity's tag, returns the Class object for the class that represents that Entity ID.
 	 * @param entity The tag that represents the entity.
 	 * @return The Class object for the class that represents the Entity ID.
-	 * @throws NBT.FormatException if the given Tile Entity ID is unknown.
+	 * @throws FormatException if the given Tile Entity ID is unknown.
 	 */
 	public static Class<? extends Entity> ClassFromID(Tag.Compound entity) throws FormatException
 	{
@@ -944,7 +944,7 @@ public abstract class Entity
 		/**
 		 * Constructs a Dropped Item entity from the given tag.
 		 * @param item The tag from which to construct this Dropped Item entity.
-		 * @throws FormatException
+		 * @throws FormatException if there is something wrong with the format of the item's tag.
 		 */
 		public Item(Tag.Compound item) throws FormatException
 		{
@@ -1704,7 +1704,7 @@ public abstract class Entity
 		{
 			/**
 			 * Constructs a Blaze Fireball projectile from the given tag.
-			 * @param fireball The tag from which to construct this Blaze Fireball projectile.
+			 * @param smallfireball The tag from which to construct this Blaze Fireball projectile.
 			 * @throws FormatException if the given tag is invalid.
 			 */
 			public SmallFireball(Tag.Compound smallfireball) throws FormatException
@@ -1729,7 +1729,7 @@ public abstract class Entity
 		{
 			/**
 			 * Constructs a Thrown Ender Pearl projectile from the given tag.
-			 * @param egg The tag from which to construct this Thrown Ender Pearl projectile.
+			 * @param thrownenderpearl The tag from which to construct this Thrown Ender Pearl projectile.
 			 * @throws FormatException if the given tag is invalid.
 			 */
 			public ThrownEnderpearl(Tag.Compound thrownenderpearl) throws FormatException

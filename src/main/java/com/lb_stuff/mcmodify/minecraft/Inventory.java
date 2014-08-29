@@ -356,7 +356,7 @@ public class Inventory
 		/**
 		 * Returns the list of pages in this book.
 		 * @return The list of pages in this book.
-		 * @throws UnsupportedOperationException if this item is not a book & quill or published book.
+		 * @throws UnsupportedOperationException if this item is not a book &amp; quill or published book.
 		 */
 		public List<String> Pages() throws UnsupportedOperationException
 		{
@@ -428,7 +428,6 @@ public class Inventory
 		/**
 		 * Returns the tag for this inventory Item, without the slot.
 		 * @param name The name the compound tag should have, or null if the compound tag should not have a name.
-		 * @param slot The slot this item should be indicated to have.
 		 * @return The tag for this inventory Item.
 		 */
 		public Tag.Compound ToNBT(String name)

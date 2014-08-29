@@ -16,7 +16,7 @@ public final class IO
 	 * @param i The <code>InputStream</code> to read the GZipped NBT structure from.
 	 * @return The root compound tag of the NBT structure.
 	 * @throws java.io.IOException if the input operation generates an exception.
-	 * @throws NBT.IO.FormatException if the NBT format isn't quite right.
+	 * @throws FormatException if the NBT format isn't quite right.
 	 */
 	public static Tag.Compound Read(InputStream i) throws java.io.IOException, FormatException
 	{
@@ -27,7 +27,7 @@ public final class IO
 	 * @param i The <code>InputStream</code> to read the uncompressed NBT structure from.
 	 * @return The root compound tag of the NBT structure.
 	 * @throws java.io.IOException if the input operation generates an exception.
-	 * @throws NBT.IO.FormatException if the NBT format isn't quite right.
+	 * @throws FormatException if the NBT format isn't quite right.
 	 */
 	public static Tag.Compound ReadUncompressed(InputStream i) throws java.io.IOException, FormatException
 	{

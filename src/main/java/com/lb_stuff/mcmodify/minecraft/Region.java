@@ -58,6 +58,7 @@ public final class Region
 	/**
 	 * Constructs this region from a Region File. If the file does not exist it is created with no chunks in it.
 	 * @param mca The Region File.
+	 * @throws IOException if an error occurs while reading the region file.
 	 */
 	public Region(File mca) throws IOException
 	{

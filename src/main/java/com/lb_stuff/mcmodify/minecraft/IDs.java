@@ -1,7 +1,7 @@
 package com.lb_stuff.mcmodify.minecraft;
 
 /**
- * Block & Item ID constants, provided as convenience.
+ * Block &amp; Item ID constants, provided as convenience.
  */
 public class IDs
 {

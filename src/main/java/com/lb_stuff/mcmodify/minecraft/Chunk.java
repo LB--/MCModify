@@ -875,6 +875,7 @@ public class Chunk
 
 	/**
 	 * Returns the free-to-modify list of Entities in this chunk.
+	 * @return The free-to-modify list of Entities in this chunk.
 	 */
 	public List<Entity> Entities()
 	{
@@ -883,6 +884,7 @@ public class Chunk
 
 	/**
 	 * Returns the free-to-modify list of Tile Entities in this chunk.
+	 * @return The free-to-modify list of Tile Entities in this chunk.
 	 */
 	public List<TileEntity> TileEntities()
 	{
@@ -891,6 +893,7 @@ public class Chunk
 
 	/**
 	 * Returns the free-to-modify list of Tile Ticks in this chunk.
+	 * @return The free-to-modify list of Tile Ticks in this chunk.
 	 */
 	public List<TileTick> TileTicks()
 	{

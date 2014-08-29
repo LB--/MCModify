@@ -368,7 +368,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this byte.
 		 * @param i The <code>InputStream</code> to deserialize the byte from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException when pigs fly.
+		 * @throws FormatException when pigs fly.
 		 */
 		public Byte(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
@@ -425,7 +425,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this short.
 		 * @param i The <code>InputStream</code> to deserialize the short from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException when pigs fly.
+		 * @throws FormatException when pigs fly.
 		 */
 		public Short(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
@@ -482,7 +482,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this integer.
 		 * @param i The <code>InputStream</code> to deserialize the integer from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException when pigs fly.
+		 * @throws FormatException when pigs fly.
 		 */
 		public Int(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
@@ -539,7 +539,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this long.
 		 * @param i The <code>InputStream</code> to deserialize the long from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException when pigs fly.
+		 * @throws FormatException when pigs fly.
 		 */
 		public Long(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
@@ -596,7 +596,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this float.
 		 * @param i The <code>InputStream</code> to deserialize the float from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException when pigs fly.
+		 * @throws FormatException when pigs fly.
 		 */
 		public Float(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
@@ -653,7 +653,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this double.
 		 * @param i The <code>InputStream</code> to deserialize the double from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException when pigs fly.
+		 * @throws FormatException when pigs fly.
 		 */
 		public Double(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
@@ -710,7 +710,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this byte array.
 		 * @param i The <code>InputStream</code> to deserialize the byte array from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException if the byte array size is negative.
+		 * @throws FormatException if the byte array size is negative.
 		 */
 		public ByteArray(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
@@ -799,7 +799,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this string.
 		 * @param i The <code>InputStream</code> to deserialize this string from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException if the string length is negative.
+		 * @throws FormatException if the string length is negative.
 		 */
 		public String(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
@@ -860,6 +860,7 @@ public abstract class Tag implements Cloneable
 		 * The normal constructor.
 		 * @param name The name of the tags.
 		 * @param _type The tag type this tags supports.
+		 * @param tags The initial list of tags.
 		 * @throws IllegalArgumentException if the tag type is TAG_End or null, or a given tag is not a supported type or has a name that is not null.
 		 */
 		public List(java.lang.String name, Type _type, Tag... tags) throws IllegalArgumentException
@@ -894,7 +895,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of the tags.
 		 * @param i The <code>InputStream</code> to deserialize the tags from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException if the tag type is TAG_End, the tags size is negative, or some other exception is thrown while deserializing the tags.
+		 * @throws FormatException if the tag type is TAG_End, the tags size is negative, or some other exception is thrown while deserializing the tags.
 		 */
 		public List(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
@@ -961,7 +962,7 @@ public abstract class Tag implements Cloneable
 		/**
 		 * Adds all given tags to this list until a given tag is of a type not supported by this list.
 		 * @param tags The tags to be added.
-		 * @throws NBT.Tag.Type.MismatchException if the tag is of a type not supported by this tags.
+		 * @throws Type.MismatchException if the tag is of a type not supported by this tags.
 		 */
 		public void Add(Tag... tags) throws Type.MismatchException
 		{
@@ -981,7 +982,7 @@ public abstract class Tag implements Cloneable
 		/**
 		 * Adds all the tags from the given list to this list.
 		 * @param l The list from which to add the tags.
-		 * @throws NBT.Tag.Type.MismatchException if the tags in the given list are not supported by this list.
+		 * @throws Type.MismatchException if the tags in the given list are not supported by this list.
 		 */
 		public void AddFrom(Tag.List l) throws Type.MismatchException
 		{
@@ -997,7 +998,7 @@ public abstract class Tag implements Cloneable
 		/**
 		 * Adds all the tags from the given collection to this list.
 		 * @param c The collection from which to add the tags.
-		 * @throws NBT.Tag.Type.MismatchException if the tags in the given collection are not supported by this list.
+		 * @throws Type.MismatchException if the tags in the given collection are not supported by this list.
 		 */
 		public void AddFrom(Collection<? extends Tag> c) throws Type.MismatchException
 		{
@@ -1018,7 +1019,7 @@ public abstract class Tag implements Cloneable
 		 * Sets the tag at the given index in the list to the given tag.
 		 * @param index The index to set.
 		 * @param t The tag that the index will be set to.
-		 * @throws NBT.Tag.Type.Type.MismatchException if the tag is of a type not supported by this tags.
+		 * @throws Type.MismatchException if the tag is of a type not supported by this tags.
 		 */
 		public void Set(int index, Tag t) throws Type.MismatchException
 		{
@@ -1032,7 +1033,7 @@ public abstract class Tag implements Cloneable
 		 * Inserts the given tags to this list at the specified index.
 		 * @param index The index before which to insert.
 		 * @param tags The tags to insert.
-		 * @throws NBT.Tag.Type.MismatchException if the tag is of a type not supported by this tags.
+		 * @throws Type.MismatchException if the tag is of a type not supported by this tags.
 		 */
 		public void Insert(int index, Tag... tags) throws Type.MismatchException
 		{
@@ -1053,7 +1054,7 @@ public abstract class Tag implements Cloneable
 		 * Inserts the tags from the given list to this list at the specified index.
 		 * @param index The index at which to insert the tags.
 		 * @param l The list from which to insert the tags.
-		 * @throws NBT.Tag.Type.MismatchException if the tags in the given list are not supported by this list.
+		 * @throws Type.MismatchException if the tags in the given list are not supported by this list.
 		 */
 		public void InsertFrom(int index, Tag.List l) throws Type.MismatchException
 		{
@@ -1070,7 +1071,7 @@ public abstract class Tag implements Cloneable
 		 * Inserts the tags from the given collection to this list at the specified index.
 		 * @param index The index at which to insert the tags.
 		 * @param c The collection from which to insert the tags.
-		 * @throws NBT.Tag.Type.MismatchException if the tags in the given collection are not supported by this list.
+		 * @throws Type.MismatchException if the tags in the given collection are not supported by this list.
 		 */
 		public void InsertFrom(int index, Collection<? extends Tag> c) throws Type.MismatchException
 		{
@@ -1169,7 +1170,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this compound tag.
 		 * @param i The <code>InputStream</code> to deserialize the compound tag from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException if some other exception is thrown while deserializing the compound tag.
+		 * @throws FormatException if some other exception is thrown while deserializing the compound tag.
 		 */
 		public Compound(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
@@ -1403,7 +1404,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this integer array.
 		 * @param i The <code>InputStream</code> to deserialize the integer array from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws NBT.FormatException if the integer array size is negative.
+		 * @throws FormatException if the integer array size is negative.
 		 */
 		public IntArray(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{

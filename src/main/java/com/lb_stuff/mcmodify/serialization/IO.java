@@ -18,7 +18,7 @@ import java.lang.reflect.Modifier;
 public final class IO
 {
 	/**
-	 * Serializes an instance of an NBTable class to a compound tag by serializing all non-transient fields that it can, including those of any NBTable super classes; fields that are null will be ignored. It can handle the primitive types, strings, other NBTable objects, and up to one dimensional arrays of such. It will also serialize fields of type Class<?> by saving the name of the class. Additionally, if one of the classes has an instance method called "ToNBT" that takes only a String for its name as a parameter and returns a Tag, that will also be serialized. Here is an example declaration:<br />
+	 * Serializes an instance of an NBTable class to a compound tag by serializing all non-transient fields that it can, including those of any NBTable super classes; fields that are null will be ignored. It can handle the primitive types, strings, other NBTable objects, and up to one dimensional arrays of such. It will also serialize fields of type Class&lt;?&gt; by saving the name of the class. Additionally, if one of the classes has an instance method called "ToNBT" that takes only a String for its name as a parameter and returns a Tag, that will also be serialized. Here is an example declaration:<br>
 	 * <code>public Tag ToNBT(String name);</code>
 	 * @param name The name of the compound tag to return.
 	 * @param obj The object to serialize to the compound tag.
@@ -253,7 +253,7 @@ public final class IO
 		return t;
 	}
 	/**
-	 * Deserializes a compound tag and returns a new instance of the given class. In order to construct the instance the given class must have a constructor that takes a <code>Tag.Compound</code> as its only parameter. The constructor must initialize any null fields to the bare minimum of an instantiated class of the correct type if the fields are to be deserialized, otherwise null fields are ignored. See {@url Serialize} for information.
+	 * Deserializes a compound tag and returns a new instance of the given class. In order to construct the instance the given class must have a constructor that takes a <code>Tag.Compound</code> as its only parameter. The constructor must initialize any null fields to the bare minimum of an instantiated class of the correct type if the fields are to be deserialized, otherwise null fields are ignored. See {@link #Serialize(java.lang.String, com.lb_stuff.mcmodify.serialization.NBTable, boolean)} for information.
 	 * @param clazz The class to deserialize.
 	 * @param outer The outer class reference to use to construct non-static inner classes. May be null if the given class is not a non-static inner class.
 	 * @param t The tag to deserialize from.

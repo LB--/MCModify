@@ -17,7 +17,7 @@ public abstract class TileEntity
 	 * Given a Tile Entity ID, returns the Class object for the class that represents that Tile Entity ID.
 	 * @param ID The Tile Entity ID.
 	 * @return The Class object for the class that represents the Tile Entity ID.
-	 * @throws NBT.FormatException if the given Tike Entity ID is unknown.
+	 * @throws FormatException if the given Tike Entity ID is unknown.
 	 */
 	public static Class<? extends TileEntity> ClassFromID(String ID) throws FormatException
 	{
@@ -954,7 +954,7 @@ public abstract class TileEntity
 	{
 		/**
 		 * Constructs an End Portal tile entity from the given tag.
-		 * @param enchanttable The tag from which to construct this End Portal tile entity.
+		 * @param airportal The tag from which to construct this End Portal tile entity.
 		 * @throws FormatException if the tag is invalid.
 		 */
 		public Airportal(Tag.Compound airportal) throws FormatException

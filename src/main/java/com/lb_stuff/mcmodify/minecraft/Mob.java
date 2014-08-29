@@ -136,6 +136,7 @@ public abstract class Mob extends Entity
 		 * and ambience.
 		 * @param level The level of the effect. 0 is level 1.
 		 * @param ticks The number of ticks before the effect wears off.
+		 * @param beacon Whether the effect is provided by a beacon and thus ambient.
 		 */
 		public EffectInfo(byte level, int ticks, boolean beacon)
 		{
@@ -421,7 +422,7 @@ public abstract class Mob extends Entity
 	 * Given an Entity ID, returns the Class object for the Mob class that represents that Entity ID.
 	 * @param ID The Entity ID.
 	 * @return The Class object for the Mob class that represents the Entity ID.
-	 * @throws NBT.FormatException if the given Tile Entity ID is unknown.
+	 * @throws FormatException if the given Tile Entity ID is unknown.
 	 */
 	public static Class<? extends Mob> ClassFromID(String ID) throws FormatException
 	{
@@ -884,7 +885,7 @@ public abstract class Mob extends Entity
 
 		/**
 		 * Constructs a Breedable mob entity from the given tag.
-		 * @param blaze The tag from which to construct the Breedable mob entity.
+		 * @param breedable The tag from which to construct the Breedable mob entity.
 		 * @throws FormatException if the given tag is invalid.
 		 */
 		public Breedable(Tag.Compound breedable) throws FormatException
@@ -970,7 +971,7 @@ public abstract class Mob extends Entity
 
 		/**
 		 * Constructs a Tameable mob entity from the given tag.
-		 * @param blaze The tag from which to construct the Tameable mob entity.
+		 * @param tameable The tag from which to construct the Tameable mob entity.
 		 * @throws FormatException if the given tag is invalid.
 		 */
 		public Tameable(Tag.Compound tameable) throws FormatException
@@ -2107,7 +2108,7 @@ public abstract class Mob extends Entity
 	{
 		/**
 		 * Constructs an Iron Golem mob entity from the given tag.
-		 * @param wolf The tag from which to construct the Iron Golem mob entity.
+		 * @param irongolem The tag from which to construct the Iron Golem mob entity.
 		 * @throws FormatException if the given tag is invalid.
 		 */
 		public VillagerGolem(Tag.Compound irongolem) throws FormatException
