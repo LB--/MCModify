@@ -1,6 +1,6 @@
 package com.lb_stuff.mcmodify.minecraft;
 
-import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.nbt.NBTFormatException;
 import com.lb_stuff.mcmodify.nbt.Tag;
 
 import java.util.HashMap;
@@ -68,23 +68,23 @@ public abstract class Entity
 	 * Given an Entity's tag, returns the Class object for the class that represents that Entity ID.
 	 * @param entity The tag that represents the entity.
 	 * @return The Class object for the class that represents the Entity ID.
-	 * @throws FormatException if the given Tile Entity ID is unknown.
+	 * @throws NBTFormatException if the given Tile Entity ID is unknown.
 	 */
-	public static Class<? extends Entity> ClassFromID(Tag.Compound entity) throws FormatException
+	public static Class<? extends Entity> ClassFromID(Tag.Compound entity) throws NBTFormatException
 	{
 		String ID = ((Tag.String)entity.Find(Tag.Type.STRING, "id")).v;
 		try
 		{
 			return Mob.ClassFromID(ID);
 		}
-		catch(FormatException e)
+		catch(NBTFormatException e)
 		{
 		}
 		try
 		{
 			return Projectile.ClassFromID(ID);
 		}
-		catch(FormatException e)
+		catch(NBTFormatException e)
 		{
 		}
 		switch(ID)
@@ -101,29 +101,29 @@ public abstract class Entity
 		{
 			return AEC.get(ID);
 		}
-		throw new FormatException("Unknown Entity ID: \""+ID+"\"");
+		throw new NBTFormatException("Unknown Entity ID: \""+ID+"\"");
 	}
 
 	/**
 	 * The constructor required to instantiate any class that extends entity.
 	 * @param entity The entity's tag. This tag will not be affected by the entity class object at any time.
-	 * @throws FormatException if there is something wrong with the format of the entity's tag.
+	 * @throws NBTFormatException if there is something wrong with the format of the entity's tag.
 	 */
-	public Entity(Tag.Compound entity) throws FormatException
+	public Entity(Tag.Compound entity) throws NBTFormatException
 	{
 		if(!(this instanceof Level.Player))
 		{
 			String id = ((Tag.String)entity.Find(Tag.Type.STRING, "id")).v;
 			if(!id.equals(getClass().getSimpleName()))
 			{
-				throw new FormatException("Attempted to instantiate a "+getClass().getSimpleName()+" Entity from a tag with id \""+id+"\"");
+				throw new NBTFormatException("Attempted to instantiate a "+getClass().getSimpleName()+" Entity from a tag with id \""+id+"\"");
 			}
 		}
 
 		Tag.List pos = (Tag.List)entity.Find(Tag.Type.LIST, "Pos");
 		if(pos.Size() != 3 || pos.Supports() != Tag.Type.DOUBLE)
 		{
-			throw new FormatException("Invalid Pos list");
+			throw new NBTFormatException("Invalid Pos list");
 		}
 		posx = ((Tag.Double)pos.Get(0)).v;
 		posy = ((Tag.Double)pos.Get(1)).v;
@@ -132,7 +132,7 @@ public abstract class Entity
 		Tag.List motion = (Tag.List)entity.Find(Tag.Type.LIST, "Motion");
 		if(motion.Size() != 3 || motion.Supports() != Tag.Type.DOUBLE)
 		{
-			throw new FormatException("Invalid Motion list");
+			throw new NBTFormatException("Invalid Motion list");
 		}
 		motionx = ((Tag.Double)motion.Get(0)).v;
 		motiony = ((Tag.Double)motion.Get(1)).v;
@@ -141,7 +141,7 @@ public abstract class Entity
 		Tag.List rotation = (Tag.List)entity.Find(Tag.Type.LIST, "Rotation");
 		if(rotation.Size() != 2 || rotation.Supports() != Tag.Type.FLOAT)
 		{
-			throw new FormatException("Invalid Rotation list");
+			throw new NBTFormatException("Invalid Rotation list");
 		}
 		rotationyaw = ((Tag.Float)rotation.Get(0)).v;
 		rotationpitch = ((Tag.Float)rotation.Get(1)).v;
@@ -209,13 +209,13 @@ public abstract class Entity
 	/**
 	 * Sets the position of this entity.
 	 * @param pos The new position of this entity.
-	 * @throws FormatException if the given position is invalid.
+	 * @throws NBTFormatException if the given position is invalid.
 	 */
-	public void Pos(Tag.List pos) throws FormatException
+	public void Pos(Tag.List pos) throws NBTFormatException
 	{
 		if(pos.Size() != 3 || pos.Supports() != Tag.Type.DOUBLE)
 		{
-			throw new FormatException("Invalid Pos list");
+			throw new NBTFormatException("Invalid Pos list");
 		}
 		posx = ((Tag.Double)pos.Get(0)).v;
 		posy = ((Tag.Double)pos.Get(1)).v;
@@ -283,13 +283,13 @@ public abstract class Entity
 	/**
 	 * Sets the motion of this entity.
 	 * @param motion The new motion of this entity.
-	 * @throws FormatException if the given motion is invalid.
+	 * @throws NBTFormatException if the given motion is invalid.
 	 */
-	public void Motion(Tag.List motion) throws FormatException
+	public void Motion(Tag.List motion) throws NBTFormatException
 	{
 		if(motion.Size() != 3 || motion.Supports() != Tag.Type.DOUBLE)
 		{
-			throw new FormatException("Invalid Motion list");
+			throw new NBTFormatException("Invalid Motion list");
 		}
 		motionx = ((Tag.Double)motion.Get(0)).v;
 		motiony = ((Tag.Double)motion.Get(1)).v;
@@ -348,13 +348,13 @@ public abstract class Entity
 	/**
 	 * Sets the rotation of this entity.
 	 * @param rotation The rotation of this entity.
-	 * @throws FormatException if the given rotation is invalid.
+	 * @throws NBTFormatException if the given rotation is invalid.
 	 */
-	public void Rotation(Tag.List rotation) throws FormatException
+	public void Rotation(Tag.List rotation) throws NBTFormatException
 	{
 		if(rotation.Size() != 2 || rotation.Supports() != Tag.Type.FLOAT)
 		{
-			throw new FormatException("Invalid Rotation list");
+			throw new NBTFormatException("Invalid Rotation list");
 		}
 		rotationyaw = ((Tag.Float)rotation.Get(0)).v;
 		rotationpitch = ((Tag.Float)rotation.Get(1)).v;
@@ -471,9 +471,9 @@ public abstract class Entity
 		/**
 		 * Constructs a Boat entity from the given tag.
 		 * @param boat The tag from which to construct this Boat entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Boat(Tag.Compound boat) throws FormatException
+		public Boat(Tag.Compound boat) throws NBTFormatException
 		{
 			super(boat);
 		}
@@ -497,9 +497,9 @@ public abstract class Entity
 		 * Gives the class object for the correct Minecart class to instantiate given the type.
 		 * @param type The type {0, 1, 2} of Minecart.
 		 * @return The class for the correct type of Minecart.
-		 * @throws FormatException if the given type is invalid.
+		 * @throws NBTFormatException if the given type is invalid.
 		 */
-		public static Class<? extends Minecart> ClassFromType(int type) throws FormatException
+		public static Class<? extends Minecart> ClassFromType(int type) throws NBTFormatException
 		{
 			switch(type)
 			{
@@ -507,30 +507,30 @@ public abstract class Entity
 			case 1: return Chest.class;
 			case 2: return Furnace.class;
 			}
-			throw new FormatException("Invalid Minecart Type: "+type);
+			throw new NBTFormatException("Invalid Minecart Type: "+type);
 		}
 
 		/**
 		 * Constructs a Minecart entity from the given tag.
 		 * @param minecart The tag from which to construct this Minecart entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Minecart(Tag.Compound minecart) throws FormatException
+		public Minecart(Tag.Compound minecart) throws NBTFormatException
 		{
 			super(minecart);
 
 			int type = ((Tag.Int)minecart.Find(Tag.Type.INT, "Type")).v;
 			if("Minecart".equals(getClass().getSimpleName()) && type != 0)
 			{
-				throw new FormatException("Tried to instantiate a regular Minecart from a minecart of type "+type);
+				throw new NBTFormatException("Tried to instantiate a regular Minecart from a minecart of type "+type);
 			}
 			else if("Chest".equals(getClass().getSimpleName()) && type != 1)
 			{
-				throw new FormatException("Tried to instantiate a Storage Minecart from a minecart of type "+type);
+				throw new NBTFormatException("Tried to instantiate a Storage Minecart from a minecart of type "+type);
 			}
 			else if("Furnace".equals(getClass().getSimpleName()) && type != 2)
 			{
-				throw new FormatException("Tried to instantiate a Powered Minecart from a minecart of type "+type);
+				throw new NBTFormatException("Tried to instantiate a Powered Minecart from a minecart of type "+type);
 			}
 		}
 		/**
@@ -570,9 +570,9 @@ public abstract class Entity
 			/**
 			 * Constructs a Storage Minecart entity from the given tag.
 			 * @param mcwchest The tag from which to construct this Storage Minecart entity.
-			 * @throws FormatException if the give tag is invalid.
+			 * @throws NBTFormatException if the give tag is invalid.
 			 */
-			public Chest(Tag.Compound mcwchest) throws FormatException
+			public Chest(Tag.Compound mcwchest) throws NBTFormatException
 			{
 				super(mcwchest);
 
@@ -648,9 +648,9 @@ public abstract class Entity
 			/**
 			 * Constructs a Powered Minecart entity from the given tag.
 			 * @param mcwfurnace The tag from which to construct this Powered Minecart entity.
-			 * @throws FormatException if the given tag is invalid.
+			 * @throws NBTFormatException if the given tag is invalid.
 			 */
-			public Furnace(Tag.Compound mcwfurnace) throws FormatException
+			public Furnace(Tag.Compound mcwfurnace) throws NBTFormatException
 			{
 				super(mcwfurnace);
 
@@ -760,9 +760,9 @@ public abstract class Entity
 		/**
 		 * Constructs a TNT dynamic tile entity from the given tag.
 		 * @param primedtnt The tag from which to construct this TNT dynamic tile entity.
-		 * @throws FormatException If the given tag is invalid.
+		 * @throws NBTFormatException If the given tag is invalid.
 		 */
-		public PrimedTnt(Tag.Compound primedtnt) throws FormatException
+		public PrimedTnt(Tag.Compound primedtnt) throws NBTFormatException
 		{
 			super(primedtnt);
 
@@ -822,9 +822,9 @@ public abstract class Entity
 		/**
 		 * Constructs a Falling Block dynamic tile entity from the given tag.
 		 * @param fallingsand The tag from which to construct this Falling Block dynamic tile entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public FallingSand(Tag.Compound fallingsand) throws FormatException
+		public FallingSand(Tag.Compound fallingsand) throws NBTFormatException
 		{
 			super(fallingsand);
 
@@ -879,9 +879,9 @@ public abstract class Entity
 		/**
 		 * Constructs an Ender Crystal entity from the given tag.
 		 * @param endercrystal The tag from which to construct this Ender Crystal.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public EnderCrystal(Tag.Compound endercrystal) throws FormatException
+		public EnderCrystal(Tag.Compound endercrystal) throws NBTFormatException
 		{
 			super(endercrystal);
 		}
@@ -904,9 +904,9 @@ public abstract class Entity
 		/**
 		 * Constructs a Thrown Eye of Ender from the given tag.
 		 * @param eyeofendersignal The tag from which to construct this Thrown Eye of Ender.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public EyeOfEnderSignal(Tag.Compound eyeofendersignal) throws FormatException
+		public EyeOfEnderSignal(Tag.Compound eyeofendersignal) throws NBTFormatException
 		{
 			super(eyeofendersignal);
 		}
@@ -944,9 +944,9 @@ public abstract class Entity
 		/**
 		 * Constructs a Dropped Item entity from the given tag.
 		 * @param item The tag from which to construct this Dropped Item entity.
-		 * @throws FormatException if there is something wrong with the format of the item's tag.
+		 * @throws NBTFormatException if there is something wrong with the format of the item's tag.
 		 */
-		public Item(Tag.Compound item) throws FormatException
+		public Item(Tag.Compound item) throws NBTFormatException
 		{
 			super(item);
 
@@ -1049,9 +1049,9 @@ public abstract class Entity
 			 * Returns the Direction constant that corresponds to the given ordinal.
 			 * @param ordinal The direction value of the Painting.
 			 * @return The Direction constant that corresponds to the given ordinal.
-			 * @throws FormatException if the ordinal is invalid.
+			 * @throws NBTFormatException if the ordinal is invalid.
 			 */
-			public static Direction FromOrdinal(byte ordinal) throws FormatException
+			public static Direction FromOrdinal(byte ordinal) throws NBTFormatException
 			{
 				switch(ordinal)
 				{
@@ -1060,7 +1060,7 @@ public abstract class Entity
 				case 2: return West;
 				case 3: return South;
 				}
-				throw new FormatException("Invalid Painting Direction: "+ordinal);
+				throw new NBTFormatException("Invalid Painting Direction: "+ordinal);
 			}
 		}
 		/**
@@ -1079,9 +1079,9 @@ public abstract class Entity
 		/**
 		 * Constructs a Painting entity from the given tag.
 		 * @param painting The tag from which this Painting entity is constructed.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Painting(Tag.Compound painting) throws FormatException
+		public Painting(Tag.Compound painting) throws NBTFormatException
 		{
 			super(painting);
 
@@ -1239,9 +1239,9 @@ public abstract class Entity
 		/**
 		 * Constructs an XP Orb entity from the given tag.
 		 * @param xporb The tag from which to construct this XP Orb entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public XPOrb(Tag.Compound xporb) throws FormatException
+		public XPOrb(Tag.Compound xporb) throws NBTFormatException
 		{
 			super(xporb);
 
@@ -1354,9 +1354,9 @@ public abstract class Entity
 		 * Returns the projectile class object given the entity ID.
 		 * @param ID The ID of the projectile entity.
 		 * @return The projectile class for the given entity ID.
-		 * @throws FormatException if the entity ID is not recognized as a projectile.
+		 * @throws NBTFormatException if the entity ID is not recognized as a projectile.
 		 */
-		public static Class<? extends Projectile> ClassFromID(String ID) throws FormatException
+		public static Class<? extends Projectile> ClassFromID(String ID) throws NBTFormatException
 		{
 			switch(ID)
 			{
@@ -1367,15 +1367,15 @@ public abstract class Entity
 			case "SmallFireball":	return Projectile.SmallFireball.class;
 			case "ThrownEnderpearl":return Projectile.ThrownEnderpearl.class;
 			}
-			throw new FormatException("Unknown Projectile ID: \""+ID+"\"");
+			throw new NBTFormatException("Unknown Projectile ID: \""+ID+"\"");
 		}
 
 		/**
 		 * Constructs a projectile from the given tag.
 		 * @param projectile The tag from which to construct the projectile.
-		 * @throws FormatException if the tag is invalid.
+		 * @throws NBTFormatException if the tag is invalid.
 		 */
-		public Projectile(Tag.Compound projectile) throws FormatException
+		public Projectile(Tag.Compound projectile) throws NBTFormatException
 		{
 			super(projectile);
 
@@ -1553,9 +1553,9 @@ public abstract class Entity
 			/**
 			 * Constructs an Arrow projectile from the given tag.
 			 * @param arrow The tag from which to construct this Arrow projectile.
-			 * @throws FormatException if the given tag is invalid.
+			 * @throws NBTFormatException if the given tag is invalid.
 			 */
-			public Arrow(Tag.Compound arrow) throws FormatException
+			public Arrow(Tag.Compound arrow) throws NBTFormatException
 			{
 				super(arrow);
 
@@ -1565,7 +1565,7 @@ public abstract class Entity
 				{
 					damage = ((Tag.Double)arrow.Find(Tag.Type.DOUBLE, "damage")).v;
 				}
-				catch(FormatException e)
+				catch(NBTFormatException e)
 				{
 					damage = 1.0;
 				}
@@ -1630,9 +1630,9 @@ public abstract class Entity
 			/**
 			 * Constructs a Thrown Snowball projectile from the given tag.
 			 * @param snowball The tag from which to construct this Thrown Snowball projectile.
-			 * @throws FormatException if the given tag is invalid.
+			 * @throws NBTFormatException if the given tag is invalid.
 			 */
-			public Snowball(Tag.Compound snowball) throws FormatException
+			public Snowball(Tag.Compound snowball) throws NBTFormatException
 			{
 				super(snowball);
 			}
@@ -1655,9 +1655,9 @@ public abstract class Entity
 			/**
 			 * Constructs a Thrown Egg projectile from the given tag.
 			 * @param egg The tag from which to construct this Thrown Egg projectile.
-			 * @throws FormatException if the given tag is invalid.
+			 * @throws NBTFormatException if the given tag is invalid.
 			 */
-			public Egg(Tag.Compound egg) throws FormatException
+			public Egg(Tag.Compound egg) throws NBTFormatException
 			{
 				super(egg);
 			}
@@ -1680,9 +1680,9 @@ public abstract class Entity
 			/**
 			 * Constructs a Ghast Fireball projectile from the given tag.
 			 * @param fireball The tag from which to construct this Ghast Fireball projectile.
-			 * @throws FormatException if the given tag is invalid.
+			 * @throws NBTFormatException if the given tag is invalid.
 			 */
-			public Fireball(Tag.Compound fireball) throws FormatException
+			public Fireball(Tag.Compound fireball) throws NBTFormatException
 			{
 				super(fireball);
 			}
@@ -1705,9 +1705,9 @@ public abstract class Entity
 			/**
 			 * Constructs a Blaze Fireball projectile from the given tag.
 			 * @param smallfireball The tag from which to construct this Blaze Fireball projectile.
-			 * @throws FormatException if the given tag is invalid.
+			 * @throws NBTFormatException if the given tag is invalid.
 			 */
-			public SmallFireball(Tag.Compound smallfireball) throws FormatException
+			public SmallFireball(Tag.Compound smallfireball) throws NBTFormatException
 			{
 				super(smallfireball);
 			}
@@ -1730,9 +1730,9 @@ public abstract class Entity
 			/**
 			 * Constructs a Thrown Ender Pearl projectile from the given tag.
 			 * @param thrownenderpearl The tag from which to construct this Thrown Ender Pearl projectile.
-			 * @throws FormatException if the given tag is invalid.
+			 * @throws NBTFormatException if the given tag is invalid.
 			 */
-			public ThrownEnderpearl(Tag.Compound thrownenderpearl) throws FormatException
+			public ThrownEnderpearl(Tag.Compound thrownenderpearl) throws NBTFormatException
 			{
 				super(thrownenderpearl);
 			}

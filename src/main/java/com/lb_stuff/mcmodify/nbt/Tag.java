@@ -368,9 +368,9 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this byte.
 		 * @param i The <code>InputStream</code> to deserialize the byte from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException when pigs fly.
+		 * @throws NBTFormatException when pigs fly.
 		 */
-		public Byte(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public Byte(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			this(name, (byte)i.read());
 		}
@@ -425,9 +425,9 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this short.
 		 * @param i The <code>InputStream</code> to deserialize the short from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException when pigs fly.
+		 * @throws NBTFormatException when pigs fly.
 		 */
-		public Short(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public Short(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			this(name, new DataInputStream(i).readShort());
 		}
@@ -482,9 +482,9 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this integer.
 		 * @param i The <code>InputStream</code> to deserialize the integer from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException when pigs fly.
+		 * @throws NBTFormatException when pigs fly.
 		 */
-		public Int(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public Int(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			this(name, new DataInputStream(i).readInt());
 		}
@@ -539,9 +539,9 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this long.
 		 * @param i The <code>InputStream</code> to deserialize the long from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException when pigs fly.
+		 * @throws NBTFormatException when pigs fly.
 		 */
-		public Long(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public Long(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			this(name, new DataInputStream(i).readLong());
 		}
@@ -596,9 +596,9 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this float.
 		 * @param i The <code>InputStream</code> to deserialize the float from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException when pigs fly.
+		 * @throws NBTFormatException when pigs fly.
 		 */
-		public Float(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public Float(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			this(name, new DataInputStream(i).readFloat());
 		}
@@ -653,9 +653,9 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this double.
 		 * @param i The <code>InputStream</code> to deserialize the double from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException when pigs fly.
+		 * @throws NBTFormatException when pigs fly.
 		 */
-		public Double(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public Double(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			this(name, new DataInputStream(i).readDouble());
 		}
@@ -710,16 +710,16 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this byte array.
 		 * @param i The <code>InputStream</code> to deserialize the byte array from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException if the byte array size is negative.
+		 * @throws NBTFormatException if the byte array size is negative.
 		 */
-		public ByteArray(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public ByteArray(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			this(name, (byte[])null);
 			DataInputStream dis = new DataInputStream(i);
 			int size = dis.readInt();
 			if(size < 0)
 			{
-				throw new FormatException("Byte Array size was negative: "+size);
+				throw new NBTFormatException("Byte Array size was negative: "+size);
 			}
 			v = new byte[size];
 			dis.readFully(v);
@@ -799,16 +799,16 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this string.
 		 * @param i The <code>InputStream</code> to deserialize this string from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException if the string length is negative.
+		 * @throws NBTFormatException if the string length is negative.
 		 */
-		public String(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public String(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			this(name, "");
 			DataInputStream dis = new DataInputStream(i);
 			short length = dis.readShort();
 			if(length < 0)
 			{
-				throw new FormatException("String length was negative: "+length);
+				throw new NBTFormatException("String length was negative: "+length);
 			}
 			byte[] str = new byte[length];
 			dis.readFully(str);
@@ -895,16 +895,16 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of the tags.
 		 * @param i The <code>InputStream</code> to deserialize the tags from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException if the tag type is TAG_End, the tags size is negative, or some other exception is thrown while deserializing the tags.
+		 * @throws NBTFormatException if the tag type is TAG_End, the tags size is negative, or some other exception is thrown while deserializing the tags.
 		 */
-		public List(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public List(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			super(name);
 			type = Type.FromID(i.read());
 			int size = new DataInputStream(i).readInt();
 			if(size < 0)
 			{
-				throw new FormatException("List size is negative: "+size);
+				throw new NBTFormatException("List size is negative: "+size);
 			}
 			try
 			{
@@ -916,7 +916,7 @@ public abstract class Tag implements Cloneable
 			}
 			catch(NoSuchMethodException|SecurityException|InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException e)
 			{
-				throw new FormatException(e);
+				throw new NBTFormatException(e);
 			}
 		}
 		/**
@@ -1170,9 +1170,9 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this compound tag.
 		 * @param i The <code>InputStream</code> to deserialize the compound tag from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException if some other exception is thrown while deserializing the compound tag.
+		 * @throws NBTFormatException if some other exception is thrown while deserializing the compound tag.
 		 */
-		public Compound(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public Compound(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			this(name);
 			try
@@ -1190,7 +1190,7 @@ public abstract class Tag implements Cloneable
 			}
 			catch(Throwable e)
 			{
-				throw new FormatException("Exception while deserializing Compound tag", e, this);
+				throw new NBTFormatException("Exception while deserializing Compound tag", e, this);
 			}
 		}
 		/**
@@ -1305,18 +1305,18 @@ public abstract class Tag implements Cloneable
 		 * @param type The type of tag.
 		 * @param n The name of the tag.
 		 * @return The tag, guaranteed to be of the type specified.
-		 * @throws FormatException if the tag doesn't exist or is of the wrong type.
+		 * @throws NBTFormatException if the tag doesn't exist or is of the wrong type.
 		 */
-		public Tag Find(Type type, java.lang.String n) throws FormatException
+		public Tag Find(Type type, java.lang.String n) throws NBTFormatException
 		{
 			Tag t = tags.get(n);
 			if(t == null)
 			{
-				throw new FormatException("No tag with the name \""+n+"\"", this);
+				throw new NBTFormatException("No tag with the name \""+n+"\"", this);
 			}
 			else if(t.Type() != type)
 			{
-				throw new FormatException("\""+n+"\" is "+t.Type()+" instead of "+type, this);
+				throw new NBTFormatException("\""+n+"\" is "+t.Type()+" instead of "+type, this);
 			}
 			return t;
 		}
@@ -1325,23 +1325,23 @@ public abstract class Tag implements Cloneable
 		 * @param n The name of the list.
 		 * @param type The type of tag the list must support.
 		 * @return The List tag, guaranteed to support the type specified.
-		 * @throws FormatException if the list doesn't exist or supports the wrong type.
+		 * @throws NBTFormatException if the list doesn't exist or supports the wrong type.
 		 */
-		public List Find(java.lang.String n, Type type) throws FormatException
+		public List Find(java.lang.String n, Type type) throws NBTFormatException
 		{
 			Tag t = tags.get(n);
 			if(t == null)
 			{
-				throw new FormatException("No List tag with the name \""+n+"\"", this);
+				throw new NBTFormatException("No List tag with the name \""+n+"\"", this);
 			}
 			else if(t.Type() != Type.LIST)
 			{
-				throw new FormatException("\""+n+"\" is "+t.Type()+" instead of a List tag", this);
+				throw new NBTFormatException("\""+n+"\" is "+t.Type()+" instead of a List tag", this);
 			}
 			List l = (List)t;
 			if(l.Supports() != type)
 			{
-				throw new FormatException("\""+n+"\" supports "+l.Supports()+" instead of "+type, this);
+				throw new NBTFormatException("\""+n+"\" supports "+l.Supports()+" instead of "+type, this);
 			}
 			return l;
 		}
@@ -1404,16 +1404,16 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of this integer array.
 		 * @param i The <code>InputStream</code> to deserialize the integer array from.
 		 * @throws IOException if the input operation generates an exception.
-		 * @throws FormatException if the integer array size is negative.
+		 * @throws NBTFormatException if the integer array size is negative.
 		 */
-		public IntArray(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
+		public IntArray(java.lang.String name, InputStream i) throws IOException, NBTFormatException //DeserializePayload
 		{
 			this(name, (int[])null);
 			DataInputStream dis = new DataInputStream(i);
 			int size = dis.readInt();
 			if(size < 0)
 			{
-				throw new FormatException("Integer Array size was negative: "+size);
+				throw new NBTFormatException("Integer Array size was negative: "+size);
 			}
 			v = new int[size];
 			for(int j = 0; j < size; ++j)

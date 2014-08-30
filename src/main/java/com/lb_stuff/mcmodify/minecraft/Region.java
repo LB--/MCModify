@@ -1,6 +1,6 @@
 package com.lb_stuff.mcmodify.minecraft;
 
-import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.nbt.NBTFormatException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -126,10 +126,10 @@ public final class Region
 	 * @param X The X chunk coordinate of the chunk.
 	 * @param Z The Z chunk coordinate of the chunk.
 	 * @return The read chunk, or null if the chunk does not exist.
-	 * @throws FormatException if the read chunk is invalid.
+	 * @throws NBTFormatException if the read chunk is invalid.
 	 * @throws IOException if an input operation throws an exception.
 	 */
-	public Chunk ReadChunk(int X, int Z) throws FormatException, IOException
+	public Chunk ReadChunk(int X, int Z) throws NBTFormatException, IOException
 	{
 		try(RandomAccessFile region = new RandomAccessFile(rf, "r"))
 		{

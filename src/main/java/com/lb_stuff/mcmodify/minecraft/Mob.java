@@ -1,6 +1,6 @@
 package com.lb_stuff.mcmodify.minecraft;
 
-import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.nbt.NBTFormatException;
 import com.lb_stuff.mcmodify.nbt.Tag;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public abstract class Mob extends Entity
 		Blindness, NightVision,
 		Hunger;
 
-		public static Effect FromID(byte ID) throws FormatException
+		public static Effect FromID(byte ID) throws NBTFormatException
 		{
 			switch(ID)
 			{
@@ -72,7 +72,7 @@ public abstract class Mob extends Entity
 			case 19: return Poison;
 			case 20: return Wither;
 			}
-			throw new FormatException("Unknown Potion Effect: "+ID);
+			throw new NBTFormatException("Unknown Potion Effect: "+ID);
 		}
 		public byte ID()
 		{
@@ -215,7 +215,7 @@ public abstract class Mob extends Entity
 		 */
 		Boots, Leggings, Chest, Helmet;
 
-		public static EquipmentSlot FromID(byte ID) throws FormatException
+		public static EquipmentSlot FromID(byte ID) throws NBTFormatException
 		{
 			switch(ID)
 			{
@@ -225,7 +225,7 @@ public abstract class Mob extends Entity
 			case 3: return Chest;
 			case 4: return Helmet;
 			}
-			throw new FormatException("Unknown Equip: "+ID);
+			throw new NBTFormatException("Unknown Equip: "+ID);
 		}
 		public byte ID()
 		{
@@ -282,9 +282,9 @@ public abstract class Mob extends Entity
 		 * Constructs a Leash from the given tag.
 		 * @param t The tag from which to construct the leash.
 		 * @return The leash constructed from the given tag.
-		 * @throws FormatException If a leash cannot be constructed from the given tag.
+		 * @throws NBTFormatException If a leash cannot be constructed from the given tag.
 		 */
-		public static Leash FromNBT(Tag.Compound t) throws FormatException
+		public static Leash FromNBT(Tag.Compound t) throws NBTFormatException
 		{
 			try
 			{
@@ -293,7 +293,7 @@ public abstract class Mob extends Entity
 				    z = ((Tag.Int)t.Find(Tag.Type.INT, "Z")).v;
 				return new Leash.Fence(x, y, z);
 			}
-			catch(FormatException e)
+			catch(NBTFormatException e)
 			{
 			}
 			long least = ((Tag.Long)t.Find(Tag.Type.LONG, "UUIDLeast")).v,
@@ -422,9 +422,9 @@ public abstract class Mob extends Entity
 	 * Given an Entity ID, returns the Class object for the Mob class that represents that Entity ID.
 	 * @param ID The Entity ID.
 	 * @return The Class object for the Mob class that represents the Entity ID.
-	 * @throws FormatException if the given Tile Entity ID is unknown.
+	 * @throws NBTFormatException if the given Tile Entity ID is unknown.
 	 */
-	public static Class<? extends Mob> ClassFromID(String ID) throws FormatException
+	public static Class<? extends Mob> ClassFromID(String ID) throws NBTFormatException
 	{
 		switch(ID)
 		{
@@ -454,15 +454,15 @@ public abstract class Mob extends Entity
 		case "Wolf":          return Wolf.class;
 		case "Zombie":        return Zombie.class;
 		}
-		throw new FormatException("Unknown Mob Entity ID: \""+ID+"\"");
+		throw new NBTFormatException("Unknown Mob Entity ID: \""+ID+"\"");
 	}
 
 	/**
 	 * Constructs a mob entity from the given tag.
 	 * @param mob The tag from which to construct this mob entity.
-	 * @throws FormatException if the given tag is invalid.
+	 * @throws NBTFormatException if the given tag is invalid.
 	 */
-	public Mob(Tag.Compound mob) throws FormatException
+	public Mob(Tag.Compound mob) throws NBTFormatException
 	{
 		super(mob);
 
@@ -475,14 +475,14 @@ public abstract class Mob extends Entity
 		{
 			effects = (Tag.List)mob.Find(Tag.Type.LIST, "ActiveEffects");
 		}
-		catch(FormatException e)
+		catch(NBTFormatException e)
 		{
 		}
 		if(effects != null)
 		{
 			if(effects.Supports() != Tag.Type.COMPOUND)
 			{
-				throw new FormatException("Invalid Potion Effects List; expected list of Compound, got list of "+effects.Supports());
+				throw new NBTFormatException("Invalid Potion Effects List; expected list of Compound, got list of "+effects.Supports());
 			}
 			for(Tag t : effects)
 			{
@@ -513,7 +513,7 @@ public abstract class Mob extends Entity
 			canpickuploot = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "CanPickUpLoot")).v == 1 ? true : false;
 			persistencerequired = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "PersistenceRequired")).v == 1 ? true : false;
 		}
-		catch(FormatException e)
+		catch(NBTFormatException e)
 		{
 		}
 
@@ -521,7 +521,7 @@ public abstract class Mob extends Entity
 		{
 			customname = ((Tag.String)mob.Find(Tag.Type.STRING, "CustomName")).v;
 		}
-		catch(FormatException e)
+		catch(NBTFormatException e)
 		{
 			customname = null;
 		}
@@ -529,7 +529,7 @@ public abstract class Mob extends Entity
 		{
 			customnamevisible = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "CustomNameVisible")).v == 1 ? true : false;
 		}
-		catch(FormatException e)
+		catch(NBTFormatException e)
 		{
 			customnamevisible = false;
 		}
@@ -537,7 +537,7 @@ public abstract class Mob extends Entity
 		{
 			healf = ((Tag.Float)mob.Find(Tag.Type.FLOAT, "HealF")).v;
 		}
-		catch(FormatException e)
+		catch(NBTFormatException e)
 		{
 			healf = health;
 		}
@@ -552,7 +552,7 @@ public abstract class Mob extends Entity
 				leash = null;
 			}
 		}
-		catch(FormatException e)
+		catch(NBTFormatException e)
 		{
 			leash = null;
 		}
@@ -886,9 +886,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Breedable mob entity from the given tag.
 		 * @param breedable The tag from which to construct the Breedable mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Breedable(Tag.Compound breedable) throws FormatException
+		public Breedable(Tag.Compound breedable) throws NBTFormatException
 		{
 			super(breedable);
 
@@ -972,9 +972,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Tameable mob entity from the given tag.
 		 * @param tameable The tag from which to construct the Tameable mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Tameable(Tag.Compound tameable) throws FormatException
+		public Tameable(Tag.Compound tameable) throws NBTFormatException
 		{
 			super(tameable);
 
@@ -1050,9 +1050,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Blaze mob entity from the given tag.
 		 * @param blaze The tag from which to construct the Blaze mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Blaze(Tag.Compound blaze) throws FormatException
+		public Blaze(Tag.Compound blaze) throws NBTFormatException
 		{
 			super(blaze);
 		}
@@ -1075,9 +1075,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Cave Spider mob entity from the given tag.
 		 * @param cavespider The tag from which to construct the CaveSpider mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public CaveSpider(Tag.Compound cavespider) throws FormatException
+		public CaveSpider(Tag.Compound cavespider) throws NBTFormatException
 		{
 			super(cavespider);
 		}
@@ -1100,9 +1100,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Chicken mob entity from the given tag.
 		 * @param chicken The tag from which to construct the Chicken mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Chicken(Tag.Compound chicken) throws FormatException
+		public Chicken(Tag.Compound chicken) throws NBTFormatException
 		{
 			super(chicken);
 		}
@@ -1125,9 +1125,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Cow mob entity from the given tag.
 		 * @param cow The tag from which to construct the Cow mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Cow(Tag.Compound cow) throws FormatException
+		public Cow(Tag.Compound cow) throws NBTFormatException
 		{
 			super(cow);
 		}
@@ -1155,9 +1155,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Creeper mob entity from the given tag.
 		 * @param creeper The tag from which to construct the Creeper mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Creeper(Tag.Compound creeper) throws FormatException
+		public Creeper(Tag.Compound creeper) throws NBTFormatException
 		{
 			super(creeper);
 
@@ -1165,7 +1165,7 @@ public abstract class Mob extends Entity
 			{
 				powered = ((Tag.Byte)creeper.Find(Tag.Type.BYTE, "powered")).v != 0 ? true : false;
 			}
-			catch(FormatException e)
+			catch(NBTFormatException e)
 			{
 				powered = false;
 			}
@@ -1219,9 +1219,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs an Ender Dragon mob entity from the given tag.
 		 * @param enderdragon The tag from which to construct the Ender Dragon mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public EnderDragon(Tag.Compound enderdragon) throws FormatException
+		public EnderDragon(Tag.Compound enderdragon) throws NBTFormatException
 		{
 			super(enderdragon);
 		}
@@ -1253,9 +1253,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs an Enderman mob entity from the given tag.
 		 * @param enderman The tag from which to construct the Enderman mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Enderman(Tag.Compound enderman) throws FormatException
+		public Enderman(Tag.Compound enderman) throws NBTFormatException
 		{
 			super(enderman);
 
@@ -1330,9 +1330,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Ghast mob entity from the given tag.
 		 * @param ghast The tag from which to construct the Ghast mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Ghast(Tag.Compound ghast) throws FormatException
+		public Ghast(Tag.Compound ghast) throws NBTFormatException
 		{
 			super(ghast);
 		}
@@ -1355,9 +1355,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Giant mob entity from the given tag.
 		 * @param giant The tag from which to construct the Giant mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Giant(Tag.Compound giant) throws FormatException
+		public Giant(Tag.Compound giant) throws NBTFormatException
 		{
 			super(giant);
 		}
@@ -1380,9 +1380,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Magma Cube mob entity from the given tag.
 		 * @param magmacube The tag from which to construct the Magma Cube mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public LavaSlime(Tag.Compound magmacube) throws FormatException
+		public LavaSlime(Tag.Compound magmacube) throws NBTFormatException
 		{
 			super(magmacube);
 		}
@@ -1405,9 +1405,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Mooshroom mob entity from the given tag.
 		 * @param mooshroom The tag from which to construct the Mooshroom mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public MushroomCow(Tag.Compound mooshroom) throws FormatException
+		public MushroomCow(Tag.Compound mooshroom) throws NBTFormatException
 		{
 			super(mooshroom);
 		}
@@ -1430,9 +1430,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs an Ocelot mob entity from the given tag.
 		 * @param ocelot The tag from which to construct the Ocelot mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Ozelot(Tag.Compound ocelot) throws FormatException
+		public Ozelot(Tag.Compound ocelot) throws NBTFormatException
 		{
 			super(ocelot);
 		}
@@ -1460,9 +1460,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Pig mob entity from the given tag.
 		 * @param pig The tag from which to construct the Pig mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Pig(Tag.Compound pig) throws FormatException
+		public Pig(Tag.Compound pig) throws NBTFormatException
 		{
 			super(pig);
 
@@ -1540,7 +1540,7 @@ public abstract class Mob extends Entity
 			Red,
 			Black;
 
-			public static Color FromID(int ordinal) throws FormatException
+			public static Color FromID(int ordinal) throws NBTFormatException
 			{
 				switch(ordinal)
 				{
@@ -1561,7 +1561,7 @@ public abstract class Mob extends Entity
 				case 14:	return Red;
 				case 15:	return Black;
 				}
-				throw new FormatException("Unknown wool color: "+ordinal);
+				throw new NBTFormatException("Unknown wool color: "+ordinal);
 			}
 		}
 		/**
@@ -1572,9 +1572,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Sheep mob entity from the given tag.
 		 * @param sheep The tag from which to construct the Sheep mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Sheep(Tag.Compound sheep) throws FormatException
+		public Sheep(Tag.Compound sheep) throws NBTFormatException
 		{
 			super(sheep);
 
@@ -1647,9 +1647,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Silverfish mob entity from the given tag.
 		 * @param silverfish The tag from which to construct the Silverfish mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Silverfish(Tag.Compound silverfish) throws FormatException
+		public Silverfish(Tag.Compound silverfish) throws NBTFormatException
 		{
 			super(silverfish);
 		}
@@ -1672,9 +1672,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Skeleton mob entity from the given tag.
 		 * @param skeleton The tag from which to construct the Skeleton mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Skeleton(Tag.Compound skeleton) throws FormatException
+		public Skeleton(Tag.Compound skeleton) throws NBTFormatException
 		{
 			super(skeleton);
 		}
@@ -1702,9 +1702,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Slime mob entity from the given tag.
 		 * @param slime The tag from which to construct the Slime mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Slime(Tag.Compound slime) throws FormatException
+		public Slime(Tag.Compound slime) throws NBTFormatException
 		{
 			super(slime);
 		}
@@ -1757,9 +1757,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Snow Golem mob entity from the given tag.
 		 * @param snowman The tag from which to construct the Snow Golem mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public SnowMan(Tag.Compound snowman) throws FormatException
+		public SnowMan(Tag.Compound snowman) throws NBTFormatException
 		{
 			super(snowman);
 		}
@@ -1782,9 +1782,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Spider mob entity from the given tag.
 		 * @param spider The tag from which to construct the Spider mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Spider(Tag.Compound spider) throws FormatException
+		public Spider(Tag.Compound spider) throws NBTFormatException
 		{
 			super(spider);
 		}
@@ -1807,9 +1807,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Squid mob entity from the given tag.
 		 * @param squid The tag from which to construct the Squid mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Squid(Tag.Compound squid) throws FormatException
+		public Squid(Tag.Compound squid) throws NBTFormatException
 		{
 			super(squid);
 		}
@@ -1863,9 +1863,9 @@ public abstract class Mob extends Entity
 			 * Given a profession ID, returns the enumeration constant that represents that ID.
 			 * @param ordinal The ID.
 			 * @return The enumeration constant that represents the given ID.
-			 * @throws FormatException if the given ID is unknown.
+			 * @throws NBTFormatException if the given ID is unknown.
 			 */
-			public static Profession FromID(int ordinal) throws FormatException
+			public static Profession FromID(int ordinal) throws NBTFormatException
 			{
 				switch(ordinal)
 				{
@@ -1876,7 +1876,7 @@ public abstract class Mob extends Entity
 				case 4:	return Butcher;
 				case 5:	return Villager;
 				}
-				throw new FormatException("Unknown Villager Profession: "+ordinal);
+				throw new NBTFormatException("Unknown Villager Profession: "+ordinal);
 			}
 		}
 		/**
@@ -1908,9 +1908,9 @@ public abstract class Mob extends Entity
 			/**
 			 * Constructs a Trade option from the given tag.
 			 * @param trade The tag from which to construct this Trade option.
-			 * @throws FormatException if the given tag is invalid.
+			 * @throws NBTFormatException if the given tag is invalid.
 			 */
-			public Trade(Tag.Compound trade) throws FormatException
+			public Trade(Tag.Compound trade) throws NBTFormatException
 			{
 				uses = ((Tag.Int)trade.Find(Tag.Type.INT, "uses")).v;
 				buy = new Inventory.Item((Tag.Compound)trade.Find(Tag.Type.COMPOUND, "buy"));
@@ -2044,9 +2044,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Villager mob entity from the given tag.
 		 * @param villager The tag from which to construct the Villager mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Villager(Tag.Compound villager) throws FormatException
+		public Villager(Tag.Compound villager) throws NBTFormatException
 		{
 			super(villager);
 
@@ -2055,7 +2055,7 @@ public abstract class Mob extends Entity
 			Tag.List trades = (Tag.List)((Tag.Compound)villager.Find(Tag.Type.COMPOUND, "Offers")).Find(Tag.Type.LIST, "Recipes");
 			if(trades.Supports() != Tag.Type.COMPOUND)
 			{
-				throw new FormatException("Expected list of compound tags, got list of: "+trades.Supports());
+				throw new NBTFormatException("Expected list of compound tags, got list of: "+trades.Supports());
 			}
 			for(Tag t : trades)
 			{
@@ -2109,9 +2109,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs an Iron Golem mob entity from the given tag.
 		 * @param irongolem The tag from which to construct the Iron Golem mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public VillagerGolem(Tag.Compound irongolem) throws FormatException
+		public VillagerGolem(Tag.Compound irongolem) throws NBTFormatException
 		{
 			super(irongolem);
 		}
@@ -2140,9 +2140,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Wolf mob entity from the given tag.
 		 * @param wolf The tag from which to construct the Wolf mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Wolf(Tag.Compound wolf) throws FormatException
+		public Wolf(Tag.Compound wolf) throws NBTFormatException
 		{
 			super(wolf);
 
@@ -2197,9 +2197,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Zombie mob entity from the given tag.
 		 * @param zombie The tag from which to construct the Zombie mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Zombie(Tag.Compound zombie) throws FormatException
+		public Zombie(Tag.Compound zombie) throws NBTFormatException
 		{
 			super(zombie);
 		}
@@ -2227,9 +2227,9 @@ public abstract class Mob extends Entity
 		/**
 		 * Constructs a Zombie Pigman mob entity from the given tag.
 		 * @param zombiepigman The tag from which to construct the Zombie Pigman mob entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public PigZombie(Tag.Compound zombiepigman) throws FormatException
+		public PigZombie(Tag.Compound zombiepigman) throws NBTFormatException
 		{
 			super(zombiepigman);
 

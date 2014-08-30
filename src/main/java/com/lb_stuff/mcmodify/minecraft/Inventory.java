@@ -1,6 +1,6 @@
 package com.lb_stuff.mcmodify.minecraft;
 
-import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.nbt.NBTFormatException;
 import com.lb_stuff.mcmodify.nbt.Tag;
 
 import java.util.ArrayList;
@@ -45,9 +45,9 @@ public class Inventory
 			 * Given an enchantment ID, returns the corresponding <code>Enchantment</code>.
 			 * @param ID The ID of the enchantment.
 			 * @return The <code>Enchantment</code> that corresponds to the given ID.
-			 * @throws FormatException if the given ID does not correspond to any known enchantment.
+			 * @throws NBTFormatException if the given ID does not correspond to any known enchantment.
 			 */
-			public static Enchantment EnchantFromID(short ID) throws FormatException
+			public static Enchantment EnchantFromID(short ID) throws NBTFormatException
 			{
 				switch(ID)
 				{
@@ -76,7 +76,7 @@ public class Inventory
 				case 50:	return Flame;
 				case 51:	return Infinity;
 				}
-				throw new FormatException("Unknown Enchantment ID: "+ID);
+				throw new NBTFormatException("Unknown Enchantment ID: "+ID);
 			}
 			/**
 			 * Returns the ID of this <code>Enchantment</code>.
@@ -126,9 +126,9 @@ public class Inventory
 		/**
 		 * Constructs an inventory Item from the given tag.
 		 * @param item The tag from which to construct this inventory Item.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Item(Tag.Compound item) throws FormatException
+		public Item(Tag.Compound item) throws NBTFormatException
 		{
 			id = ((Tag.Short)item.Find(Tag.Type.SHORT, "id")).v;
 			damage = ((Tag.Short)item.Find(Tag.Type.SHORT, "Damage")).v;
@@ -138,7 +138,7 @@ public class Inventory
 			{
 				tag = (Tag.Compound)item.Find(Tag.Type.COMPOUND, "tag");
 			}
-			catch(FormatException e)
+			catch(NBTFormatException e)
 			{
 			}
 			if(tag != null)
@@ -148,14 +148,14 @@ public class Inventory
 				{
 					ench = (Tag.List)tag.Find(Tag.Type.LIST, "ench");
 				}
-				catch(FormatException e)
+				catch(NBTFormatException e)
 				{
 				}
 				if(ench != null)
 				{
 					if(ench.Supports() != Tag.Type.COMPOUND)
 					{
-						throw new FormatException("Invalid Enchantment List");
+						throw new NBTFormatException("Invalid Enchantment List");
 					}
 					for(int i = 0; i < ench.Size(); ++i)
 					{
@@ -163,7 +163,7 @@ public class Inventory
 						Enchantment e = Enchantment.EnchantFromID(((Tag.Short)enchant.Find(Tag.Type.SHORT, "id")).v);
 						if(enchantments.containsKey(e))
 						{
-							throw new FormatException("Duplicate Enchantment: "+e);
+							throw new NBTFormatException("Duplicate Enchantment: "+e);
 						}
 						enchantments.put(e, ((Tag.Short)enchant.Find(Tag.Type.SHORT, "lvl")).v);
 					}
@@ -179,7 +179,7 @@ public class Inventory
 					Tag.List pagelist = (Tag.List)tag.Find(Tag.Type.LIST, "pages");
 					if(pagelist.Supports() != Tag.Type.STRING)
 					{
-						throw new FormatException("Invalid Page List");
+						throw new NBTFormatException("Invalid Page List");
 					}
 					pages = new ArrayList<>();
 					for(Tag t : pagelist)
@@ -445,9 +445,9 @@ public class Inventory
 	/**
 	 * Constructs an inventory from the given tag.
 	 * @param inventory The tag from which to construct this Inventory.
-	 * @throws FormatException if the given tag is invalid.
+	 * @throws NBTFormatException if the given tag is invalid.
 	 */
-	public Inventory(Tag.List inventory) throws FormatException
+	public Inventory(Tag.List inventory) throws NBTFormatException
 	{
 		if(inventory.Supports() != Tag.Type.COMPOUND)
 		{
@@ -455,7 +455,7 @@ public class Inventory
 			{
 				return; //for EnderItems
 			}
-			throw new FormatException("Invalid Inventory List");
+			throw new NBTFormatException("Invalid Inventory List");
 		}
 		for(int i = 0; i < inventory.Size(); ++i)
 		{
@@ -463,11 +463,11 @@ public class Inventory
 			byte slot = ((Tag.Byte)item.Find(Tag.Type.BYTE, "Slot")).v;
 			if(slot < 0)
 			{
-				throw new FormatException("Invalid Slot number: "+slot);
+				throw new NBTFormatException("Invalid Slot number: "+slot);
 			}
 			if(items.containsKey(slot))
 			{
-				throw new FormatException("Duplicate Inventory Slot: "+slot);
+				throw new NBTFormatException("Duplicate Inventory Slot: "+slot);
 			}
 			items.put(slot, new Item(item));
 		}

@@ -1,6 +1,6 @@
 package com.lb_stuff.mcmodify.minecraft;
 
-import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.nbt.NBTFormatException;
 import com.lb_stuff.mcmodify.nbt.Tag;
 
 import java.awt.Color;
@@ -88,9 +88,9 @@ public class Map
 			MapColors[i*4 +3] = new Color((int)(bc.getRed()*135.0/255.0+0.5), (int)(bc.getGreen()*135.0/255.0+0.5), (int)(bc.getBlue()*135.0/255.0+0.5), bc.getAlpha());
 		}
 		byte[] r = new byte[MapColors.length],
-			   g = new byte[MapColors.length],
-			   b = new byte[MapColors.length],
-			   a = new byte[MapColors.length];
+		       g = new byte[MapColors.length],
+		       b = new byte[MapColors.length],
+		       a = new byte[MapColors.length];
 		for(int i = 0; i < MapColors.length; ++i)
 		{
 			Color mc = MapColors[i];
@@ -109,9 +109,9 @@ public class Map
 	/**
 	 * Constructs a Map from the given tag.
 	 * @param map The tag from which to construct this map.
-	 * @throws FormatException If the given tag is invalid.
+	 * @throws NBTFormatException If the given tag is invalid.
 	 */
-	public Map(Tag.Compound map) throws FormatException
+	public Map(Tag.Compound map) throws NBTFormatException
 	{
 		map = (Tag.Compound)map.Find(Tag.Type.COMPOUND, "data");
 		width = ((Tag.Short)map.Find(Tag.Type.SHORT, "width")).v;
@@ -245,15 +245,17 @@ public class Map
 	 */
 	public Tag.Compound ToNBT(String name)
 	{
-		byte[] data;
-		Tag.Compound t = new Tag.Compound(name,
-						 new Tag.Compound("data", new Tag.Short("width", width),
-												  new Tag.Short("height", height),
-												  new Tag.Byte("scale", scale),
-												  new Tag.Byte("dimension", dimension.ID()),
-												  new Tag.Int("xCenter", xcenter),
-												  new Tag.Int("zCenter", zcenter),
-												  new Tag.ByteArray("colors", data = new byte[width*height])));
+		byte[] data = new byte[width*height];
+		Tag.Compound t =
+			new Tag.Compound(name,
+				new Tag.Compound("data",
+					new Tag.Short("width", width),
+					new Tag.Short("height", height),
+					new Tag.Byte("scale", scale),
+					new Tag.Byte("dimension", dimension.ID()),
+					new Tag.Int("xCenter", xcenter),
+					new Tag.Int("zCenter", zcenter),
+					new Tag.ByteArray("colors", data)));
 		for(int i = 0; i < width; ++i)
 		{
 			for(int j = 0; j < height; ++j)

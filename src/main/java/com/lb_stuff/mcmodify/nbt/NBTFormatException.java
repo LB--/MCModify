@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * The generic "this data is wonky" exception.
  */
-public class FormatException extends Exception
+public class NBTFormatException extends Exception
 {
 	/**
 	 * The tag(s) that caused the problem, if any.
@@ -19,7 +19,7 @@ public class FormatException extends Exception
 	 * @param msg The message to be seen with this exception.
 	 * @param tags The tag(s) (if any) that were malformed.
 	 */
-	public FormatException(String msg, Tag... tags)
+	public NBTFormatException(String msg, Tag... tags)
 	{
 		super(msg);
 		t.addAll(Arrays.asList(tags));
@@ -30,7 +30,7 @@ public class FormatException extends Exception
 	 * @param cause The exception that caused the trouble in the first place.
 	 * @param tags The tag(s) (if any) that were malformed.
 	 */
-	public FormatException(String msg, Throwable cause, Tag... tags)
+	public NBTFormatException(String msg, Throwable cause, Tag... tags)
 	{
 		super(msg, cause);
 		t.addAll(Arrays.asList(tags));
@@ -40,7 +40,7 @@ public class FormatException extends Exception
 	 * @param cause The exception that caused the trouble in the first place.
 	 * @param tags The tag(s) (if any) that were malformed.
 	 */
-	public FormatException(Throwable cause, Tag... tags)
+	public NBTFormatException(Throwable cause, Tag... tags)
 	{
 		super(cause);
 		t.addAll(Arrays.asList(tags));

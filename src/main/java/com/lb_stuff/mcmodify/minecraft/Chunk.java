@@ -1,6 +1,6 @@
 package com.lb_stuff.mcmodify.minecraft;
 
-import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.nbt.NBTFormatException;
 import com.lb_stuff.mcmodify.nbt.Tag;
 
 import java.util.ArrayList;
@@ -57,16 +57,16 @@ public class Chunk
 		/**
 		 * Constructs a Section from the given tag.
 		 * @param section The tag fromm which to construct this Section.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throNBTFormatExceptionion if the given tag is invalid.
 		 */
-		public Section(Tag.Compound section) throws FormatException
+		public Section(Tag.Compound section) tNBTFormatExceptioneption
 		{
 			blocks = ((Tag.ByteArray)section.Find(Tag.Type.BYTEARRAY, "Blocks")).v;
 			try
 			{
 				add = ((Tag.ByteArray)section.Find(Tag.Type.BYTEARRAY, "Add")).v;
 			}
-			catch(FormatException e)
+NBTFormatExceptionException e)
 			{
 				add = new byte[2048];
 			}
@@ -191,9 +191,9 @@ public class Chunk
 		/**
 		 * Constructs a Tile Tick object from a tile tick compound tag.
 		 * @param tiletick The tag from which to instantiate this tile tick.
-		 * @throws FormatException If the given tag is invalid.
+	NBTFormatExceptionmatException If the given tag is invalid.
 		 */
-		public TileTick(Tag.Compound tiletick) throws FormatException
+		public TileTick(Tag.Compound tiNBTFormatExceptionFormatException
 		{
 			i = ((Tag.Int)tiletick.Find(Tag.Type.INT, "i")).v;
 			t = ((Tag.Int)tiletick.Find(Tag.Type.INT, "t")).v;
@@ -304,7 +304,7 @@ public class Chunk
 	 */
 	private List<TileTick> tileticks = new ArrayList<>();
 
-	public Chunk(Tag.Compound chunk) throws FormatException
+	public Chunk(Tag.CompoNBTFormatExceptionws FormatException
 	{
 		Tag.Compound original = chunk;
 		chunk = (Tag.Compound)chunk.Find(Tag.Type.COMPOUND, "Level");
@@ -313,24 +313,20 @@ public class Chunk
 		lastupdate = ((Tag.Long)chunk.Find(Tag.Type.LONG, "LastUpdate")).v;
 		try
 		{
-			inhabitedtime = ((Tag.Long)chunk.Find(Tag.Type.LONG, "InhabitedTime")).v;
-		}
-		catch(FormatException e)
+			inhabitedtime = ((Tag.Long)chunk.Find(Tag.Type.LONG, "InhabitedTiNBTFormatExceptioncatch(FormatException e)
 		{
 			inhabitedtime = 0;
 		}
 		try
 		{
-			terrainpopulated = ((Tag.Byte)chunk.Find(Tag.Type.BYTE, "TerrainPopulated")).v != 0 ? true : false;
-		}
+			terrainpopulated = ((Tag.Byte)chunk.Find(Tag.Type.BYTE, "TerrainPopulated")).v != 0 ? trNBTFormatException
 		catch(FormatException e)
 		{
 			terrainpopulated = false;
 		}
 		try
 		{
-			biomes = ((Tag.ByteArray)chunk.Find(Tag.Type.BYTEARRAY, "Biomes")).v;
-		}
+			biomes = ((Tag.ByteArray)chunk.Find(Tag.Type.BYTEARRAY,NBTFormatException		}
 		catch(FormatException e)
 		{
 			biomes = new byte[256];
@@ -339,17 +335,16 @@ public class Chunk
 				biomes[i] = -1;
 			}
 		}
-		if(biomes.length != 256)
-		{
+		if(biomes.leNBTFormatException{
 			throw new FormatException("Invalid Biomes Array; size was "+biomes.length+" instead of 256", original);
 		}
 		heightmap = ((Tag.IntArray)chunk.Find(Tag.Type.INTARRAY, "HeightMap")).v;
-		if(heightmap.length != 256)
+		if(heightmapNBTFormatException
 		{
 			throw new FormatException("Invalid Height Map Array; size was "+heightmap.length+" instead of 256", original);
 		}
 		Tag.List sectionlist = (Tag.List)chunk.Find(Tag.Type.LIST, "Sections");
-		if(sectionlist.Supports() != Tag.Type.COMPOUND)
+		if(sectionlist.Supports() != NBTFormatExceptionND)
 		{
 			throw new FormatException("Invalid Sections list; expected list of Compound, got list of "+sectionlist.Supports(), original);
 		}
@@ -359,7 +354,7 @@ public class Chunk
 			sections.put(((Tag.Byte)section.Find(Tag.Type.BYTE, "Y")).v, new Section(section));
 		}
 		Tag.List entitylist = (Tag.List)chunk.Find(Tag.Type.LIST, "Entities");
-		if(entitylist.Size() > 0 && entitylist.Supports() != Tag.Type.COMPOUND)
+		if(entitylist.Size() > 0 && entitylist.Supports() NBTFormatExceptionPOUND)
 		{
 			throw new FormatException("Invalid Entities list; expected list of Compound, got list of "+entitylist.Supports(), original);
 		}
@@ -380,13 +375,13 @@ public class Chunk
 			{
 				entities.add(econs.newInstance(entity));
 			}
-			catch(InstantiationException|IllegalAccessException|InvocationTargetException e)
+			catch(InstantiationException|IllegalAccessException|InvocaNBTFormatExceptiontion e)
 			{
 				throw new FormatException(e, original);
 			}
 		}
 		Tag.List tileentitylist = (Tag.List)chunk.Find(Tag.Type.LIST, "TileEntities");
-		if(tileentitylist.Size() > 0 && tileentitylist.Supports() != Tag.Type.COMPOUND)
+		if(tileentitylist.Size() > 0 && tileentitylist.SuppoNBTFormatExceptionpe.COMPOUND)
 		{
 			throw new FormatException("Invalid Tile Entities list; expected list of Compound, got list of "+tileentitylist.Supports(), original);
 		}
@@ -407,7 +402,7 @@ public class Chunk
 			{
 				tileentities.add(tecons.newInstance(tileentity));
 			}
-			catch(InstantiationException|IllegalAccessException|InvocationTargetException e)
+			catch(InstantiationException|IllegalAccessException|NBTFormatExceptiontException e)
 			{
 				throw new FormatException(e, original);
 			}
@@ -415,13 +410,13 @@ public class Chunk
 		Tag.List tileticklist;
 		try
 		{
-			tileticklist = (Tag.List)chunk.Find(Tag.Type.LIST, "TileTicks");
+			tileticklist = (Tag.List)cNBTFormatExceptionype.LIST, "TileTicks");
 		}
 		catch(FormatException e)
 		{
 			tileticklist = new Tag.List(null, Tag.Type.COMPOUND);
 		}
-		if(tileticklist.Supports() != Tag.Type.COMPOUND)
+		if(tileticklNBTFormatException!= Tag.Type.COMPOUND)
 		{
 			throw new FormatException("Invalid Tile Tick list; expected list of Compound, got list of "+tileticklist.Supports(), original);
 		}

@@ -1,6 +1,6 @@
 package com.lb_stuff.mcmodify.minecraft;
 
-import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.nbt.NBTFormatException;
 import com.lb_stuff.mcmodify.nbt.Tag;
 
 /**
@@ -17,9 +17,9 @@ public abstract class TileEntity
 	 * Given a Tile Entity ID, returns the Class object for the class that represents that Tile Entity ID.
 	 * @param ID The Tile Entity ID.
 	 * @return The Class object for the class that represents the Tile Entity ID.
-	 * @throws FormatException if the given Tike Entity ID is unknown.
+	 * @throws NBTFormatException if the given Tike Entity ID is unknown.
 	 */
-	public static Class<? extends TileEntity> ClassFromID(String ID) throws FormatException
+	public static Class<? extends TileEntity> ClassFromID(String ID) throws NBTFormatException
 	{
 		switch(ID)
 		{
@@ -35,20 +35,20 @@ public abstract class TileEntity
 		case "EnchantTable":return EnchantTable.class;
 		case "Airportal":	return Airportal.class;
 		}
-		throw new FormatException("Unkown Tile Entity ID: \""+ID+"\"");
+		throw new NBTFormatException("Unkown Tile Entity ID: \""+ID+"\"");
 	}
 
 	/**
 	 * Constructs a tile entity from a compound tag.
 	 * @param tileentity The tag from which to instantiate this tile entity.
-	 * @throws FormatException if the given tag is invalid.
+	 * @throws NBTFormatException if the given tag is invalid.
 	 */
-	public TileEntity(Tag.Compound tileentity) throws FormatException
+	public TileEntity(Tag.Compound tileentity) throws NBTFormatException
 	{
 		String id = ((Tag.String)tileentity.Find(Tag.Type.STRING, "id")).v;
 		if(!getClass().getSimpleName().equals(id))
 		{
-			throw new FormatException("Tried to instantiate a "+getClass().getSimpleName()+" Tile Entity from a tag with id \""+id+"\"");
+			throw new NBTFormatException("Tried to instantiate a "+getClass().getSimpleName()+" Tile Entity from a tag with id \""+id+"\"");
 		}
 		x = ((Tag.Int)tileentity.Find(Tag.Type.INT, "x")).v;
 		y = ((Tag.Int)tileentity.Find(Tag.Type.INT, "y")).v;
@@ -97,9 +97,9 @@ public abstract class TileEntity
 		/**
 		 * Constructs a Furnace tile entity from a tile entity tag.
 		 * @param furnace The tag from which to construct this Furnace tile entity.
-		 * @throws FormatException if the tag is invalid.
+		 * @throws NBTFormatException if the tag is invalid.
 		 */
-		public Furnace(Tag.Compound furnace) throws FormatException
+		public Furnace(Tag.Compound furnace) throws NBTFormatException
 		{
 			super(furnace);
 
@@ -109,7 +109,7 @@ public abstract class TileEntity
 			Tag.List items = (Tag.List)furnace.Find(Tag.Type.LIST, "Items");
 			if(items.Supports() != Tag.Type.COMPOUND)
 			{
-				throw new FormatException("Invalid Items list; expected list of Compound, got list of "+items.Supports());
+				throw new NBTFormatException("Invalid Items list; expected list of Compound, got list of "+items.Supports());
 			}
 			smelting = new Inventory.Item((Tag.Compound)items.Get(0));
 			fuel = new Inventory.Item((Tag.Compound)items.Get(1));
@@ -196,9 +196,9 @@ public abstract class TileEntity
 		/**
 		 * Constructs a Sign tile entity from the given tag.
 		 * @param sign The tag from which to construct this Sign tile entity.
-		 * @throws FormatException if the tag is invalid.
+		 * @throws NBTFormatException if the tag is invalid.
 		 */
-		public Sign(Tag.Compound sign) throws FormatException
+		public Sign(Tag.Compound sign) throws NBTFormatException
 		{
 			super(sign);
 
@@ -287,9 +287,9 @@ public abstract class TileEntity
 		/**
 		 * Constructs a Mob Spawner tile entity from the given tag.
 		 * @param mobspawner The tag from which to construct this Mob Spawner.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public MobSpawner(Tag.Compound mobspawner) throws FormatException
+		public MobSpawner(Tag.Compound mobspawner) throws NBTFormatException
 		{
 			super(mobspawner);
 
@@ -300,7 +300,7 @@ public abstract class TileEntity
 			{
 				spawndata.AddFrom((Tag.Compound)mobspawner.Find(Tag.Type.COMPOUND, "SpawnData"));
 			}
-			catch(FormatException e)
+			catch(NBTFormatException e)
 			{
 			}
 			delay = ((Tag.Short)mobspawner.Find(Tag.Type.SHORT, "Delay")).v;
@@ -443,9 +443,9 @@ public abstract class TileEntity
 		/**
 		 * Constructs a Chest tile entity from the given tag.
 		 * @param chest The tag from which to construct the Chest tile entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Chest(Tag.Compound chest) throws FormatException
+		public Chest(Tag.Compound chest) throws NBTFormatException
 		{
 			super(chest);
 
@@ -508,9 +508,9 @@ public abstract class TileEntity
 		/**
 		 * Constructs a Music tile entity from a tag.
 		 * @param music The tag from which to construct the Music tile entity.
-		 * @throws FormatException if the tag is invalid.
+		 * @throws NBTFormatException if the tag is invalid.
 		 */
-		public Music(Tag.Compound music) throws FormatException
+		public Music(Tag.Compound music) throws NBTFormatException
 		{
 			super(music);
 
@@ -552,7 +552,7 @@ public abstract class TileEntity
 	public static class Trap extends TileEntity
 	{
 		private Inventory items;
-		public Trap(Tag.Compound trap) throws FormatException
+		public Trap(Tag.Compound trap) throws NBTFormatException
 		{
 			super(trap);
 
@@ -615,9 +615,9 @@ public abstract class TileEntity
 		/**
 		 * Constructs a Record Player tile entity from the given tag.
 		 * @param recordplayer The tag from which to construct the Record Player tile entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public RecordPlayer(Tag.Compound recordplayer) throws FormatException
+		public RecordPlayer(Tag.Compound recordplayer) throws NBTFormatException
 		{
 			super(recordplayer);
 
@@ -678,9 +678,9 @@ public abstract class TileEntity
 			 * Converts an ordinal to the Facing it represents.
 			 * @param ordinal The facing as a number.
 			 * @return The Facing represented by the given ordinal.
-			 * @throws FormatException If the ordinal does not represent a valid facing.
+			 * @throws NBTFormatException If the ordinal does not represent a valid facing.
 			 */
-			public static Facing FromOrdinal(int ordinal) throws FormatException
+			public static Facing FromOrdinal(int ordinal) throws NBTFormatException
 			{
 				switch(ordinal)
 				{
@@ -691,7 +691,7 @@ public abstract class TileEntity
 				case 4:	return East;
 				case 5:	return West;
 				}
-				throw new FormatException("Unkown direction: "+ordinal);
+				throw new NBTFormatException("Unkown direction: "+ordinal);
 			}
 		}
 		/**
@@ -710,9 +710,9 @@ public abstract class TileEntity
 		/**
 		 * Constructs a Piston tile entity from the given tag.
 		 * @param piston The tag from which to construct the Piston tile entity.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Piston(Tag.Compound piston) throws FormatException
+		public Piston(Tag.Compound piston) throws NBTFormatException
 		{
 			super(piston);
 
@@ -846,9 +846,9 @@ public abstract class TileEntity
 		/**
 		 * Constructs a Cauldron tile entity from the given tag.
 		 * @param cauldron The tag from which to  construct the Cauldron tile entity.
-		 * @throws FormatException if the tag is invalid.
+		 * @throws NBTFormatException if the tag is invalid.
 		 */
-		public Cauldron(Tag.Compound cauldron) throws FormatException
+		public Cauldron(Tag.Compound cauldron) throws NBTFormatException
 		{
 			super(cauldron);
 
@@ -940,9 +940,9 @@ public abstract class TileEntity
 		/**
 		 * Constructs an Enchantment Table tile entity from the given tag.
 		 * @param enchanttable The tag from which to construct this Enchantment Table tile entity.
-		 * @throws FormatException if the tag is invalid.
+		 * @throws NBTFormatException if the tag is invalid.
 		 */
-		public EnchantTable(Tag.Compound enchanttable) throws FormatException
+		public EnchantTable(Tag.Compound enchanttable) throws NBTFormatException
 		{
 			super(enchanttable);
 		}
@@ -955,9 +955,9 @@ public abstract class TileEntity
 		/**
 		 * Constructs an End Portal tile entity from the given tag.
 		 * @param airportal The tag from which to construct this End Portal tile entity.
-		 * @throws FormatException if the tag is invalid.
+		 * @throws NBTFormatException if the tag is invalid.
 		 */
-		public Airportal(Tag.Compound airportal) throws FormatException
+		public Airportal(Tag.Compound airportal) throws NBTFormatException
 		{
 			super(airportal);
 		}

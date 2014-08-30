@@ -1,6 +1,8 @@
 package com.lb_stuff.mcmodify.minecraft;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
 
 /**
  * @see <a href="http://minecraft.gamepedia.com/Formatting_codes">Formatting codes</a> on the Minecraft Wiki
@@ -32,31 +34,35 @@ public enum Formatting
 	RESET        ('r', null, null),
 	;
 
+	public static final int NUMBER_OF_COLORS = 16;
 	public static final String FORMAT_CHARACTER = "\u00A7";
 
 	private final char code;
 	private final Color foreground;
 	private final Color background;
-
 	private Formatting(char c, Color f, Color b)
 	{
 		code = c;
 		foreground = f;
 		background = b;
 	}
+
 	@Override
 	public String toString()
 	{
 		return FORMAT_CHARACTER+code;
 	}
+
 	public String getScoreboardTeamName()
 	{
 		return name().toLowerCase();
 	}
+
 	public char getCode()
 	{
 		return code;
 	}
+
 	public boolean isColor()
 	{
 		return foreground != null;
@@ -68,5 +74,71 @@ public enum Formatting
 	public Color getBackgroundColor()
 	{
 		return background;
+	}
+
+	//TODO: Use a less hacky solution that doesn't involve a BufferedImage
+	private static final IndexColorModel ficm;
+	private static final BufferedImage fip;
+	static
+	{
+		byte[] r = new byte[NUMBER_OF_COLORS],
+		       g = new byte[NUMBER_OF_COLORS],
+		       b = new byte[NUMBER_OF_COLORS],
+		       a = new byte[NUMBER_OF_COLORS];
+		for(int i = 0; i < NUMBER_OF_COLORS; ++i)
+		{
+			Color f = values()[i].getForegroundColor();
+			r[i] = (byte)f.getRed();
+			g[i] = (byte)f.getGreen();
+			b[i] = (byte)f.getBlue();
+			a[i] = (byte)f.getAlpha();
+		}
+		ficm = new IndexColorModel(8, NUMBER_OF_COLORS, r, g, b, a);
+		fip = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_INDEXED, ficm);
+	}
+	public static Formatting byNearestForeground(Color c)
+	{
+		fip.setRGB(0, 0, c.getRGB());
+		Color t = new Color(fip.getRGB(0, 0));
+		for(int i = 0; i < NUMBER_OF_COLORS; ++i)
+		{
+			if(values()[i].getForegroundColor().equals(t))
+			{
+				return values()[i];
+			}
+		}
+		throw new IllegalStateException();
+	}
+	private static final IndexColorModel bicm;
+	private static final BufferedImage bip;
+	static
+	{
+		byte[] r = new byte[NUMBER_OF_COLORS],
+		       g = new byte[NUMBER_OF_COLORS],
+		       b = new byte[NUMBER_OF_COLORS],
+		       a = new byte[NUMBER_OF_COLORS];
+		for(int i = 0; i < NUMBER_OF_COLORS; ++i)
+		{
+			Color f = values()[i].getBackgroundColor();
+			r[i] = (byte)f.getRed();
+			g[i] = (byte)f.getGreen();
+			b[i] = (byte)f.getBlue();
+			a[i] = (byte)f.getAlpha();
+		}
+		bicm = new IndexColorModel(8, NUMBER_OF_COLORS, r, g, b, a);
+		bip = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_INDEXED, bicm);
+	}
+	public static Formatting byNearestBackground(Color c)
+	{
+		bip.setRGB(0, 0, c.getRGB());
+		Color t = new Color(bip.getRGB(0, 0));
+		for(int i = 0; i < NUMBER_OF_COLORS; ++i)
+		{
+			if(values()[i].getBackgroundColor().equals(t))
+			{
+				return values()[i];
+			}
+		}
+		throw new IllegalStateException();
 	}
 }

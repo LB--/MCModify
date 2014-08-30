@@ -1,12 +1,13 @@
 package com.lb_stuff.mcmodify;
 
 import com.lb_stuff.mcmodify.minecraft.Chunk;
+import com.lb_stuff.mcmodify.minecraft.Formatting;
 import com.lb_stuff.mcmodify.minecraft.Inventory;
 import com.lb_stuff.mcmodify.minecraft.Level;
 import com.lb_stuff.mcmodify.minecraft.Map;
 import com.lb_stuff.mcmodify.minecraft.Region;
 import com.lb_stuff.mcmodify.nbt.Tag;
-import com.lb_stuff.mcmodify.serialization.NBTable;
+import com.lb_stuff.mcmodify.nbt.AutoNBTSerializable;
 
 import static com.lb_stuff.mcmodify.minecraft.IDs.*;
 
@@ -68,12 +69,12 @@ public class MCModify
 
 		{
 			System.out.println(">>>TEST 2: Serialize an NBTable class to a compound tag and load it back again.");
-			Tag.Compound serializationTest = com.lb_stuff.mcmodify.serialization.IO.Serialize("Test", new TestClass(), false); //Serialize it!
+			Tag.Compound serializationTest = com.lb_stuff.mcmodify.nbt.Serialization.Serialize("Test", new TestClass(), false); //Serialize it!
 			System.out.println(serializationTest); //Print it!
 
 			System.out.println();
 
-			TestClass tc = (TestClass)com.lb_stuff.mcmodify.serialization.IO.Deserialize(TestClass.class, null, serializationTest); //Deserialize it!
+			TestClass tc = (TestClass)com.lb_stuff.mcmodify.nbt.Serialization.Deserialize(TestClass.class, null, serializationTest); //Deserialize it!
 			System.out.println(tc); //Print the other it!
 		}
 
@@ -144,12 +145,20 @@ public class MCModify
 				}
 			}
 		}
+
+		System.out.println();
+
+		{
+			System.out.println(">>>TEST 6: Get the Minecraft text color closest to Color.MAGENTA");
+			Formatting closest = Formatting.byNearestForeground(Color.MAGENTA);
+			System.out.println("Minecraft text color closest to magenta is "+closest.getScoreboardTeamName());
+		}
 	}
 
 	/**
 	 * A class for testing.
 	 */
-	public static class TestClass implements NBTable
+	public static class TestClass implements AutoNBTSerializable
 	{
 		public byte m1;
 		/*default*/ short m2;

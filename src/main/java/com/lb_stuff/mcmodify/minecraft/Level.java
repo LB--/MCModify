@@ -1,6 +1,6 @@
 package com.lb_stuff.mcmodify.minecraft;
 
-import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.nbt.NBTFormatException;
 import com.lb_stuff.mcmodify.nbt.Tag;
 
 /**
@@ -70,7 +70,7 @@ public class Level
 		 */
 		LargeBiomes;
 
-		public static Generator FromName(String name) throws FormatException
+		public static Generator FromName(String name) throws NBTFormatException
 		{
 			switch(name)
 			{
@@ -78,7 +78,7 @@ public class Level
 			case "flat":		return Superflat;
 			case "largeBiomes":	return LargeBiomes;
 			}
-			throw new FormatException("Unkown Level Generator: \""+name+"\"");
+			throw new NBTFormatException("Unkown Level Generator: \""+name+"\"");
 		}
 		@Override public String toString()
 		{
@@ -150,9 +150,9 @@ public class Level
 			 * Returns the enumeration constant represented by the given ID.
 			 * @param ordinal The dimension ID.
 			 * @return The enumeration constant represented by the given ID.
-			 * @throws FormatException if the given ID is not recognized as a dimension.
+			 * @throws NBTFormatException if the given ID is not recognized as a dimension.
 			 */
-			public static Dimension FromID(int ordinal) throws FormatException
+			public static Dimension FromID(int ordinal) throws NBTFormatException
 			{
 				switch(ordinal)
 				{
@@ -160,7 +160,7 @@ public class Level
 				case 0:		return Overworld;
 				case 1:		return End;
 				}
-				throw new FormatException("Unknown Dimension: "+ordinal);
+				throw new NBTFormatException("Unknown Dimension: "+ordinal);
 			}
 			/**
 			 * Returns the ID of this dimension constant.
@@ -199,7 +199,7 @@ public class Level
 			 */
 			Adventure;
 
-			public static GameMode FromID(int ordinal) throws FormatException
+			public static GameMode FromID(int ordinal) throws NBTFormatException
 			{
 				switch(ordinal)
 				{
@@ -207,7 +207,7 @@ public class Level
 				case 1:	return Creative;
 				case 2:	return Adventure;
 				}
-				throw new FormatException("Unknown Game Mode: "+ordinal);
+				throw new NBTFormatException("Unknown Game Mode: "+ordinal);
 			}
 		}
 		/**
@@ -286,9 +286,9 @@ public class Level
 		/**
 		 * Constructs a Player from the given tag.
 		 * @param player The tag from which to construct this Player.
-		 * @throws FormatException if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Player(Tag.Compound player) throws FormatException
+		public Player(Tag.Compound player) throws NBTFormatException
 		{
 			super(player);
 
@@ -306,7 +306,7 @@ public class Level
 				spawny = ((Tag.Int)player.Find(Tag.Type.INT, "SpawnY")).v;
 				spawnz = ((Tag.Int)player.Find(Tag.Type.INT, "SpawnZ")).v;
 			}
-			catch(FormatException e)
+			catch(NBTFormatException e)
 			{
 				spawnx = spawny = spawnz = null;
 			}
@@ -731,15 +731,15 @@ public class Level
 	/**
 	 * Constructs this Level from the given tag.
 	 * @param level The tag from which to construct this level.
-	 * @throws FormatException if the given tag is invalid.
+	 * @throws NBTFormatException if the given tag is invalid.
 	 */
-	public Level(Tag.Compound level) throws FormatException
+	public Level(Tag.Compound level) throws NBTFormatException
 	{
 		level = (Tag.Compound)level.Find(Tag.Type.COMPOUND, "Data");
 		version = ((Tag.Int)level.Find(Tag.Type.INT, "version")).v;
 		if(version != 19133)
 		{
-			throw new FormatException("Incorrect Version: "+version);
+			throw new NBTFormatException("Incorrect Version: "+version);
 		}
 		levelname = ((Tag.String)level.Find(Tag.Type.STRING, "LevelName")).v;
 		allowcommands = ((Tag.Byte)level.Find(Tag.Type.BYTE, "allowCommands")).v != 0 ? true : false;
@@ -764,7 +764,7 @@ public class Level
 		{
 			plr = (Tag.Compound)level.Find(Tag.Type.COMPOUND, "Player");
 		}
-		catch(FormatException e)
+		catch(NBTFormatException e)
 		{
 		}
 		if(plr != null)
