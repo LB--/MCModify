@@ -57,16 +57,16 @@ public class Chunk
 		/**
 		 * Constructs a Section from the given tag.
 		 * @param section The tag fromm which to construct this Section.
-		 * @throNBTFormatExceptionion if the given tag is invalid.
+		 * @throws NBTFormatException if the given tag is invalid.
 		 */
-		public Section(Tag.Compound section) tNBTFormatExceptioneption
+		public Section(Tag.Compound section) throws NBTFormatException
 		{
 			blocks = ((Tag.ByteArray)section.Find(Tag.Type.BYTEARRAY, "Blocks")).v;
 			try
 			{
 				add = ((Tag.ByteArray)section.Find(Tag.Type.BYTEARRAY, "Add")).v;
 			}
-NBTFormatExceptionException e)
+			catch(NBTFormatException e)
 			{
 				add = new byte[2048];
 			}
@@ -191,9 +191,9 @@ NBTFormatExceptionException e)
 		/**
 		 * Constructs a Tile Tick object from a tile tick compound tag.
 		 * @param tiletick The tag from which to instantiate this tile tick.
-	NBTFormatExceptionmatException If the given tag is invalid.
+		 * @throws NBTFormatException If the given tag is invalid.
 		 */
-		public TileTick(Tag.Compound tiNBTFormatExceptionFormatException
+		public TileTick(Tag.Compound tiletick) throws NBTFormatException
 		{
 			i = ((Tag.Int)tiletick.Find(Tag.Type.INT, "i")).v;
 			t = ((Tag.Int)tiletick.Find(Tag.Type.INT, "t")).v;
@@ -304,7 +304,7 @@ NBTFormatExceptionException e)
 	 */
 	private List<TileTick> tileticks = new ArrayList<>();
 
-	public Chunk(Tag.CompoNBTFormatExceptionws FormatException
+	public Chunk(Tag.Compound chunk) throws NBTFormatException
 	{
 		Tag.Compound original = chunk;
 		chunk = (Tag.Compound)chunk.Find(Tag.Type.COMPOUND, "Level");
@@ -313,21 +313,25 @@ NBTFormatExceptionException e)
 		lastupdate = ((Tag.Long)chunk.Find(Tag.Type.LONG, "LastUpdate")).v;
 		try
 		{
-			inhabitedtime = ((Tag.Long)chunk.Find(Tag.Type.LONG, "InhabitedTiNBTFormatExceptioncatch(FormatException e)
+			inhabitedtime = ((Tag.Long)chunk.Find(Tag.Type.LONG, "InhabitedTime")).v;
+		}
+		catch(NBTFormatException e)
 		{
 			inhabitedtime = 0;
 		}
 		try
 		{
-			terrainpopulated = ((Tag.Byte)chunk.Find(Tag.Type.BYTE, "TerrainPopulated")).v != 0 ? trNBTFormatException
-		catch(FormatException e)
+			terrainpopulated = ((Tag.Byte)chunk.Find(Tag.Type.BYTE, "TerrainPopulated")).v != 0 ? true : false;
+		}
+		catch(NBTFormatException e)
 		{
 			terrainpopulated = false;
 		}
 		try
 		{
-			biomes = ((Tag.ByteArray)chunk.Find(Tag.Type.BYTEARRAY,NBTFormatException		}
-		catch(FormatException e)
+			biomes = ((Tag.ByteArray)chunk.Find(Tag.Type.BYTEARRAY, "Biomes")).v;
+		}
+		catch(NBTFormatException e)
 		{
 			biomes = new byte[256];
 			for(int i = 0; i < 256; ++i)
@@ -335,18 +339,19 @@ NBTFormatExceptionException e)
 				biomes[i] = -1;
 			}
 		}
-		if(biomes.leNBTFormatException{
-			throw new FormatException("Invalid Biomes Array; size was "+biomes.length+" instead of 256", original);
+		if(biomes.length != 256)
+		{
+			throw new NBTFormatException("Invalid Biomes Array; size was "+biomes.length+" instead of 256", original);
 		}
 		heightmap = ((Tag.IntArray)chunk.Find(Tag.Type.INTARRAY, "HeightMap")).v;
-		if(heightmapNBTFormatException
+		if(heightmap.length != 256)
 		{
-			throw new FormatException("Invalid Height Map Array; size was "+heightmap.length+" instead of 256", original);
+			throw new NBTFormatException("Invalid Height Map Array; size was "+heightmap.length+" instead of 256", original);
 		}
 		Tag.List sectionlist = (Tag.List)chunk.Find(Tag.Type.LIST, "Sections");
-		if(sectionlist.Supports() != NBTFormatExceptionND)
+		if(sectionlist.Supports() != Tag.Type.COMPOUND)
 		{
-			throw new FormatException("Invalid Sections list; expected list of Compound, got list of "+sectionlist.Supports(), original);
+			throw new NBTFormatException("Invalid Sections list; expected list of Compound, got list of "+sectionlist.Supports(), original);
 		}
 		for(Tag t : sectionlist)
 		{
@@ -354,9 +359,9 @@ NBTFormatExceptionException e)
 			sections.put(((Tag.Byte)section.Find(Tag.Type.BYTE, "Y")).v, new Section(section));
 		}
 		Tag.List entitylist = (Tag.List)chunk.Find(Tag.Type.LIST, "Entities");
-		if(entitylist.Size() > 0 && entitylist.Supports() NBTFormatExceptionPOUND)
+		if(entitylist.Size() > 0 && entitylist.Supports() != Tag.Type.COMPOUND)
 		{
-			throw new FormatException("Invalid Entities list; expected list of Compound, got list of "+entitylist.Supports(), original);
+			throw new NBTFormatException("Invalid Entities list; expected list of Compound, got list of "+entitylist.Supports(), original);
 		}
 		for(Tag t : entitylist)
 		{
@@ -375,15 +380,15 @@ NBTFormatExceptionException e)
 			{
 				entities.add(econs.newInstance(entity));
 			}
-			catch(InstantiationException|IllegalAccessException|InvocaNBTFormatExceptiontion e)
+			catch(InstantiationException|IllegalAccessException|InvocationTargetException e)
 			{
-				throw new FormatException(e, original);
+				throw new NBTFormatException(e, original);
 			}
 		}
 		Tag.List tileentitylist = (Tag.List)chunk.Find(Tag.Type.LIST, "TileEntities");
-		if(tileentitylist.Size() > 0 && tileentitylist.SuppoNBTFormatExceptionpe.COMPOUND)
+		if(tileentitylist.Size() > 0 && tileentitylist.Supports() != Tag.Type.COMPOUND)
 		{
-			throw new FormatException("Invalid Tile Entities list; expected list of Compound, got list of "+tileentitylist.Supports(), original);
+			throw new NBTFormatException("Invalid Tile Entities list; expected list of Compound, got list of "+tileentitylist.Supports(), original);
 		}
 		for(Tag t : tileentitylist)
 		{
@@ -402,23 +407,23 @@ NBTFormatExceptionException e)
 			{
 				tileentities.add(tecons.newInstance(tileentity));
 			}
-			catch(InstantiationException|IllegalAccessException|NBTFormatExceptiontException e)
+			catch(InstantiationException|IllegalAccessException|InvocationTargetException e)
 			{
-				throw new FormatException(e, original);
+				throw new NBTFormatException(e, original);
 			}
 		}
 		Tag.List tileticklist;
 		try
 		{
-			tileticklist = (Tag.List)cNBTFormatExceptionype.LIST, "TileTicks");
+			tileticklist = (Tag.List)chunk.Find(Tag.Type.LIST, "TileTicks");
 		}
-		catch(FormatException e)
+		catch(NBTFormatException e)
 		{
 			tileticklist = new Tag.List(null, Tag.Type.COMPOUND);
 		}
-		if(tileticklNBTFormatException!= Tag.Type.COMPOUND)
+		if(tileticklist.Supports() != Tag.Type.COMPOUND)
 		{
-			throw new FormatException("Invalid Tile Tick list; expected list of Compound, got list of "+tileticklist.Supports(), original);
+			throw new NBTFormatException("Invalid Tile Tick list; expected list of Compound, got list of "+tileticklist.Supports(), original);
 		}
 		for(Tag t : tileticklist)
 		{
