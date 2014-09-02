@@ -18,9 +18,9 @@ import java.util.zip.InflaterInputStream;
 
 /**
  * FileRegion file reader/writer
- * @see <a href="http://minecraft.gamepedia.com/Region_file_format">FileRegion file format</a> on the Minecraft Wiki
+ * @see <a href="http://minecraft.gamepedia.com/Region_file_format">Region file format</a> on the Minecraft Wiki
  */
-public final class FileRegion
+public class FileRegion extends Region
 {
 	/**
 	 * The number of bytes in a kibibyte = 1024.
@@ -52,10 +52,6 @@ public final class FileRegion
 	private static final byte Zlib_Compression = 2;
 
 	/**
-	 * The associated world.
-	 */
-	private final World w;
-	/**
 	 * The FileRegion File.
 	 */
 	private final File rf;
@@ -67,8 +63,6 @@ public final class FileRegion
 	 */
 	public FileRegion(File mca) throws IOException
 	{
-		w = null;
-		throwIfNotLocked();
 		rf = mca;
 		if(!rf.exists())
 		{
@@ -80,23 +74,6 @@ public final class FileRegion
 			}
 		}
 	}
-	/*default*/ FileRegion(World world, int chunkx, int chunkz)
-	{
-		w = world;
-		rf = new File(w.getDirectory(), "");
-	}
-
-	/**
-	 * If constructed via a {@link World}, calls {@link World#throwIfNotLocked()}.
-	 * @throws World.NotLockedException via {@link World#throwIfNotLocked()}
-	 */
-	public void throwIfNotLocked() throws World.NotLockedException
-	{
-		if(w != null)
-		{
-			w.throwIfNotLocked();
-		}
-	}
 
 	/**
 	 * Returns the offset and sector count for a chunk.
@@ -105,7 +82,7 @@ public final class FileRegion
 	 * @return The offset and sector count for a chunk. The offset is the key and the sector count is the value.
 	 * @throws IOException if the input operation throws an exception.
 	 */
-	private static Entry<Integer, Integer> OffSect(RandomAccessFile region, int index) throws IOException
+	private static Entry<Integer, Integer> sectorOffset(RandomAccessFile region, int index) throws IOException
 	{
 		region.getChannel().position(4*index);
 		byte[] buf = new byte[4];
@@ -127,7 +104,7 @@ public final class FileRegion
 	 * @param sectors The sector count of the chunk.
 	 * @throws IOException if the output operation throws an exception.
 	 */
-	private static void OffSect(RandomAccessFile region, int index, int offset, int sectors) throws IOException
+	private static void sectorOffset(RandomAccessFile region, int index, int offset, int sectors) throws IOException
 	{
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream(4))
 		{
@@ -146,19 +123,18 @@ public final class FileRegion
 
 	/**
 	 * Reads a chunk from the region file.
-	 * @param X The X chunk coordinate of the chunk.
-	 * @param Z The Z chunk coordinate of the chunk.
+	 * @param x The X chunk coordinate of the chunk.
+	 * @param z The Z chunk coordinate of the chunk.
 	 * @return The read chunk, or null if the chunk does not exist.
 	 * @throws FormatException if the read chunk is invalid.
 	 * @throws IOException if an input operation throws an exception.
-	 * @throws World.NotLockedException via {@link World#throwIfNotLocked()}
 	 */
-	public Chunk ReadChunk(int X, int Z) throws FormatException, IOException, World.NotLockedException
+	@Override
+	public Chunk getChunk(int x, int z) throws FormatException, IOException
 	{
-		throwIfNotLocked();
 		try(RandomAccessFile region = new RandomAccessFile(rf, "r"))
 		{
-			Entry<Integer, Integer> pair = OffSect(region, ((X%32) + (Z%32)*32));
+			Entry<Integer, Integer> pair = sectorOffset(region, ((x%32) + (z%32)*32));
 			int offset = pair.getKey();
 			int sectors = pair.getValue();
 			if(offset != -SectorOffset && sectors != 0)
@@ -191,18 +167,17 @@ public final class FileRegion
 	}
 	/**
 	 * Reads a chunk timestamp from the region file.
-	 * @param X The X chunk coordinate of the chunk.
-	 * @param Z The Z chunk coordinate of the chunk.
+	 * @param x The X chunk coordinate of the chunk.
+	 * @param z The Z chunk coordinate of the chunk.
 	 * @return The read chunk timestamp.
 	 * @throws IOException if an input operation throws an exception.
-	 * @throws World.NotLockedException via {@link World#throwIfNotLocked()}
 	 */
-	public int ReadTimestamp(int X, int Z) throws IOException, World.NotLockedException
+	@Override
+	public int getTimestamp(int x, int z) throws IOException
 	{
-		throwIfNotLocked();
 		try(FileInputStream region = new FileInputStream(rf))
 		{
-			region.getChannel().position(LocationsOffset+4*((X%32) + (Z%32)*32));
+			region.getChannel().position(LocationsOffset+4*((x%32) + (z%32)*32));
 			try(DataInputStream dis = new DataInputStream(region))
 			{
 				return dis.readInt();
@@ -212,21 +187,20 @@ public final class FileRegion
 
 	/**
 	 * Writes the given chunk to the region file in a lazy fashion. If the chunk exists in the region file and the given chunk can fit, it will be placed there and the sector size will be updated. Otherwise the chunk will be placed at the end of the region file without removing the old chunk, and the offset and sector size will be updated.
-	 * @param X The X chunk coordinate of the chunk.
-	 * @param Z The Z chunk coordinate of the chunk.
+	 * @param x The X chunk coordinate of the chunk.
+	 * @param z The Z chunk coordinate of the chunk.
 	 * @param c The chunk to write.
 	 * @throws IOException if an input or output operation throws an exception.
-	 * @throws World.NotLockedException via {@link World#throwIfNotLocked()}
 	 */
-	public void WriteChunk(int X, int Z, Chunk c) throws IOException, World.NotLockedException
+	@Override
+	public void setChunk(int x, int z, Chunk c) throws IOException
 	{
-		throwIfNotLocked();
 		try(RandomAccessFile region = new RandomAccessFile(rf, "rw"))
 		{
-			final int index = ((X%32) + (Z%32)*32);
+			final int index = ((x%32) + (z%32)*32);
 			if(c == null)
 			{
-				OffSect(region, index, -SectorOffset, 0);
+				sectorOffset(region, index, -SectorOffset, 0);
 				return;
 			}
 			int chunksize, newsectors;
@@ -242,7 +216,7 @@ public final class FileRegion
 				chunkbytes.put(baos.toByteArray());
 			}
 
-			Entry<Integer, Integer> pair = OffSect(region, index);
+			Entry<Integer, Integer> pair = sectorOffset(region, index);
 			int offset = pair.getKey();
 			int sectors = pair.getValue();
 
@@ -252,30 +226,29 @@ public final class FileRegion
 				newoffset = newoffset < 0 ? 0 : newoffset;
 				region.seek(TimestampsOffset+SectorSize*newoffset);
 				region.write(chunkbytes.array());
-				OffSect(region, index, newoffset, newsectors);
+				sectorOffset(region, index, newoffset, newsectors);
 			}
 			else if(sectors >= newsectors)
 			{
 				region.seek(TimestampsOffset+SectorSize*offset);
 				region.write(chunkbytes.array());
-				OffSect(region, index, offset, newsectors);
+				sectorOffset(region, index, offset, newsectors);
 			}
 		}
 	}
 	/**
 	 * Writes a chunk timestamp to the region file.
-	 * @param X The X chunk coordinate of the chunk.
-	 * @param Z The Z chunk coordinate of the chunk.
+	 * @param x The X chunk coordinate of the chunk.
+	 * @param z The Z chunk coordinate of the chunk.
 	 * @param timestamp The new timestamp.
 	 * @throws IOException if the output operation throws an exception.
-	 * @throws World.NotLockedException via {@link World#throwIfNotLocked()}
 	 */
-	public void WriteTimestamp(int X, int Z, int timestamp) throws IOException, World.NotLockedException
+	@Override
+	public void setTimestamp(int x, int z, int timestamp) throws IOException
 	{
-		throwIfNotLocked();
 		try(FileOutputStream region = new FileOutputStream(rf))
 		{
-			region.getChannel().position(LocationsOffset+4*((X%32) + (Z%32)*32));
+			region.getChannel().position(LocationsOffset+4*((x%32) + (z%32)*32));
 			try(DataOutputStream dos = new DataOutputStream(region))
 			{
 				dos.writeInt(timestamp);

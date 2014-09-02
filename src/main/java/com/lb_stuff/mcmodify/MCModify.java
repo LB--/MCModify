@@ -135,12 +135,12 @@ public class MCModify
 			{
 				for(int z = 0; z < 31; ++z)
 				{
-					Chunk chunk = region.ReadChunk(x, z); //Simple as that!
+					Chunk chunk = region.getChunk(x, z); //Simple as that!
 					if(chunk != null)
 					{
 						chunk.Entities().add(new com.lb_stuff.mcmodify.minecraft.Mob.EnderDragon(x*16+8, 96, z*16+8)); //Entity lists!
 					}
-					newregion.WriteChunk(x, z, chunk); //Deletes the chunk if it is null!
+					newregion.setChunk(x, z, chunk); //Deletes the chunk if it is null!
 				}
 			}
 		}
