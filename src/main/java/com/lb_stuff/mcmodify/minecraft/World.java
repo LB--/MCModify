@@ -10,9 +10,14 @@ import java.util.Scanner;
 /**
  * @see <a href="http://minecraft.gamepedia.com/Level_format">Level format</a> on the Minecraft Wiki
  */
-public class World
+public final class World
 {
 	private final File dir;
+	/**
+	 * Construct this instance from either the directory of the world
+	 * or the "level.dat" file of the world. Neither has to exist.
+	 * @param level
+	 */
 	public World(File level)
 	{
 		if(level.isDirectory())
@@ -28,11 +33,54 @@ public class World
 		throw new IllegalArgumentException("\"level\" must be the world directory or level.dat file");
 	}
 
+	public File getDirectory()
+	{
+		return dir;
+	}
+
+	public File getLevelFile()
+	{
+		return new File(getDirectory(), "level.dat");
+	}
+	/**
+	 * Returns whether this world exists and could be seen by Minecraft.
+	 * @return Whether this world exists and could be seen by Minecraft.
+	 */
+	public boolean exists()
+	{
+		return dir.exists() && getLevelFile().exists();
+	}
+
+	/**
+	 * Thrown when the world indicated by {@link NotLockedException#getWorld()} was going
+	 * to be used while unlocked.
+	 */
+	public final class NotLockedException extends IllegalStateException
+	{
+		private NotLockedException()
+		{
+			super("World is no longer locked by this instance/program");
+		}
+
+		/**
+		 * Returns the {@link World} instance that would have been illegitimately used.
+		 * @return The {@link World} instance that would have been illegitimately used.
+		 */
+		public World getWorld()
+		{
+			return World.this;
+		}
+	}
+
 	private File getLockFile()
 	{
-		return new File(dir, "session.lock");
+		return new File(getDirectory(), "session.lock");
 	}
 	private Long locktimestamp = null;
+	/**
+	 * //
+	 * @throws IOException
+	 */
 	public void lock() throws IOException
 	{
 		File f = getLockFile();
@@ -63,11 +111,15 @@ public class World
 			return false;
 		}
 	}
-	public void throwIfNotLocked() throws IllegalStateException
+	/**
+	 * If {@link #isLocked()} returns false, throws {@link NotLockedException}.
+	 * @throws NotLockedException if {@link #isLocked()} returns false.
+	 */
+	public void throwIfNotLocked() throws NotLockedException
 	{
 		if(!isLocked())
 		{
-			throw new IllegalStateException("World is no longer locked by this instance/program");
+			throw new NotLockedException();
 		}
 	}
 

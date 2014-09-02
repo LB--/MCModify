@@ -27,7 +27,7 @@ public class Map
 	/**
 	 * The dimension the map shows terrain from.
 	 */
-	private Level.Player.Dimension dimension;
+	private Dimension dimension;
 	/**
 	 * The colors for maps.
 	 */
@@ -117,7 +117,7 @@ public class Map
 		width = ((Tag.Short)map.Find(Tag.Type.SHORT, "width")).v;
 		height = ((Tag.Short)map.Find(Tag.Type.SHORT, "height")).v;
 		scale = ((Tag.Byte)map.Find(Tag.Type.BYTE, "scale")).v;
-		dimension = Level.Player.Dimension.FromID(((Tag.Byte)map.Find(Tag.Type.BYTE, "dimension")).v);
+		dimension = Dimension.fromId(((Tag.Byte)map.Find(Tag.Type.BYTE, "dimension")).v);
 		xcenter = ((Tag.Int)map.Find(Tag.Type.INT, "xCenter")).v;
 		zcenter = ((Tag.Int)map.Find(Tag.Type.INT, "zCenter")).v;
 
@@ -198,7 +198,7 @@ public class Map
 	 * Returns the dimension this map shows blocks from.
 	 * @return The dimension this map shows blocks from.
 	 */
-	public Level.Player.Dimension Dimension()
+	public Dimension Dimension()
 	{
 		return dimension;
 	}
@@ -206,7 +206,7 @@ public class Map
 	 * Sets the dimension this map will show blocks from.
 	 * @param dim The dimension this map will show blocks from.
 	 */
-	public void Dimension(Level.Player.Dimension dim)
+	public void Dimension(Dimension dim)
 	{
 		dimension = dim;
 	}
@@ -250,7 +250,7 @@ public class Map
 						 new Tag.Compound("data", new Tag.Short("width", width),
 												  new Tag.Short("height", height),
 												  new Tag.Byte("scale", scale),
-												  new Tag.Byte("dimension", dimension.ID()),
+												  new Tag.Byte("dimension", (byte)dimension.getId()),
 												  new Tag.Int("xCenter", xcenter),
 												  new Tag.Int("zCenter", zcenter),
 												  new Tag.ByteArray("colors", data = new byte[width*height])));

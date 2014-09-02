@@ -4,7 +4,7 @@ import com.lb_stuff.mcmodify.minecraft.Chunk;
 import com.lb_stuff.mcmodify.minecraft.Inventory;
 import com.lb_stuff.mcmodify.minecraft.Level;
 import com.lb_stuff.mcmodify.minecraft.Map;
-import com.lb_stuff.mcmodify.minecraft.Region;
+import com.lb_stuff.mcmodify.minecraft.FileRegion;
 import com.lb_stuff.mcmodify.nbt.Tag;
 import com.lb_stuff.mcmodify.serialization.NBTable;
 
@@ -129,8 +129,8 @@ public class MCModify
 
 		{
 			System.out.println(">>>TEST 5: Load a region file and put an ender dragon in every chunk.");
-			Region region = new Region(new File("r.0.0.mca"));
-			Region newregion = new Region(new File("r.0.1.mca")); //Creates an empty region file for you if it doesn't exist!
+			FileRegion region = new FileRegion(new File("r.0.0.mca"));
+			FileRegion newregion = new FileRegion(new File("r.0.1.mca")); //Creates an empty region file for you if it doesn't exist!
 			for(int x = 0; x < 31; ++x)
 			{
 				for(int z = 0; z < 31; ++z)

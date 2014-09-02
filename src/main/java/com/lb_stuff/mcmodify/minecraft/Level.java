@@ -129,55 +129,6 @@ public class Level
 		 */
 		private short sleeptimer;
 		/**
-		 * An enumeration class for the known dimensions.
-		 */
-		public static enum Dimension
-		{
-			/**
-			 * -1
-			 */
-			Nether,
-			/**
-			 * 0
-			 */
-			Overworld,
-			/**
-			 * 1
-			 */
-			End;
-
-			/**
-			 * Returns the enumeration constant represented by the given ID.
-			 * @param ordinal The dimension ID.
-			 * @return The enumeration constant represented by the given ID.
-			 * @throws FormatException if the given ID is not recognized as a dimension.
-			 */
-			public static Dimension FromID(int ordinal) throws FormatException
-			{
-				switch(ordinal)
-				{
-				case -1:	return Nether;
-				case 0:		return Overworld;
-				case 1:		return End;
-				}
-				throw new FormatException("Unknown Dimension: "+ordinal);
-			}
-			/**
-			 * Returns the ID of this dimension constant.
-			 * @return The ID of this dimension constant.
-			 */
-			public byte ID()
-			{
-				switch(this)
-				{
-				case Nether:	return -1;
-				case Overworld:	return 0;
-				case End:		return 1;
-				}
-				throw new IllegalArgumentException();
-			}
-		}
-		/**
 		 * Which dimension the player is in.
 		 */
 		private Dimension dimension;
@@ -294,7 +245,7 @@ public class Level
 
 			sleeping = ((Tag.Byte)player.Find(Tag.Type.BYTE, "Sleeping")).v != 0 ? true : false;
 			sleeptimer = ((Tag.Short)player.Find(Tag.Type.SHORT, "SleepTimer")).v;
-			dimension = Dimension.FromID(((Tag.Int)player.Find(Tag.Type.INT, "Dimension")).v);
+			dimension = Dimension.fromId(((Tag.Int)player.Find(Tag.Type.INT, "Dimension")).v);
 			playergametype = GameMode.FromID(((Tag.Int)player.Find(Tag.Type.INT, "playerGameType")).v);
 			foodlevel = ((Tag.Int)player.Find(Tag.Type.INT, "foodLevel")).v;
 			foodticktimer = ((Tag.Int)player.Find(Tag.Type.INT, "foodTickTimer")).v;
@@ -696,7 +647,7 @@ public class Level
 			t.Remove("id");
 			t.Add(new Tag.Byte("Sleeping", (byte)(sleeping?1:0)),
 				  new Tag.Short("SleepTimer", sleeptimer),
-				  new Tag.Int("Dimension", dimension.ID()),
+				  new Tag.Int("Dimension", dimension.getId()),
 				  new Tag.Int("playerGameType", playergametype.ordinal()),
 				  new Tag.Int("foodLevel", foodlevel),
 				  new Tag.Int("foodTickTimer", foodticktimer),

@@ -17,10 +17,10 @@ import java.util.Map.Entry;
 import java.util.zip.InflaterInputStream;
 
 /**
- * Region file reader/writer
- * @see <a href="http://minecraft.gamepedia.com/Region_file_format">Region file format</a> on the Minecraft Wiki
+ * FileRegion file reader/writer
+ * @see <a href="http://minecraft.gamepedia.com/Region_file_format">FileRegion file format</a> on the Minecraft Wiki
  */
-public final class Region
+public final class FileRegion
 {
 	/**
 	 * The number of bytes in a kibibyte = 1024.
@@ -52,17 +52,23 @@ public final class Region
 	private static final byte Zlib_Compression = 2;
 
 	/**
-	 * The Region File.
+	 * The associated world.
 	 */
-	private File rf;
+	private final World w;
+	/**
+	 * The FileRegion File.
+	 */
+	private final File rf;
 
 	/**
 	 * Constructs this region from a Region File. If the file does not exist it is created with no chunks in it.
 	 * @param mca The Region File.
 	 * @throws IOException if an error occurs while reading the region file.
 	 */
-	public Region(File mca) throws IOException
+	public FileRegion(File mca) throws IOException
 	{
+		w = null;
+		throwIfNotLocked();
 		rf = mca;
 		if(!rf.exists())
 		{
@@ -72,6 +78,23 @@ public final class Region
 				byte[] def = new byte[8192];
 				region.write(def);
 			}
+		}
+	}
+	/*default*/ FileRegion(World world, int chunkx, int chunkz)
+	{
+		w = world;
+		rf = new File(w.getDirectory(), "");
+	}
+
+	/**
+	 * If constructed via a {@link World}, calls {@link World#throwIfNotLocked()}.
+	 * @throws World.NotLockedException via {@link World#throwIfNotLocked()}
+	 */
+	public void throwIfNotLocked() throws World.NotLockedException
+	{
+		if(w != null)
+		{
+			w.throwIfNotLocked();
 		}
 	}
 
@@ -128,9 +151,11 @@ public final class Region
 	 * @return The read chunk, or null if the chunk does not exist.
 	 * @throws FormatException if the read chunk is invalid.
 	 * @throws IOException if an input operation throws an exception.
+	 * @throws World.NotLockedException via {@link World#throwIfNotLocked()}
 	 */
-	public Chunk ReadChunk(int X, int Z) throws FormatException, IOException
+	public Chunk ReadChunk(int X, int Z) throws FormatException, IOException, World.NotLockedException
 	{
+		throwIfNotLocked();
 		try(RandomAccessFile region = new RandomAccessFile(rf, "r"))
 		{
 			Entry<Integer, Integer> pair = OffSect(region, ((X%32) + (Z%32)*32));
@@ -170,9 +195,11 @@ public final class Region
 	 * @param Z The Z chunk coordinate of the chunk.
 	 * @return The read chunk timestamp.
 	 * @throws IOException if an input operation throws an exception.
+	 * @throws World.NotLockedException via {@link World#throwIfNotLocked()}
 	 */
-	public int ReadTimestamp(int X, int Z) throws IOException
+	public int ReadTimestamp(int X, int Z) throws IOException, World.NotLockedException
 	{
+		throwIfNotLocked();
 		try(FileInputStream region = new FileInputStream(rf))
 		{
 			region.getChannel().position(LocationsOffset+4*((X%32) + (Z%32)*32));
@@ -189,9 +216,11 @@ public final class Region
 	 * @param Z The Z chunk coordinate of the chunk.
 	 * @param c The chunk to write.
 	 * @throws IOException if an input or output operation throws an exception.
+	 * @throws World.NotLockedException via {@link World#throwIfNotLocked()}
 	 */
-	public void WriteChunk(int X, int Z, Chunk c) throws IOException
+	public void WriteChunk(int X, int Z, Chunk c) throws IOException, World.NotLockedException
 	{
+		throwIfNotLocked();
 		try(RandomAccessFile region = new RandomAccessFile(rf, "rw"))
 		{
 			final int index = ((X%32) + (Z%32)*32);
@@ -239,9 +268,11 @@ public final class Region
 	 * @param Z The Z chunk coordinate of the chunk.
 	 * @param timestamp The new timestamp.
 	 * @throws IOException if the output operation throws an exception.
+	 * @throws World.NotLockedException via {@link World#throwIfNotLocked()}
 	 */
-	public void WriteTimestamp(int X, int Z, int timestamp) throws IOException
+	public void WriteTimestamp(int X, int Z, int timestamp) throws IOException, World.NotLockedException
 	{
+		throwIfNotLocked();
 		try(FileOutputStream region = new FileOutputStream(rf))
 		{
 			region.getChannel().position(LocationsOffset+4*((X%32) + (Z%32)*32));
