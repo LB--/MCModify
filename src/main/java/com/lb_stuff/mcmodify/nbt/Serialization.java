@@ -254,7 +254,7 @@ public final class Serialization
 		return t;
 	}
 	/**
-	 * Deserializes a compound tag and returns a new instance of the given class. In order to construct the instance the given class must have a constructor that takes a <code>Tag.Compound</code> as its only parameter. The constructor must initialize any null fields to the bare minimum of an instantiated class of the correct type if the fields are to be deserialized, otherwise null fields are ignored. See {@link #Serialize(java.lang.String, com.lb_stuff.mcmodify.serialization.NBTable, boolean)} for information.
+	 * Deserializes a compound tag and returns a new instance of the given class. In order to construct the instance the given class must have a constructor that takes a <code>Tag.Compound</code> as its only parameter. The constructor must initialize any null fields to the bare minimum of an instantiated class of the correct type if the fields are to be deserialized, otherwise null fields are ignored. See {@link #Serialize(java.lang.String, com.lb_stuff.mcmodify.nbt.AutoNBTSerializable, boolean)} for information.
 	 * @param clazz The class to deserialize.
 	 * @param outer The outer class reference to use to construct non-static inner classes. May be null if the given class is not a non-static inner class.
 	 * @param t The tag to deserialize from.
