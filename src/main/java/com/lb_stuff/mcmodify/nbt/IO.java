@@ -9,6 +9,7 @@ import java.util.zip.GZIPOutputStream;
  * The input/output class for this NBT package.
  * Like the java.lang.Math class, this class is final, uninstantiable, and both of its methods are static.
  */
+@Deprecated
 public final class IO
 {
 	/**

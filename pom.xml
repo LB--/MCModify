@@ -55,4 +55,13 @@
 		<developerConnection>scm:git:ssh://git@github.com/LB--/MCModify.git</developerConnection>
 		<url>https://github.com/LB--/MCModify</url>
 	</scm>
+	<repositories>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+	</dependencies>
 </project>

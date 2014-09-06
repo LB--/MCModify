@@ -1,0 +1,136 @@
+package com.lb_stuff.mcmodify.minecraft;
+
+import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.nbt.IO;
+
+import org.apache.commons.io.IOUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+
+/**
+ * Loads an entire region file into memory and allows you to save it later.
+ * @see <a href="http://minecraft.gamepedia.com/Region_file_format">Region file format</a> on the Minecraft Wiki
+ */
+public class MemoryRegion extends Region
+{
+	private final ChunkCompression compression;
+	private final int[] timestamps = new int[MAX_CHUNKS];
+	private final byte[][] chunks = new byte[MAX_CHUNKS][];
+	public MemoryRegion(File mca, ChunkCompression preferred) throws IOException
+	{
+		compression = preferred;
+		try(RandomAccessFile region = new RandomAccessFile(mca, "r"))
+		{
+			for(int i = 0; i < MAX_CHUNKS; ++i)
+			{
+				region.seek(LOCATIONS_SECTOR_START + i*4);
+				final LocationPair loc = new LocationPair(region);
+
+				region.seek(TIMESTAMPS_SECTOR_START + i*4);
+				timestamps[i] = region.readInt();
+
+				if(loc.offset != 0 && loc.count != 0)
+				{
+					region.seek(loc.offset);
+					final int length = region.readInt();
+					final ChunkCompression compressed = ChunkCompression.fromId(region.readByte());
+					chunks[i] = new byte[length-1];
+					region.readFully(chunks[i]);
+					if(compressed != null && compressed != compression)
+					{
+						try(InputStream is = compressed.getInputStream(new ByteArrayInputStream(chunks[i])))
+						{
+							try(ByteArrayOutputStream baos = new ByteArrayOutputStream())
+							{
+								try(OutputStream os = compression.getOutputStream(baos))
+								{
+									os.write(IOUtils.toByteArray(is));
+								}
+								chunks[i] = baos.toByteArray();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void saveToFile(File mca) throws IOException
+	{
+		try(RandomAccessFile region = new RandomAccessFile(mca, "rw"))
+		{
+			long offset = CHUNK_SECTORS_START;
+			for(int i = 0; i < MAX_CHUNKS; ++i)
+			{
+				region.seek(LOCATIONS_SECTOR_START + i*4);
+				region.writeInt(0);
+
+				region.seek(TIMESTAMPS_SECTOR_START + i*4);
+				region.writeInt(timestamps[i]);
+
+				if(chunks[i] != null)
+				{
+					final byte[] chunk;
+					try(ByteArrayOutputStream baos = new ByteArrayOutputStream())
+					{
+						try(OutputStream os = compression.getOutputStream(baos))
+						{
+							os.write(chunks[i]);
+						}
+						chunk = baos.toByteArray();
+					}
+					region.seek(offset);
+					region.writeInt(chunk.length+1);
+					region.writeByte(compression.getId());
+					region.write(chunk);
+
+					final LocationPair loc = new LocationPair(offset, region.getFilePointer()-offset);
+					region.seek(LOCATIONS_SECTOR_START + i*4);
+					loc.serialize(region);
+					offset = LocationPair.nextSector(region.getFilePointer());
+				}
+			}
+		}
+	}
+
+	@Override
+	public Chunk getChunk(int x, int z) throws FormatException, IOException
+	{
+		final int index = chunkIndex(x, z);
+		if(chunks[index] != null)
+		{
+			return new Chunk(IO.ReadUncompressed(compression.getInputStream(new ByteArrayInputStream(chunks[index]))));
+		}
+		return null;
+	}
+	@Override
+	public int getTimestamp(int x, int z)
+	{
+		return timestamps[chunkIndex(x, z)];
+	}
+
+	@Override
+	public void setChunk(int x, int z, Chunk c) throws IOException
+	{
+		final int index = chunkIndex(x, z);
+		try(ByteArrayOutputStream baos = new ByteArrayOutputStream())
+		{
+			try(OutputStream os = compression.getOutputStream(baos))
+			{
+				c.ToNBT("").Serialize(os);
+			}
+			chunks[index] = baos.toByteArray();
+		}
+	}
+	@Override
+	public void setTimestamp(int x, int z, int timestamp)
+	{
+		timestamps[chunkIndex(x, z)] = timestamp;
+	}
+}
