@@ -61,8 +61,12 @@ public class MemoryRegion extends Region
 		}
 	}
 
-	public void saveToFile(File mca) throws IOException
+	public void saveToFile(File mca, ChunkCompression preferred) throws IOException
 	{
+		if(preferred == ChunkCompression.None)
+		{
+			throw new IllegalArgumentException("Minecraft does not support uncompressed region files");
+		}
 		try(RandomAccessFile region = new RandomAccessFile(mca, "rw"))
 		{
 			long offset = CHUNK_SECTORS_START;
@@ -77,23 +81,26 @@ public class MemoryRegion extends Region
 				if(chunks[i] != null)
 				{
 					final byte[] chunk;
-					try(ByteArrayOutputStream baos = new ByteArrayOutputStream())
+					try(InputStream is = compression.getInputStream(new ByteArrayInputStream(chunks[i])))
 					{
-						try(OutputStream os = compression.getOutputStream(baos))
+						try(ByteArrayOutputStream baos = new ByteArrayOutputStream())
 						{
-							os.write(chunks[i]);
+							try(OutputStream os = preferred.getOutputStream(baos))
+							{
+								os.write(IOUtils.toByteArray(is));
+							}
+							chunk = baos.toByteArray();
 						}
-						chunk = baos.toByteArray();
 					}
 					region.seek(offset);
 					region.writeInt(chunk.length+1);
-					region.writeByte(compression.getId());
+					region.writeByte(preferred.getId());
 					region.write(chunk);
 
 					final LocationPair loc = new LocationPair(offset, region.getFilePointer()-offset);
+					offset = LocationPair.nextSector(region.getFilePointer());
 					region.seek(LOCATIONS_SECTOR_START + i*4);
 					loc.serialize(region);
-					offset = LocationPair.nextSector(region.getFilePointer());
 				}
 			}
 		}
