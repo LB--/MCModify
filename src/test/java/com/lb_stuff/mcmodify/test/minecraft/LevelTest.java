@@ -1,21 +1,25 @@
-package com.lb_stuff.mcmodify.test;
+package com.lb_stuff.mcmodify.test.minecraft;
 
 import com.lb_stuff.mcmodify.minecraft.CompressionScheme;
 import com.lb_stuff.mcmodify.minecraft.Inventory;
 import com.lb_stuff.mcmodify.minecraft.Level;
 import com.lb_stuff.mcmodify.nbt.Tag;
+import com.lb_stuff.mcmodify.test.TestingUtils;
 
 import static com.lb_stuff.mcmodify.minecraft.IDs.WrittenBook;
+
+import org.junit.Test;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-public class LevelGeneral
+public class LevelTest
 {
-	public static void main(String[] args) throws Throwable
+	@Test
+	public void general() throws Throwable
 	{
 		final Level level;
-		try(FileInputStream fis = new FileInputStream("level.dat.in"))
+		try(FileInputStream fis = new FileInputStream(TestingUtils.getInputFile("level.dat")))
 		{
 			level = new Level((Tag.Compound)Tag.deserialize(CompressionScheme.GZip.getInputStream(fis)));
 		}
@@ -29,7 +33,7 @@ public class LevelGeneral
 		item.EnchantLevel(Inventory.Item.Enchantment.FireAspect, (short)2);
 		i.Item(7, item);
 
-		try(FileOutputStream fos = new FileOutputStream("level.dat.out"))
+		try(FileOutputStream fos = new FileOutputStream(TestingUtils.getOutputFile("level.dat")))
 		{
 			level.ToNBT("").serialize(CompressionScheme.GZip.getOutputStream(fos));
 		}

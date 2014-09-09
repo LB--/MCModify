@@ -1,14 +1,17 @@
-package com.lb_stuff.mcmodify.test;
+package com.lb_stuff.mcmodify.test.nbt;
 
 import com.lb_stuff.mcmodify.minecraft.CompressionScheme;
 import com.lb_stuff.mcmodify.nbt.Tag;
 
+import org.junit.Test;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-public class ManualTimeAdjust
+public class TagTests
 {
-	public static void main(String[] args) throws Throwable
+	@Test
+	public void manualTimeAdjust() throws Throwable
 	{
 		final Tag.Compound level;
 		try(FileInputStream fis = new FileInputStream("level.dat.in"))

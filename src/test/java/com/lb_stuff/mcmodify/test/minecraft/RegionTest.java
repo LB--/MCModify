@@ -1,17 +1,21 @@
-package com.lb_stuff.mcmodify.test;
+package com.lb_stuff.mcmodify.test.minecraft;
 
 import com.lb_stuff.mcmodify.minecraft.Chunk;
 import com.lb_stuff.mcmodify.minecraft.FileRegion;
 import com.lb_stuff.mcmodify.minecraft.Mob;
+import com.lb_stuff.mcmodify.test.TestingUtils;
+
+import org.junit.Test;
 
 import java.io.File;
 
-public class ModifyEveryChunkInRegion
+public class RegionTest
 {
-	public static void main(String[] args) throws Throwable
+	@Test
+	public void modifyEveryChunk() throws Throwable
 	{
-		FileRegion region = new FileRegion(new File("r.0.0.mca.in"));
-		FileRegion newregion = new FileRegion(new File("r.0.0.mca.out"));
+		FileRegion region = new FileRegion(TestingUtils.getInputFile("r.0.0.mca"));
+		FileRegion newregion = new FileRegion(TestingUtils.getOutputFile("r.0.0.mca"));
 		for(int x = 0; x < 31; ++x)
 		{
 			for(int z = 0; z < 31; ++z)
