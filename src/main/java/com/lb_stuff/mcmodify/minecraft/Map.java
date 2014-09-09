@@ -113,15 +113,15 @@ public class Map
 	 */
 	public Map(Tag.Compound map) throws FormatException
 	{
-		map = (Tag.Compound)map.Find(Tag.Type.COMPOUND, "data");
-		width = ((Tag.Short)map.Find(Tag.Type.SHORT, "width")).v;
-		height = ((Tag.Short)map.Find(Tag.Type.SHORT, "height")).v;
-		scale = ((Tag.Byte)map.Find(Tag.Type.BYTE, "scale")).v;
-		dimension = Dimension.fromId(((Tag.Byte)map.Find(Tag.Type.BYTE, "dimension")).v);
-		xcenter = ((Tag.Int)map.Find(Tag.Type.INT, "xCenter")).v;
-		zcenter = ((Tag.Int)map.Find(Tag.Type.INT, "zCenter")).v;
+		map = (Tag.Compound)map.find(Tag.Type.COMPOUND, "data");
+		width = ((Tag.Short)map.find(Tag.Type.SHORT, "width")).v;
+		height = ((Tag.Short)map.find(Tag.Type.SHORT, "height")).v;
+		scale = ((Tag.Byte)map.find(Tag.Type.BYTE, "scale")).v;
+		dimension = Dimension.fromId(((Tag.Byte)map.find(Tag.Type.BYTE, "dimension")).v);
+		xcenter = ((Tag.Int)map.find(Tag.Type.INT, "xCenter")).v;
+		zcenter = ((Tag.Int)map.find(Tag.Type.INT, "zCenter")).v;
 
-		byte[] data = ((Tag.ByteArray)map.Find(Tag.Type.BYTEARRAY, "colors")).v;
+		byte[] data = ((Tag.ByteArray)map.find(Tag.Type.BYTEARRAY, "colors")).v;
 		colors = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED, MapColorModel);
 		for(int i = 0; i < width; ++i)
 		{

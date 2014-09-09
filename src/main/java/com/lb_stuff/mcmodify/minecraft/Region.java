@@ -42,59 +42,6 @@ public abstract class Region
 	 */
 	protected static final long CHUNK_SECTORS_START = TIMESTAMPS_SECTOR_START+SECTOR_BYTES;
 
-	public static enum ChunkCompression
-	{
-		None,
-		GZip,
-		Zlib,
-		;
-
-		public static ChunkCompression fromId(byte id)
-		{
-			switch(id)
-			{
-				case 1: return GZip;
-				case 2: return Zlib;
-				default: return null;
-			}
-		}
-		public byte getId()
-		{
-			switch(this)
-			{
-				case None: throw new IllegalArgumentException("There is no Id for compression scheme "+this);
-				case GZip: return 1;
-				case Zlib: return 2;
-				default: throw new IllegalStateException();
-			}
-		}
-
-		public InputStream getInputStream(InputStream original) throws IOException
-		{
-			switch(this)
-			{
-				case None: return original;
-				case GZip: return new GZIPInputStream(original);
-				case Zlib: return new InflaterInputStream(original);
-				default: throw new IllegalStateException();
-			}
-		}
-		public OutputStream getOutputStream(OutputStream original) throws IOException
-		{
-			switch(this)
-			{
-				case None: return original;
-				case GZip: return new GZIPOutputStream(original);
-				case Zlib: return new DeflaterOutputStream(original);
-				default: throw new IllegalStateException();
-			}
-		}
-	}
-	@Deprecated
-	public static final byte GZip_Compression = 1;
-	@Deprecated
-	public static final byte Zlib_Compression = 2;
-
 	protected static final class LocationPair
 	{
 		public final long offset;
@@ -165,7 +112,7 @@ public abstract class Region
 		return (x%32) + (z%32)*32;
 	}
 
-	public abstract Chunk getChunk(int x, int z) throws FormatException, IOException;
+	public abstract Chunk getChunk(int x, int z) throws IOException;
 	public abstract int getTimestamp(int x, int z) throws IOException;
 	public abstract void setChunk(int x, int z, Chunk c) throws IOException;
 	public abstract void setTimestamp(int x, int z, int timestamp) throws IOException;

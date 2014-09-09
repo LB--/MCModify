@@ -1,7 +1,4 @@
-map.png
-level.dat_mca
-map_.dat
-r.0.1.mca
+*.out
 target/
 *.class
 *.jar

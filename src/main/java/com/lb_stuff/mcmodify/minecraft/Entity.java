@@ -72,7 +72,7 @@ public abstract class Entity
 	 */
 	public static Class<? extends Entity> ClassFromID(Tag.Compound entity) throws FormatException
 	{
-		String ID = ((Tag.String)entity.Find(Tag.Type.STRING, "id")).v;
+		String ID = ((Tag.String)entity.find(Tag.Type.STRING, "id")).v;
 		try
 		{
 			return Mob.ClassFromID(ID);
@@ -92,7 +92,7 @@ public abstract class Entity
 		case "Item":			return Item.class;
 		case "Painting":		return Painting.class;
 		case "XPOrb":			return XPOrb.class;
-		case "Minecart":		return Minecart.ClassFromType(((Tag.Int)entity.Find(Tag.Type.INT, "Type")).v);
+		case "Minecart":		return Minecart.ClassFromType(((Tag.Int)entity.find(Tag.Type.INT, "Type")).v);
 		case "Boat":			return Boat.class;
 		case "PrimedTnt":		return PrimedTnt.class;
 		case "FallingSand":		return FallingSand.class;
@@ -113,46 +113,46 @@ public abstract class Entity
 	{
 		if(!(this instanceof Level.Player))
 		{
-			String id = ((Tag.String)entity.Find(Tag.Type.STRING, "id")).v;
+			String id = ((Tag.String)entity.find(Tag.Type.STRING, "id")).v;
 			if(!id.equals(getClass().getSimpleName()))
 			{
 				throw new FormatException("Attempted to instantiate a "+getClass().getSimpleName()+" Entity from a tag with id \""+id+"\"");
 			}
 		}
 
-		Tag.List pos = (Tag.List)entity.Find(Tag.Type.LIST, "Pos");
-		if(pos.Size() != 3 || pos.Supports() != Tag.Type.DOUBLE)
+		Tag.List pos = (Tag.List)entity.find(Tag.Type.LIST, "Pos");
+		if(pos.getSize() != 3 || pos.getContainedType() != Tag.Type.DOUBLE)
 		{
 			throw new FormatException("Invalid Pos list");
 		}
-		posx = ((Tag.Double)pos.Get(0)).v;
-		posy = ((Tag.Double)pos.Get(1)).v;
-		posz = ((Tag.Double)pos.Get(2)).v;
+		posx = ((Tag.Double)pos.get(0)).v;
+		posy = ((Tag.Double)pos.get(1)).v;
+		posz = ((Tag.Double)pos.get(2)).v;
 
-		Tag.List motion = (Tag.List)entity.Find(Tag.Type.LIST, "Motion");
-		if(motion.Size() != 3 || motion.Supports() != Tag.Type.DOUBLE)
+		Tag.List motion = (Tag.List)entity.find(Tag.Type.LIST, "Motion");
+		if(motion.getSize() != 3 || motion.getContainedType() != Tag.Type.DOUBLE)
 		{
 			throw new FormatException("Invalid Motion list");
 		}
-		motionx = ((Tag.Double)motion.Get(0)).v;
-		motiony = ((Tag.Double)motion.Get(1)).v;
-		motionz = ((Tag.Double)motion.Get(2)).v;
+		motionx = ((Tag.Double)motion.get(0)).v;
+		motiony = ((Tag.Double)motion.get(1)).v;
+		motionz = ((Tag.Double)motion.get(2)).v;
 
-		Tag.List rotation = (Tag.List)entity.Find(Tag.Type.LIST, "Rotation");
-		if(rotation.Size() != 2 || rotation.Supports() != Tag.Type.FLOAT)
+		Tag.List rotation = (Tag.List)entity.find(Tag.Type.LIST, "Rotation");
+		if(rotation.getSize() != 2 || rotation.getContainedType() != Tag.Type.FLOAT)
 		{
 			throw new FormatException("Invalid Rotation list");
 		}
-		rotationyaw = ((Tag.Float)rotation.Get(0)).v;
-		rotationpitch = ((Tag.Float)rotation.Get(1)).v;
+		rotationyaw = ((Tag.Float)rotation.get(0)).v;
+		rotationpitch = ((Tag.Float)rotation.get(1)).v;
 
-		falldistance = ((Tag.Float)entity.Find(Tag.Type.FLOAT, "FallDistance")).v;
+		falldistance = ((Tag.Float)entity.find(Tag.Type.FLOAT, "FallDistance")).v;
 
-		fire = ((Tag.Short)entity.Find(Tag.Type.SHORT, "Fire")).v;
+		fire = ((Tag.Short)entity.find(Tag.Type.SHORT, "Fire")).v;
 
-		air = ((Tag.Short)entity.Find(Tag.Type.SHORT, "Air")).v;
+		air = ((Tag.Short)entity.find(Tag.Type.SHORT, "Air")).v;
 
-		onground = ((Tag.Byte)entity.Find(Tag.Type.BYTE, "OnGround")).v != 0 ? true : false;
+		onground = ((Tag.Byte)entity.find(Tag.Type.BYTE, "OnGround")).v != 0 ? true : false;
 	}
 	/**
 	 * Constructs an entity from a position.
@@ -213,13 +213,13 @@ public abstract class Entity
 	 */
 	public void Pos(Tag.List pos) throws FormatException
 	{
-		if(pos.Size() != 3 || pos.Supports() != Tag.Type.DOUBLE)
+		if(pos.getSize() != 3 || pos.getContainedType() != Tag.Type.DOUBLE)
 		{
 			throw new FormatException("Invalid Pos list");
 		}
-		posx = ((Tag.Double)pos.Get(0)).v;
-		posy = ((Tag.Double)pos.Get(1)).v;
-		posz = ((Tag.Double)pos.Get(2)).v;
+		posx = ((Tag.Double)pos.get(0)).v;
+		posy = ((Tag.Double)pos.get(1)).v;
+		posz = ((Tag.Double)pos.get(2)).v;
 	}
 	/**
 	 * Sets the X position of this entity.
@@ -287,13 +287,13 @@ public abstract class Entity
 	 */
 	public void Motion(Tag.List motion) throws FormatException
 	{
-		if(motion.Size() != 3 || motion.Supports() != Tag.Type.DOUBLE)
+		if(motion.getSize() != 3 || motion.getContainedType() != Tag.Type.DOUBLE)
 		{
 			throw new FormatException("Invalid Motion list");
 		}
-		motionx = ((Tag.Double)motion.Get(0)).v;
-		motiony = ((Tag.Double)motion.Get(1)).v;
-		motionz = ((Tag.Double)motion.Get(2)).v;
+		motionx = ((Tag.Double)motion.get(0)).v;
+		motiony = ((Tag.Double)motion.get(1)).v;
+		motionz = ((Tag.Double)motion.get(2)).v;
 	}
 	/**
 	 * Sets the X motion of this entity.
@@ -352,12 +352,12 @@ public abstract class Entity
 	 */
 	public void Rotation(Tag.List rotation) throws FormatException
 	{
-		if(rotation.Size() != 2 || rotation.Supports() != Tag.Type.FLOAT)
+		if(rotation.getSize() != 2 || rotation.getContainedType() != Tag.Type.FLOAT)
 		{
 			throw new FormatException("Invalid Rotation list");
 		}
-		rotationyaw = ((Tag.Float)rotation.Get(0)).v;
-		rotationpitch = ((Tag.Float)rotation.Get(1)).v;
+		rotationyaw = ((Tag.Float)rotation.get(0)).v;
+		rotationpitch = ((Tag.Float)rotation.get(1)).v;
 	}
 	/**
 	 * Sets the yaw for this entity.
@@ -519,7 +519,7 @@ public abstract class Entity
 		{
 			super(minecart);
 
-			int type = ((Tag.Int)minecart.Find(Tag.Type.INT, "Type")).v;
+			int type = ((Tag.Int)minecart.find(Tag.Type.INT, "Type")).v;
 			if("Minecart".equals(getClass().getSimpleName()) && type != 0)
 			{
 				throw new FormatException("Tried to instantiate a regular Minecart from a minecart of type "+type);
@@ -554,9 +554,9 @@ public abstract class Entity
 			Tag.Compound t = super.ToNBT(name);
 			switch(getClass().getSimpleName())
 			{
-			case "Minecart":t.Add(new Tag.Int("Type", 0));
-			case "Chest":	t.Add(new Tag.Int("Type", 1));
-			case "Furnace":	t.Add(new Tag.Int("Type", 2));
+			case "Minecart":t.add(new Tag.Int("Type", 0));
+			case "Chest":	t.add(new Tag.Int("Type", 1));
+			case "Furnace":	t.add(new Tag.Int("Type", 2));
 			}
 			return t;
 		}
@@ -576,7 +576,7 @@ public abstract class Entity
 			{
 				super(mcwchest);
 
-				items = new Inventory((Tag.List)mcwchest.Find(Tag.Type.LIST, "Items"));
+				items = new Inventory((Tag.List)mcwchest.find(Tag.Type.LIST, "Items"));
 			}
 			/**
 			 * Constructs a Storage Minecart from a position.
@@ -627,7 +627,7 @@ public abstract class Entity
 			@Override public Tag.Compound ToNBT(String name)
 			{
 				Tag.Compound t = super.ToNBT(name);
-				t.Add(items.ToNBT("Items"));
+				t.add(items.ToNBT("Items"));
 				return t;
 			}
 		}
@@ -654,10 +654,10 @@ public abstract class Entity
 			{
 				super(mcwfurnace);
 
-				pushx = ((Tag.Double)mcwfurnace.Find(Tag.Type.DOUBLE, "PushX")).v;
-				pushz = ((Tag.Double)mcwfurnace.Find(Tag.Type.DOUBLE, "PushZ")).v;
+				pushx = ((Tag.Double)mcwfurnace.find(Tag.Type.DOUBLE, "PushX")).v;
+				pushz = ((Tag.Double)mcwfurnace.find(Tag.Type.DOUBLE, "PushZ")).v;
 
-				fuel = ((Tag.Short)mcwfurnace.Find(Tag.Type.SHORT, "Fuel")).v;
+				fuel = ((Tag.Short)mcwfurnace.find(Tag.Type.SHORT, "Fuel")).v;
 			}
 			/**
 			 * Constructs a Powered Minecart from a position.
@@ -740,7 +740,7 @@ public abstract class Entity
 			@Override public Tag.Compound ToNBT(String name)
 			{
 				Tag.Compound t = super.ToNBT(name);
-				t.Add(new Tag.Double("PushX", pushx),
+				t.add(new Tag.Double("PushX", pushx),
 					  new Tag.Double("PushZ", pushz),
 					  new Tag.Short("Fuel", fuel));
 				return t;
@@ -766,7 +766,7 @@ public abstract class Entity
 		{
 			super(primedtnt);
 
-			fuse = ((Tag.Byte)primedtnt.Find(Tag.Type.BYTE, "Fuse")).v;
+			fuse = ((Tag.Byte)primedtnt.find(Tag.Type.BYTE, "Fuse")).v;
 		}
 		/**
 		 * Constructs a TNT dynamic tile from a position.
@@ -805,7 +805,7 @@ public abstract class Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Byte("Fuse", fuse));
+			t.add(new Tag.Byte("Fuse", fuse));
 			return t;
 		}
 	}
@@ -828,7 +828,7 @@ public abstract class Entity
 		{
 			super(fallingsand);
 
-			tile = ((Tag.Byte)fallingsand.Find(Tag.Type.BYTE, "Tile")).v;
+			tile = ((Tag.Byte)fallingsand.find(Tag.Type.BYTE, "Tile")).v;
 		}
 		/**
 		 * Constructs a Falling Block dynamic tile from a position.
@@ -867,7 +867,7 @@ public abstract class Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Byte("Tile", tile));
+			t.add(new Tag.Byte("Tile", tile));
 			return t;
 		}
 	}
@@ -950,9 +950,9 @@ public abstract class Entity
 		{
 			super(item);
 
-			health = ((Tag.Short)item.Find(Tag.Type.SHORT, "Health")).v;
-			age = ((Tag.Short)item.Find(Tag.Type.SHORT, "Age")).v;
-			this.item = new Inventory.Item((Tag.Compound)item.Find(Tag.Type.COMPOUND, "Item"));
+			health = ((Tag.Short)item.find(Tag.Type.SHORT, "Health")).v;
+			age = ((Tag.Short)item.find(Tag.Type.SHORT, "Age")).v;
+			this.item = new Inventory.Item((Tag.Compound)item.find(Tag.Type.COMPOUND, "Item"));
 		}
 		/**
 		 * Constructs a Dropped Item from a position.
@@ -1027,7 +1027,7 @@ public abstract class Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Short("Health", health),
+			t.add(new Tag.Short("Health", health),
 				  new Tag.Short("Age", age),
 				  item.ToNBT("Item"));
 			return t;
@@ -1085,11 +1085,11 @@ public abstract class Entity
 		{
 			super(painting);
 
-			dir = Direction.FromOrdinal(((Tag.Byte)painting.Find(Tag.Type.BYTE, "Dir")).v);
-			motive = ((Tag.String)painting.Find(Tag.Type.STRING, "Motive")).v;
-			tilex = ((Tag.Int)painting.Find(Tag.Type.INT, "TileX")).v;
-			tiley = ((Tag.Int)painting.Find(Tag.Type.INT, "TileY")).v;
-			tilez = ((Tag.Int)painting.Find(Tag.Type.INT, "TileZ")).v;
+			dir = Direction.FromOrdinal(((Tag.Byte)painting.find(Tag.Type.BYTE, "Dir")).v);
+			motive = ((Tag.String)painting.find(Tag.Type.STRING, "Motive")).v;
+			tilex = ((Tag.Int)painting.find(Tag.Type.INT, "TileX")).v;
+			tiley = ((Tag.Int)painting.find(Tag.Type.INT, "TileY")).v;
+			tilez = ((Tag.Int)painting.find(Tag.Type.INT, "TileZ")).v;
 		}
 		/**
 		 * Constructs a Painting from a position.
@@ -1210,7 +1210,7 @@ public abstract class Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Byte("Dir", (byte)dir.ordinal()),
+			t.add(new Tag.Byte("Dir", (byte)dir.ordinal()),
 				  new Tag.String("Motive", motive),
 				  new Tag.Int("TileX", tilex),
 				  new Tag.Int("TileY", tiley),
@@ -1245,9 +1245,9 @@ public abstract class Entity
 		{
 			super(xporb);
 
-			health = ((Tag.Short)xporb.Find(Tag.Type.SHORT, "Health")).v;
-			age = ((Tag.Short)xporb.Find(Tag.Type.SHORT, "Age")).v;
-			value = ((Tag.Short)xporb.Find(Tag.Type.SHORT, "Value")).v;
+			health = ((Tag.Short)xporb.find(Tag.Type.SHORT, "Health")).v;
+			age = ((Tag.Short)xporb.find(Tag.Type.SHORT, "Age")).v;
+			value = ((Tag.Short)xporb.find(Tag.Type.SHORT, "Value")).v;
 		}
 		/**
 		 * Constructs an XP Orb from a position.
@@ -1322,7 +1322,7 @@ public abstract class Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Short("Health", health),
+			t.add(new Tag.Short("Health", health),
 				  new Tag.Short("Age", age),
 				  new Tag.Short("Value", value));
 			return t;
@@ -1379,12 +1379,12 @@ public abstract class Entity
 		{
 			super(projectile);
 
-			xtile = ((Tag.Short)projectile.Find(Tag.Type.SHORT, "xTile")).v;
-			ytile = ((Tag.Short)projectile.Find(Tag.Type.SHORT, "yTile")).v;
-			ztile = ((Tag.Short)projectile.Find(Tag.Type.SHORT, "zTile")).v;
-			intile = ((Tag.Byte)projectile.Find(Tag.Type.BYTE, "inTile")).v != 0 ? true : false;
-			shake = ((Tag.Byte)projectile.Find(Tag.Type.BYTE, "shake")).v;
-			inground = ((Tag.Byte)projectile.Find(Tag.Type.BYTE, "inGround")).v != 0 ? true : false;
+			xtile = ((Tag.Short)projectile.find(Tag.Type.SHORT, "xTile")).v;
+			ytile = ((Tag.Short)projectile.find(Tag.Type.SHORT, "yTile")).v;
+			ztile = ((Tag.Short)projectile.find(Tag.Type.SHORT, "zTile")).v;
+			intile = ((Tag.Byte)projectile.find(Tag.Type.BYTE, "inTile")).v != 0 ? true : false;
+			shake = ((Tag.Byte)projectile.find(Tag.Type.BYTE, "shake")).v;
+			inground = ((Tag.Byte)projectile.find(Tag.Type.BYTE, "inGround")).v != 0 ? true : false;
 		}
 		/**
 		 * Constructs a Projectile from a position.
@@ -1523,7 +1523,7 @@ public abstract class Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Short("xTile", xtile),
+			t.add(new Tag.Short("xTile", xtile),
 				  new Tag.Short("yTile", ytile),
 				  new Tag.Short("zTile", ztile),
 				  new Tag.Byte("inTile", (byte)(intile?1:0)),
@@ -1559,11 +1559,11 @@ public abstract class Entity
 			{
 				super(arrow);
 
-				indata = ((Tag.Byte)arrow.Find(Tag.Type.BYTE, "inData")).v;
-				pickup = ((Tag.Byte)arrow.Find(Tag.Type.BYTE, "pickup")).v;
+				indata = ((Tag.Byte)arrow.find(Tag.Type.BYTE, "inData")).v;
+				pickup = ((Tag.Byte)arrow.find(Tag.Type.BYTE, "pickup")).v;
 				try
 				{
-					damage = ((Tag.Double)arrow.Find(Tag.Type.DOUBLE, "damage")).v;
+					damage = ((Tag.Double)arrow.find(Tag.Type.DOUBLE, "damage")).v;
 				}
 				catch(FormatException e)
 				{
@@ -1616,7 +1616,7 @@ public abstract class Entity
 			@Override public Tag.Compound ToNBT(String name)
 			{
 				Tag.Compound t = super.ToNBT(name);
-				t.Add(new Tag.Byte("inData", indata),
+				t.add(new Tag.Byte("inData", indata),
 					  new Tag.Byte("pickup", pickup),
 					  new Tag.Double("damage", damage));
 				return t;

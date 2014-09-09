@@ -288,16 +288,16 @@ public abstract class Mob extends Entity
 		{
 			try
 			{
-				int x = ((Tag.Int)t.Find(Tag.Type.INT, "X")).v,
-				    y = ((Tag.Int)t.Find(Tag.Type.INT, "Y")).v,
-				    z = ((Tag.Int)t.Find(Tag.Type.INT, "Z")).v;
+				int x = ((Tag.Int)t.find(Tag.Type.INT, "X")).v,
+				    y = ((Tag.Int)t.find(Tag.Type.INT, "Y")).v,
+				    z = ((Tag.Int)t.find(Tag.Type.INT, "Z")).v;
 				return new Leash.Fence(x, y, z);
 			}
 			catch(FormatException e)
 			{
 			}
-			long least = ((Tag.Long)t.Find(Tag.Type.LONG, "UUIDLeast")).v,
-			     most  = ((Tag.Long)t.Find(Tag.Type.LONG, "UUIDMost")).v;
+			long least = ((Tag.Long)t.find(Tag.Type.LONG, "UUIDLeast")).v,
+			     most  = ((Tag.Long)t.find(Tag.Type.LONG, "UUIDMost")).v;
 			return new Leash.UUID(least, most);
 		}
 		/**
@@ -466,52 +466,52 @@ public abstract class Mob extends Entity
 	{
 		super(mob);
 
-		health = ((Tag.Short)mob.Find(Tag.Type.SHORT, "Health")).v;
-		attacktime = ((Tag.Short)mob.Find(Tag.Type.SHORT, "AttackTime")).v;
-		hurttime = ((Tag.Short)mob.Find(Tag.Type.SHORT, "HurtTime")).v;
-		deathtime = ((Tag.Short)mob.Find(Tag.Type.SHORT, "DeathTime")).v;
+		health = ((Tag.Short)mob.find(Tag.Type.SHORT, "Health")).v;
+		attacktime = ((Tag.Short)mob.find(Tag.Type.SHORT, "AttackTime")).v;
+		hurttime = ((Tag.Short)mob.find(Tag.Type.SHORT, "HurtTime")).v;
+		deathtime = ((Tag.Short)mob.find(Tag.Type.SHORT, "DeathTime")).v;
 		Tag.List effects = null;
 		try
 		{
-			effects = (Tag.List)mob.Find(Tag.Type.LIST, "ActiveEffects");
+			effects = (Tag.List)mob.find(Tag.Type.LIST, "ActiveEffects");
 		}
 		catch(FormatException e)
 		{
 		}
 		if(effects != null)
 		{
-			if(effects.Supports() != Tag.Type.COMPOUND)
+			if(effects.getContainedType() != Tag.Type.COMPOUND)
 			{
-				throw new FormatException("Invalid Potion Effects List; expected list of Compound, got list of "+effects.Supports());
+				throw new FormatException("Invalid Potion Effects List; expected list of Compound, got list of "+effects.getContainedType());
 			}
 			for(Tag t : effects)
 			{
 				Tag.Compound effect = (Tag.Compound)t;
-				activeeffects.put(Effect.FromID(((Tag.Byte)effect.Find(Tag.Type.BYTE, "Id")).v),
-				                  new EffectInfo(((Tag.Byte)mob.Find(Tag.Type.BYTE, "Amplifier")).v,
-				                                 ((Tag.Int)mob.Find(Tag.Type.INT, "Duration")).v,
-				                                 ((Tag.Byte)mob.Find(Tag.Type.BYTE, "Ambient")).v  == 1 ? true : false));
+				activeeffects.put(Effect.FromID(((Tag.Byte)effect.find(Tag.Type.BYTE, "Id")).v),
+				                  new EffectInfo(((Tag.Byte)mob.find(Tag.Type.BYTE, "Amplifier")).v,
+				                                 ((Tag.Int)mob.find(Tag.Type.INT, "Duration")).v,
+				                                 ((Tag.Byte)mob.find(Tag.Type.BYTE, "Ambient")).v  == 1 ? true : false));
 			}
 		}
 
 		try
 		{
-			Tag.List equip = (Tag.List)mob.Find(Tag.Type.LIST, "Equipment");
-			equipment.put(EquipmentSlot.Hand,     new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Hand.    ID())));
-			equipment.put(EquipmentSlot.Boots,    new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Boots.   ID())));
-			equipment.put(EquipmentSlot.Leggings, new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Leggings.ID())));
-			equipment.put(EquipmentSlot.Chest,    new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Chest.   ID())));
-			equipment.put(EquipmentSlot.Helmet,   new Inventory.Item((Tag.Compound)equip.Get(EquipmentSlot.Helmet.  ID())));
+			Tag.List equip = (Tag.List)mob.find(Tag.Type.LIST, "Equipment");
+			equipment.put(EquipmentSlot.Hand,     new Inventory.Item((Tag.Compound)equip.get(EquipmentSlot.Hand.    ID())));
+			equipment.put(EquipmentSlot.Boots,    new Inventory.Item((Tag.Compound)equip.get(EquipmentSlot.Boots.   ID())));
+			equipment.put(EquipmentSlot.Leggings, new Inventory.Item((Tag.Compound)equip.get(EquipmentSlot.Leggings.ID())));
+			equipment.put(EquipmentSlot.Chest,    new Inventory.Item((Tag.Compound)equip.get(EquipmentSlot.Chest.   ID())));
+			equipment.put(EquipmentSlot.Helmet,   new Inventory.Item((Tag.Compound)equip.get(EquipmentSlot.Helmet.  ID())));
 
-			Tag.List drops = (Tag.List)mob.Find(Tag.Type.LIST, "DropChances");
-			dropchances.put(EquipmentSlot.Hand,     ((Tag.Float)equip.Get(EquipmentSlot.Hand.    ID())).v);
-			dropchances.put(EquipmentSlot.Boots,    ((Tag.Float)equip.Get(EquipmentSlot.Boots.   ID())).v);
-			dropchances.put(EquipmentSlot.Leggings, ((Tag.Float)equip.Get(EquipmentSlot.Leggings.ID())).v);
-			dropchances.put(EquipmentSlot.Chest,    ((Tag.Float)equip.Get(EquipmentSlot.Chest.   ID())).v);
-			dropchances.put(EquipmentSlot.Helmet,   ((Tag.Float)equip.Get(EquipmentSlot.Helmet.  ID())).v);
+			Tag.List drops = (Tag.List)mob.find(Tag.Type.LIST, "DropChances");
+			dropchances.put(EquipmentSlot.Hand,     ((Tag.Float)equip.get(EquipmentSlot.Hand.    ID())).v);
+			dropchances.put(EquipmentSlot.Boots,    ((Tag.Float)equip.get(EquipmentSlot.Boots.   ID())).v);
+			dropchances.put(EquipmentSlot.Leggings, ((Tag.Float)equip.get(EquipmentSlot.Leggings.ID())).v);
+			dropchances.put(EquipmentSlot.Chest,    ((Tag.Float)equip.get(EquipmentSlot.Chest.   ID())).v);
+			dropchances.put(EquipmentSlot.Helmet,   ((Tag.Float)equip.get(EquipmentSlot.Helmet.  ID())).v);
 
-			canpickuploot = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "CanPickUpLoot")).v == 1 ? true : false;
-			persistencerequired = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "PersistenceRequired")).v == 1 ? true : false;
+			canpickuploot = ((Tag.Byte)mob.find(Tag.Type.BYTE, "CanPickUpLoot")).v == 1 ? true : false;
+			persistencerequired = ((Tag.Byte)mob.find(Tag.Type.BYTE, "PersistenceRequired")).v == 1 ? true : false;
 		}
 		catch(FormatException e)
 		{
@@ -519,7 +519,7 @@ public abstract class Mob extends Entity
 
 		try
 		{
-			customname = ((Tag.String)mob.Find(Tag.Type.STRING, "CustomName")).v;
+			customname = ((Tag.String)mob.find(Tag.Type.STRING, "CustomName")).v;
 		}
 		catch(FormatException e)
 		{
@@ -527,7 +527,7 @@ public abstract class Mob extends Entity
 		}
 		try
 		{
-			customnamevisible = ((Tag.Byte)mob.Find(Tag.Type.BYTE, "CustomNameVisible")).v == 1 ? true : false;
+			customnamevisible = ((Tag.Byte)mob.find(Tag.Type.BYTE, "CustomNameVisible")).v == 1 ? true : false;
 		}
 		catch(FormatException e)
 		{
@@ -535,7 +535,7 @@ public abstract class Mob extends Entity
 		}
 		try
 		{
-			healf = ((Tag.Float)mob.Find(Tag.Type.FLOAT, "HealF")).v;
+			healf = ((Tag.Float)mob.find(Tag.Type.FLOAT, "HealF")).v;
 		}
 		catch(FormatException e)
 		{
@@ -543,9 +543,9 @@ public abstract class Mob extends Entity
 		}
 		try
 		{
-			if(((Tag.Byte)mob.Find(Tag.Type.BYTE, "Leashed")).v == 1)
+			if(((Tag.Byte)mob.find(Tag.Type.BYTE, "Leashed")).v == 1)
 			{
-				leash = Leash.FromNBT((Tag.Compound)mob.Find(Tag.Type.COMPOUND, "Leash"));
+				leash = Leash.FromNBT((Tag.Compound)mob.find(Tag.Type.COMPOUND, "Leash"));
 			}
 			else
 			{
@@ -815,7 +815,7 @@ public abstract class Mob extends Entity
 		Tag.Compound t = super.ToNBT(name);
 		Tag.List effects;
 		Tag.List equip, drops;
-		t.Add(new Tag.Short("Health", health),
+		t.add(new Tag.Short("Health", health),
 		      new Tag.Short("AttackTime", attacktime),
 		      new Tag.Short("HurtTime", hurttime),
 		      new Tag.Short("DeathTime", deathtime),
@@ -829,42 +829,36 @@ public abstract class Mob extends Entity
 		      new Tag.Float("HealF", healf));
 		if(customname != null)
 		{
-			t.Add(new Tag.String("CustomName", customname));
+			t.add(new Tag.String("CustomName", customname));
 		}
 		if(leash != null)
 		{
-			t.Add(leash.ToNBT("Leash"));
+			t.add(leash.ToNBT("Leash"));
 		}
-		try
+		for(Map.Entry<Effect, EffectInfo> effect : activeeffects.entrySet())
 		{
-			for(Map.Entry<Effect, EffectInfo> effect : activeeffects.entrySet())
-			{
-				effects.Add(new Tag.Compound(null, new Tag.Byte("Id", effect.getKey().ID()),
-				                                   new Tag.Byte("Amplifier", effect.getValue().amplifier),
-				                                   new Tag.Int("Duration", effect.getValue().duration),
-				                                   new Tag.Byte("ambient", (byte)(effect.getValue().ambient ? 1 : 0))));
-			}
-			equip.Add(new Tag.Compound(null),
-			          new Tag.Compound(null),
-			          new Tag.Compound(null),
-			          new Tag.Compound(null),
-			          new Tag.Compound(null));
-			for(Map.Entry<EquipmentSlot, Inventory.Item> e : equipment.entrySet())
-			{
-				equip.Set(e.getKey().ID(), e.getValue().ToNBT(null));
-			}
-			drops.Add(new Tag.Compound(null),
-			          new Tag.Compound(null),
-			          new Tag.Compound(null),
-			          new Tag.Compound(null),
-			          new Tag.Compound(null));
-			for(Map.Entry<EquipmentSlot, Float> e : dropchances.entrySet())
-			{
-				drops.Set(e.getKey().ID(), new Tag.Float(null, e.getValue()));
-			}
+			effects.add(new Tag.Compound(null, new Tag.Byte("Id", effect.getKey().ID()),
+											   new Tag.Byte("Amplifier", effect.getValue().amplifier),
+											   new Tag.Int("Duration", effect.getValue().duration),
+											   new Tag.Byte("ambient", (byte)(effect.getValue().ambient ? 1 : 0))));
 		}
-		catch(Tag.Type.MismatchException e)
+		equip.add(new Tag.Compound(null),
+				  new Tag.Compound(null),
+				  new Tag.Compound(null),
+				  new Tag.Compound(null),
+				  new Tag.Compound(null));
+		for(Map.Entry<EquipmentSlot, Inventory.Item> e : equipment.entrySet())
 		{
+			equip.set(e.getKey().ID(), e.getValue().ToNBT(null));
+		}
+		drops.add(new Tag.Compound(null),
+				  new Tag.Compound(null),
+				  new Tag.Compound(null),
+				  new Tag.Compound(null),
+				  new Tag.Compound(null));
+		for(Map.Entry<EquipmentSlot, Float> e : dropchances.entrySet())
+		{
+			drops.set(e.getKey().ID(), new Tag.Float(null, e.getValue()));
 		}
 		return t;
 	}
@@ -892,8 +886,8 @@ public abstract class Mob extends Entity
 		{
 			super(breedable);
 
-			inlove = ((Tag.Int)breedable.Find(Tag.Type.INT, "InLove")).v;
-			age = ((Tag.Int)breedable.Find(Tag.Type.INT, "Age")).v;
+			inlove = ((Tag.Int)breedable.find(Tag.Type.INT, "InLove")).v;
+			age = ((Tag.Int)breedable.find(Tag.Type.INT, "Age")).v;
 		}
 		/**
 		 * Constructs a Breedable from a position.
@@ -950,7 +944,7 @@ public abstract class Mob extends Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Int("InLove", inlove),
+			t.add(new Tag.Int("InLove", inlove),
 				  new Tag.Int("Age", age));
 			return t;
 		}
@@ -978,8 +972,8 @@ public abstract class Mob extends Entity
 		{
 			super(tameable);
 
-			owner = ((Tag.String)tameable.Find(Tag.Type.STRING, "Owner")).v;
-			sitting = ((Tag.Byte)tameable.Find(Tag.Type.BYTE, "Sitting")).v != 0 ? true : false;
+			owner = ((Tag.String)tameable.find(Tag.Type.STRING, "Owner")).v;
+			sitting = ((Tag.Byte)tameable.find(Tag.Type.BYTE, "Sitting")).v != 0 ? true : false;
 		}
 		/**
 		 * Constructs a Tameable from a position.
@@ -1036,7 +1030,7 @@ public abstract class Mob extends Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.String("Owner", owner),
+			t.add(new Tag.String("Owner", owner),
 				  new Tag.Byte("Sitting", (byte)(sitting?1:0)));
 			return t;
 		}
@@ -1163,7 +1157,7 @@ public abstract class Mob extends Entity
 
 			try
 			{
-				powered = ((Tag.Byte)creeper.Find(Tag.Type.BYTE, "powered")).v != 0 ? true : false;
+				powered = ((Tag.Byte)creeper.find(Tag.Type.BYTE, "powered")).v != 0 ? true : false;
 			}
 			catch(FormatException e)
 			{
@@ -1207,7 +1201,7 @@ public abstract class Mob extends Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Byte("powered", (byte)(powered?1:0)));
+			t.add(new Tag.Byte("powered", (byte)(powered?1:0)));
 			return t;
 		}
 	}
@@ -1259,8 +1253,8 @@ public abstract class Mob extends Entity
 		{
 			super(enderman);
 
-			carried = ((Tag.Short)enderman.Find(Tag.Type.SHORT, "carried")).v;
-			carrieddata = ((Tag.Short)enderman.Find(Tag.Type.SHORT, "carriedData")).v;
+			carried = ((Tag.Short)enderman.find(Tag.Type.SHORT, "carried")).v;
+			carrieddata = ((Tag.Short)enderman.find(Tag.Type.SHORT, "carriedData")).v;
 		}
 		/**
 		 * Constructs an Enderman from a position.
@@ -1317,7 +1311,7 @@ public abstract class Mob extends Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Short("carried", carried),
+			t.add(new Tag.Short("carried", carried),
 				  new Tag.Short("carriedData", carrieddata));
 			return t;
 		}
@@ -1466,7 +1460,7 @@ public abstract class Mob extends Entity
 		{
 			super(pig);
 
-			saddle = ((Tag.Byte)pig.Find(Tag.Type.BYTE, "Saddle")).v != 0 ? true : false;
+			saddle = ((Tag.Byte)pig.find(Tag.Type.BYTE, "Saddle")).v != 0 ? true : false;
 		}
 		/**
 		 * Constructs a Pig from a position.
@@ -1505,7 +1499,7 @@ public abstract class Mob extends Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Byte("Saddle", (byte)(saddle?1:0)));
+			t.add(new Tag.Byte("Saddle", (byte)(saddle?1:0)));
 			return t;
 		}
 	}
@@ -1578,8 +1572,8 @@ public abstract class Mob extends Entity
 		{
 			super(sheep);
 
-			sheared = ((Tag.Byte)sheep.Find(Tag.Type.BYTE, "Sheared")).v != 0 ? true: false;
-			color = Color.FromID(((Tag.Byte)sheep.Find(Tag.Type.BYTE, "Color")).v);
+			sheared = ((Tag.Byte)sheep.find(Tag.Type.BYTE, "Sheared")).v != 0 ? true: false;
+			color = Color.FromID(((Tag.Byte)sheep.find(Tag.Type.BYTE, "Color")).v);
 		}
 		/**
 		 * Constructs a Sheep from a position.
@@ -1634,7 +1628,7 @@ public abstract class Mob extends Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Byte("Sheared", (byte)(sheared?1:0)),
+			t.add(new Tag.Byte("Sheared", (byte)(sheared?1:0)),
 				  new Tag.Byte("Color", (byte)color.ordinal()));
 			return t;
 		}
@@ -1745,7 +1739,7 @@ public abstract class Mob extends Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Int("Size", size));
+			t.add(new Tag.Int("Size", size));
 			return t;
 		}
 	}
@@ -1912,9 +1906,9 @@ public abstract class Mob extends Entity
 			 */
 			public Trade(Tag.Compound trade) throws FormatException
 			{
-				uses = ((Tag.Int)trade.Find(Tag.Type.INT, "uses")).v;
-				buy = new Inventory.Item((Tag.Compound)trade.Find(Tag.Type.COMPOUND, "buy"));
-				Tag t = trade.Get("buyB");
+				uses = ((Tag.Int)trade.find(Tag.Type.INT, "uses")).v;
+				buy = new Inventory.Item((Tag.Compound)trade.find(Tag.Type.COMPOUND, "buy"));
+				Tag t = trade.get("buyB");
 				if(t == null)
 				{
 					buyb = null;
@@ -1923,7 +1917,7 @@ public abstract class Mob extends Entity
 				{
 					buyb = new Inventory.Item((Tag.Compound)t);
 				}
-				sell = new Inventory.Item((Tag.Compound)trade.Find(Tag.Type.COMPOUND, "sell"));
+				sell = new Inventory.Item((Tag.Compound)trade.find(Tag.Type.COMPOUND, "sell"));
 			}
 			/**
 			 * Constructs a trade from one or two cost items and a sale item.
@@ -2050,12 +2044,12 @@ public abstract class Mob extends Entity
 		{
 			super(villager);
 
-			profession = Profession.FromID(((Tag.Int)villager.Find(Tag.Type.INT, "Profession")).v);
-			riches = ((Tag.Int)villager.Find(Tag.Type.INT, "Riches")).v;
-			Tag.List trades = (Tag.List)((Tag.Compound)villager.Find(Tag.Type.COMPOUND, "Offers")).Find(Tag.Type.LIST, "Recipes");
-			if(trades.Supports() != Tag.Type.COMPOUND)
+			profession = Profession.FromID(((Tag.Int)villager.find(Tag.Type.INT, "Profession")).v);
+			riches = ((Tag.Int)villager.find(Tag.Type.INT, "Riches")).v;
+			Tag.List trades = (Tag.List)((Tag.Compound)villager.find(Tag.Type.COMPOUND, "Offers")).find(Tag.Type.LIST, "Recipes");
+			if(trades.getContainedType() != Tag.Type.COMPOUND)
 			{
-				throw new FormatException("Expected list of compound tags, got list of: "+trades.Supports());
+				throw new FormatException("Expected list of compound tags, got list of: "+trades.getContainedType());
 			}
 			for(Tag t : trades)
 			{
@@ -2084,18 +2078,12 @@ public abstract class Mob extends Entity
 		{
 			Tag.Compound t = super.ToNBT(name);
 			Tag.List trades;
-			t.Add(new Tag.Int("Profession", profession.ordinal()),
+			t.add(new Tag.Int("Profession", profession.ordinal()),
 				  new Tag.Int("Riches", riches),
 				  new Tag.Compound("Offers"), trades = new Tag.List("Recipes", Tag.Type.COMPOUND));
-			try
+			for(Trade trade : offers)
 			{
-				for(Trade trade : offers)
-				{
-					trades.Add(trade.ToNBT(null));
-				}
-			}
-			catch(Tag.Type.MismatchException e)
-			{
+				trades.add(trade.ToNBT(null));
 			}
 			return t;
 		}
@@ -2146,7 +2134,7 @@ public abstract class Mob extends Entity
 		{
 			super(wolf);
 
-			angry = ((Tag.Byte)wolf.Find(Tag.Type.BYTE, "Angry")).v != 0 ? true : false;
+			angry = ((Tag.Byte)wolf.find(Tag.Type.BYTE, "Angry")).v != 0 ? true : false;
 		}
 		/**
 		 * Constructs a Wolf from a position.
@@ -2185,7 +2173,7 @@ public abstract class Mob extends Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Byte("Angry", (byte)(angry?1:0)));
+			t.add(new Tag.Byte("Angry", (byte)(angry?1:0)));
 			return t;
 		}
 	}
@@ -2233,7 +2221,7 @@ public abstract class Mob extends Entity
 		{
 			super(zombiepigman);
 
-			anger = ((Tag.Short)zombiepigman.Find(Tag.Type.SHORT, "Anger")).v;
+			anger = ((Tag.Short)zombiepigman.find(Tag.Type.SHORT, "Anger")).v;
 		}
 		/**
 		 * Constructs a Zombie Pigman from a position.
@@ -2255,7 +2243,7 @@ public abstract class Mob extends Entity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Short("Anger", anger));
+			t.add(new Tag.Short("Anger", anger));
 			return t;
 		}
 	}

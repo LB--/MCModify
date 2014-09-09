@@ -243,37 +243,37 @@ public class Level
 		{
 			super(player);
 
-			sleeping = ((Tag.Byte)player.Find(Tag.Type.BYTE, "Sleeping")).v != 0 ? true : false;
-			sleeptimer = ((Tag.Short)player.Find(Tag.Type.SHORT, "SleepTimer")).v;
-			dimension = Dimension.fromId(((Tag.Int)player.Find(Tag.Type.INT, "Dimension")).v);
-			playergametype = GameMode.FromID(((Tag.Int)player.Find(Tag.Type.INT, "playerGameType")).v);
-			foodlevel = ((Tag.Int)player.Find(Tag.Type.INT, "foodLevel")).v;
-			foodticktimer = ((Tag.Int)player.Find(Tag.Type.INT, "foodTickTimer")).v;
-			foodexhaustionlevel = ((Tag.Float)player.Find(Tag.Type.FLOAT, "foodExhaustionLevel")).v;
-			foodsaturationlevel = ((Tag.Float)player.Find(Tag.Type.FLOAT, "foodSaturationLevel")).v;
+			sleeping = ((Tag.Byte)player.find(Tag.Type.BYTE, "Sleeping")).v != 0 ? true : false;
+			sleeptimer = ((Tag.Short)player.find(Tag.Type.SHORT, "SleepTimer")).v;
+			dimension = Dimension.fromId(((Tag.Int)player.find(Tag.Type.INT, "Dimension")).v);
+			playergametype = GameMode.FromID(((Tag.Int)player.find(Tag.Type.INT, "playerGameType")).v);
+			foodlevel = ((Tag.Int)player.find(Tag.Type.INT, "foodLevel")).v;
+			foodticktimer = ((Tag.Int)player.find(Tag.Type.INT, "foodTickTimer")).v;
+			foodexhaustionlevel = ((Tag.Float)player.find(Tag.Type.FLOAT, "foodExhaustionLevel")).v;
+			foodsaturationlevel = ((Tag.Float)player.find(Tag.Type.FLOAT, "foodSaturationLevel")).v;
 			try
 			{
-				spawnx = ((Tag.Int)player.Find(Tag.Type.INT, "SpawnX")).v;
-				spawny = ((Tag.Int)player.Find(Tag.Type.INT, "SpawnY")).v;
-				spawnz = ((Tag.Int)player.Find(Tag.Type.INT, "SpawnZ")).v;
+				spawnx = ((Tag.Int)player.find(Tag.Type.INT, "SpawnX")).v;
+				spawny = ((Tag.Int)player.find(Tag.Type.INT, "SpawnY")).v;
+				spawnz = ((Tag.Int)player.find(Tag.Type.INT, "SpawnZ")).v;
 			}
 			catch(FormatException e)
 			{
 				spawnx = spawny = spawnz = null;
 			}
-			xplevel = ((Tag.Int)player.Find(Tag.Type.INT, "XpLevel")).v;
-			xptotal = ((Tag.Int)player.Find(Tag.Type.INT, "XpTotal")).v;
-			xpp = ((Tag.Float)player.Find(Tag.Type.FLOAT, "XpP")).v;
-			inventory = new Inventory((Tag.List)player.Find(Tag.Type.LIST, "Inventory"));
-			enderitems = new Inventory((Tag.List)player.Find(Tag.Type.LIST, "EnderItems"));
-			Tag.Compound abilities = (Tag.Compound)player.Find(Tag.Type.COMPOUND, "abilities");
-			mayfly = ((Tag.Byte)abilities.Find(Tag.Type.BYTE, "mayfly")).v != 0 ? true : false;
-			flyspeed = ((Tag.Float)abilities.Find(Tag.Type.FLOAT, "flySpeed")).v;
-			flying = ((Tag.Byte)abilities.Find(Tag.Type.BYTE, "flying")).v != 0 ? true : false;
-			maybuild = ((Tag.Byte)abilities.Find(Tag.Type.BYTE, "mayBuild")).v != 0 ? true : false;
-			instabuild = ((Tag.Byte)abilities.Find(Tag.Type.BYTE, "instabuild")).v != 0 ? true : false;
-			invulnerable = ((Tag.Byte)abilities.Find(Tag.Type.BYTE, "invulnerable")).v != 0 ? true : false;
-			walkspeed = ((Tag.Float)abilities.Find(Tag.Type.FLOAT, "walkSpeed")).v;
+			xplevel = ((Tag.Int)player.find(Tag.Type.INT, "XpLevel")).v;
+			xptotal = ((Tag.Int)player.find(Tag.Type.INT, "XpTotal")).v;
+			xpp = ((Tag.Float)player.find(Tag.Type.FLOAT, "XpP")).v;
+			inventory = new Inventory((Tag.List)player.find(Tag.Type.LIST, "Inventory"));
+			enderitems = new Inventory((Tag.List)player.find(Tag.Type.LIST, "EnderItems"));
+			Tag.Compound abilities = (Tag.Compound)player.find(Tag.Type.COMPOUND, "abilities");
+			mayfly = ((Tag.Byte)abilities.find(Tag.Type.BYTE, "mayfly")).v != 0 ? true : false;
+			flyspeed = ((Tag.Float)abilities.find(Tag.Type.FLOAT, "flySpeed")).v;
+			flying = ((Tag.Byte)abilities.find(Tag.Type.BYTE, "flying")).v != 0 ? true : false;
+			maybuild = ((Tag.Byte)abilities.find(Tag.Type.BYTE, "mayBuild")).v != 0 ? true : false;
+			instabuild = ((Tag.Byte)abilities.find(Tag.Type.BYTE, "instabuild")).v != 0 ? true : false;
+			invulnerable = ((Tag.Byte)abilities.find(Tag.Type.BYTE, "invulnerable")).v != 0 ? true : false;
+			walkspeed = ((Tag.Float)abilities.find(Tag.Type.FLOAT, "walkSpeed")).v;
 		}
 
 		/**
@@ -644,8 +644,8 @@ public class Level
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Remove("id");
-			t.Add(new Tag.Byte("Sleeping", (byte)(sleeping?1:0)),
+			t.remove("id");
+			t.add(new Tag.Byte("Sleeping", (byte)(sleeping?1:0)),
 				  new Tag.Short("SleepTimer", sleeptimer),
 				  new Tag.Int("Dimension", dimension.getId()),
 				  new Tag.Int("playerGameType", playergametype.ordinal()),
@@ -655,11 +655,11 @@ public class Level
 				  new Tag.Float("foodSaturationLevel", foodsaturationlevel));
 			if(spawnx != null && spawny != null && spawnz != null)
 			{
-				t.Add(new Tag.Int("SpawnX", spawnx),
+				t.add(new Tag.Int("SpawnX", spawnx),
 					  new Tag.Int("SpawnY", spawny),
 					  new Tag.Int("SpawnZ", spawnz));
 			}
-			t.Add(new Tag.Int("XpLevel", xplevel),
+			t.add(new Tag.Int("XpLevel", xplevel),
 				  new Tag.Int("XpTotal", xptotal),
 				  new Tag.Float("XpP", xpp),
 				  inventory.ToNBT("Inventory"),
@@ -686,34 +686,34 @@ public class Level
 	 */
 	public Level(Tag.Compound level) throws FormatException
 	{
-		level = (Tag.Compound)level.Find(Tag.Type.COMPOUND, "Data");
-		version = ((Tag.Int)level.Find(Tag.Type.INT, "version")).v;
+		level = (Tag.Compound)level.find(Tag.Type.COMPOUND, "Data");
+		version = ((Tag.Int)level.find(Tag.Type.INT, "version")).v;
 		if(version != 19133)
 		{
 			throw new FormatException("Incorrect Version: "+version);
 		}
-		levelname = ((Tag.String)level.Find(Tag.Type.STRING, "LevelName")).v;
-		allowcommands = ((Tag.Byte)level.Find(Tag.Type.BYTE, "allowCommands")).v != 0 ? true : false;
-		gametype = Player.GameMode.FromID(((Tag.Int)level.Find(Tag.Type.INT, "GameType")).v);
-		hardcore = ((Tag.Byte)level.Find(Tag.Type.BYTE, "hardcore")).v != 0 ? true : false;
-		mapfeatures = ((Tag.Byte)level.Find(Tag.Type.BYTE, "MapFeatures")).v != 0 ? true : false;
-		time = ((Tag.Long)level.Find(Tag.Type.LONG, "Time")).v;
-		raining = ((Tag.Byte)level.Find(Tag.Type.BYTE, "raining")).v != 0 ? true : false;
-		raintime = ((Tag.Int)level.Find(Tag.Type.INT, "rainTime")).v;
-		thundering = ((Tag.Byte)level.Find(Tag.Type.BYTE, "thundering")).v != 0 ? true : false;
-		thundertime = ((Tag.Int)level.Find(Tag.Type.INT, "thunderTime")).v;
-		generator = Generator.FromName(((Tag.String)level.Find(Tag.Type.STRING, "generatorName")).v);
-		generatorversion = ((Tag.Int)level.Find(Tag.Type.INT, "generatorVersion")).v;
-		randomseed = ((Tag.Long)level.Find(Tag.Type.LONG, "RandomSeed")).v;
-		spawnx = ((Tag.Int)level.Find(Tag.Type.INT, "SpawnX")).v;
-		spawny = ((Tag.Int)level.Find(Tag.Type.INT, "SpawnY")).v;
-		spawnz = ((Tag.Int)level.Find(Tag.Type.INT, "SpawnZ")).v;
-		lastplayed = ((Tag.Long)level.Find(Tag.Type.LONG, "LastPlayed")).v;
-		sizeondisk = ((Tag.Long)level.Find(Tag.Type.LONG, "SizeOnDisk")).v;
+		levelname = ((Tag.String)level.find(Tag.Type.STRING, "LevelName")).v;
+		allowcommands = ((Tag.Byte)level.find(Tag.Type.BYTE, "allowCommands")).v != 0 ? true : false;
+		gametype = Player.GameMode.FromID(((Tag.Int)level.find(Tag.Type.INT, "GameType")).v);
+		hardcore = ((Tag.Byte)level.find(Tag.Type.BYTE, "hardcore")).v != 0 ? true : false;
+		mapfeatures = ((Tag.Byte)level.find(Tag.Type.BYTE, "MapFeatures")).v != 0 ? true : false;
+		time = ((Tag.Long)level.find(Tag.Type.LONG, "Time")).v;
+		raining = ((Tag.Byte)level.find(Tag.Type.BYTE, "raining")).v != 0 ? true : false;
+		raintime = ((Tag.Int)level.find(Tag.Type.INT, "rainTime")).v;
+		thundering = ((Tag.Byte)level.find(Tag.Type.BYTE, "thundering")).v != 0 ? true : false;
+		thundertime = ((Tag.Int)level.find(Tag.Type.INT, "thunderTime")).v;
+		generator = Generator.FromName(((Tag.String)level.find(Tag.Type.STRING, "generatorName")).v);
+		generatorversion = ((Tag.Int)level.find(Tag.Type.INT, "generatorVersion")).v;
+		randomseed = ((Tag.Long)level.find(Tag.Type.LONG, "RandomSeed")).v;
+		spawnx = ((Tag.Int)level.find(Tag.Type.INT, "SpawnX")).v;
+		spawny = ((Tag.Int)level.find(Tag.Type.INT, "SpawnY")).v;
+		spawnz = ((Tag.Int)level.find(Tag.Type.INT, "SpawnZ")).v;
+		lastplayed = ((Tag.Long)level.find(Tag.Type.LONG, "LastPlayed")).v;
+		sizeondisk = ((Tag.Long)level.find(Tag.Type.LONG, "SizeOnDisk")).v;
 		Tag.Compound plr = null;
 		try
 		{
-			plr = (Tag.Compound)level.Find(Tag.Type.COMPOUND, "Player");
+			plr = (Tag.Compound)level.find(Tag.Type.COMPOUND, "Player");
 		}
 		catch(FormatException e)
 		{
@@ -1057,7 +1057,7 @@ public class Level
 														new Tag.Long("SizeOnDisk", sizeondisk)));
 		if(player != null)
 		{
-			data.Add(player.ToNBT("Player"));
+			data.add(player.ToNBT("Player"));
 		}
 		return t;
 	}

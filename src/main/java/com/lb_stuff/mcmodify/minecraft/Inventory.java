@@ -130,13 +130,13 @@ public class Inventory
 		 */
 		public Item(Tag.Compound item) throws FormatException
 		{
-			id = ((Tag.Short)item.Find(Tag.Type.SHORT, "id")).v;
-			damage = ((Tag.Short)item.Find(Tag.Type.SHORT, "Damage")).v;
-			count = ((Tag.Byte)item.Find(Tag.Type.BYTE, "Count")).v;
+			id = ((Tag.Short)item.find(Tag.Type.SHORT, "id")).v;
+			damage = ((Tag.Short)item.find(Tag.Type.SHORT, "Damage")).v;
+			count = ((Tag.Byte)item.find(Tag.Type.BYTE, "Count")).v;
 			Tag.Compound tag = null;
 			try
 			{
-				tag = (Tag.Compound)item.Find(Tag.Type.COMPOUND, "tag");
+				tag = (Tag.Compound)item.find(Tag.Type.COMPOUND, "tag");
 			}
 			catch(FormatException e)
 			{
@@ -146,26 +146,26 @@ public class Inventory
 				Tag.List ench = null;
 				try
 				{
-					ench = (Tag.List)tag.Find(Tag.Type.LIST, "ench");
+					ench = (Tag.List)tag.find(Tag.Type.LIST, "ench");
 				}
 				catch(FormatException e)
 				{
 				}
 				if(ench != null)
 				{
-					if(ench.Supports() != Tag.Type.COMPOUND)
+					if(ench.getContainedType() != Tag.Type.COMPOUND)
 					{
 						throw new FormatException("Invalid Enchantment List");
 					}
-					for(int i = 0; i < ench.Size(); ++i)
+					for(int i = 0; i < ench.getSize(); ++i)
 					{
-						Tag.Compound enchant  = (Tag.Compound)ench.Get(i);
-						Enchantment e = Enchantment.EnchantFromID(((Tag.Short)enchant.Find(Tag.Type.SHORT, "id")).v);
+						Tag.Compound enchant  = (Tag.Compound)ench.get(i);
+						Enchantment e = Enchantment.EnchantFromID(((Tag.Short)enchant.find(Tag.Type.SHORT, "id")).v);
 						if(enchantments.containsKey(e))
 						{
 							throw new FormatException("Duplicate Enchantment: "+e);
 						}
-						enchantments.put(e, ((Tag.Short)enchant.Find(Tag.Type.SHORT, "lvl")).v);
+						enchantments.put(e, ((Tag.Short)enchant.find(Tag.Type.SHORT, "lvl")).v);
 					}
 				}
 
@@ -173,11 +173,11 @@ public class Inventory
 				{
 					if(id == IDs.WrittenBook)
 					{
-						title = ((Tag.String)tag.Find(Tag.Type.STRING, "title")).v;
-						author = ((Tag.String)tag.Find(Tag.Type.STRING, "author")).v;
+						title = ((Tag.String)tag.find(Tag.Type.STRING, "title")).v;
+						author = ((Tag.String)tag.find(Tag.Type.STRING, "author")).v;
 					}
-					Tag.List pagelist = (Tag.List)tag.Find(Tag.Type.LIST, "pages");
-					if(pagelist.Supports() != Tag.Type.STRING)
+					Tag.List pagelist = (Tag.List)tag.find(Tag.Type.LIST, "pages");
+					if(pagelist.getContainedType() != Tag.Type.STRING)
 					{
 						throw new FormatException("Invalid Page List");
 					}
@@ -383,22 +383,16 @@ public class Inventory
 			if(!enchantments.isEmpty() || pages != null)
 			{
 				tag = new Tag.Compound("tag");
-				t.Add(tag);
+				t.add(tag);
 
 				if(!enchantments.isEmpty())
 				{
 					Tag.List enchants;
-					tag.Add(enchants = new Tag.List("ench", Tag.Type.COMPOUND));
+					tag.add(enchants = new Tag.List("ench", Tag.Type.COMPOUND));
 					for(Map.Entry<Enchantment, Short> enchant : enchantments.entrySet())
 					{
-						try
-						{
-							enchants.Add(new Tag.Compound(null, new Tag.Short("id", enchant.getKey().ID()),
-																new Tag.Short("lvl", enchant.getValue())));
-						}
-						catch(Tag.Type.MismatchException e)
-						{
-						}
+						enchants.add(new Tag.Compound(null, new Tag.Short("id", enchant.getKey().ID()),
+															new Tag.Short("lvl", enchant.getValue())));
 					}
 				}
 
@@ -406,20 +400,14 @@ public class Inventory
 				{
 					if(title != null && author != null)
 					{
-						tag.Add(new Tag.String("title", title),
+						tag.add(new Tag.String("title", title),
 								new Tag.String("author", author));
 					}
 					Tag.List pagelist;
-					tag.Add(pagelist = new Tag.List("pages", Tag.Type.STRING));
-					try
+					tag.add(pagelist = new Tag.List("pages", Tag.Type.STRING));
+					for(String page : pages)
 					{
-						for(String page : pages)
-						{
-							pagelist.Add(new Tag.String(null, page));
-						}
-					}
-					catch(Tag.Type.MismatchException e)
-					{
+						pagelist.add(new Tag.String(null, page));
 					}
 				}
 			}
@@ -433,7 +421,7 @@ public class Inventory
 		public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = ToNBT(name, (byte)-1);
-			t.Remove("Slot");
+			t.remove("Slot");
 			return t;
 		}
 	}
@@ -449,18 +437,18 @@ public class Inventory
 	 */
 	public Inventory(Tag.List inventory) throws FormatException
 	{
-		if(inventory.Supports() != Tag.Type.COMPOUND)
+		if(inventory.getContainedType() != Tag.Type.COMPOUND)
 		{
-			if(inventory.Supports() == Tag.Type.BYTE)
+			if(inventory.getContainedType() == Tag.Type.BYTE)
 			{
 				return; //for EnderItems
 			}
 			throw new FormatException("Invalid Inventory List");
 		}
-		for(int i = 0; i < inventory.Size(); ++i)
+		for(int i = 0; i < inventory.getSize(); ++i)
 		{
-			Tag.Compound item = (Tag.Compound)inventory.Get(i);
-			byte slot = ((Tag.Byte)item.Find(Tag.Type.BYTE, "Slot")).v;
+			Tag.Compound item = (Tag.Compound)inventory.get(i);
+			byte slot = ((Tag.Byte)item.find(Tag.Type.BYTE, "Slot")).v;
 			if(slot < 0)
 			{
 				throw new FormatException("Invalid Slot number: "+slot);
@@ -523,15 +511,9 @@ public class Inventory
 	public Tag.List ToNBT(String name)
 	{
 		Tag.List inventory = new Tag.List(name, Tag.Type.COMPOUND);
-		try
+		for(Map.Entry<Byte, Item> slot : items.entrySet())
 		{
-			for(Map.Entry<Byte, Item> slot : items.entrySet())
-			{
-				inventory.Add(slot.getValue().ToNBT(null, slot.getKey()));
-			}
-		}
-		catch(Tag.Type.MismatchException e)
-		{
+			inventory.add(slot.getValue().ToNBT(null, slot.getKey()));
 		}
 		return inventory;
 	}

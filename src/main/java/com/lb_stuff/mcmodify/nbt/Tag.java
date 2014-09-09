@@ -16,8 +16,8 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * The main class used by this NBT package, its static subclasses extend and implement it. The equals() and hashCode() methods are based entirely on the name of the tag.
- * I am aware that this means you can do nonsensical things such as Tag.Byte.Compound.Short.List...
  * @version 19133
+ * @see <a href="http://minecraft.gamepedia.com/NBT_format">NBT format</a> on the Minecraft Wiki
  */
 public abstract class Tag implements Cloneable
 {
@@ -34,11 +34,48 @@ public abstract class Tag implements Cloneable
 		name = _name;
 	}
 
+	public static Tag deserialize(InputStream is) throws IOException
+	{
+		DataInputStream dis = new DataInputStream(is);
+		final Type type = Type.fromId(dis.readByte());
+		if(type == Type.END)
+		{
+			return new End();
+		}
+		final java.lang.String name = readString(dis);
+		switch(type)
+		{
+			case BYTE:      return new Byte(name, is);
+			case SHORT:     return new Short(name, is);
+			case INT:       return new Int(name, is);
+			case LONG:      return new Long(name, is);
+			case FLOAT:     return new Float(name, is);
+			case DOUBLE:    return new Double(name, is);
+			case BYTEARRAY: return new ByteArray(name, is);
+			case STRING:    return new String(name, is);
+			case LIST:      return new List(name, is);
+			case COMPOUND:  return new Compound(name, is);
+			case INTARRAY:  return new IntArray(name, is);
+			default: throw new IllegalStateException();
+		}
+	}
+	private static java.lang.String readString(DataInputStream dis) throws IOException
+	{
+		short length = dis.readShort();
+		if(length < 0)
+		{
+			throw new FormatException("String length was negative: "+length);
+		}
+		byte[] str = new byte[length];
+		dis.readFully(str);
+		return new java.lang.String(str, UTF8);
+	}
+
 	/**
 	 * Returns the name of this tag, or null if this tag doesn't have a name.
 	 * @return The name of this tag, or null if this tag doesn't have a name.
 	 */
-	public java.lang.String Name()
+	public java.lang.String getName()
 	{
 		return name;
 	}
@@ -59,51 +96,51 @@ public abstract class Tag implements Cloneable
 
 		/**
 		 * Converts an integer ordinal to a tag type.
-		 * @param ordinal The integer ID of the tag.
+		 * @param id The integer ID of the tag.
 		 * @return The Tag.Type corresponding to the ID.
 		 * @throws IndexOutOfBoundsException if the ordinal is not with a valid range.
 		 */
-		public static Type FromID(int ordinal) throws IndexOutOfBoundsException
+		public static Type fromId(int id)
 		{
-			switch(ordinal)
+			switch(id)
 			{
-			case 0:		return END;
-			case 1:		return BYTE;
-			case 2:		return SHORT;
-			case 3:		return INT;
-			case 4:		return LONG;
-			case 5:		return FLOAT;
-			case 6:		return DOUBLE;
-			case 7:		return BYTEARRAY;
-			case 8:		return STRING;
-			case 9:		return LIST;
-			case 10:	return COMPOUND;
-			case 11:	return INTARRAY;
+				case 0:  return END;
+				case 1:  return BYTE;
+				case 2:  return SHORT;
+				case 3:  return INT;
+				case 4:  return LONG;
+				case 5:  return FLOAT;
+				case 6:  return DOUBLE;
+				case 7:  return BYTEARRAY;
+				case 8:  return STRING;
+				case 9:  return LIST;
+				case 10: return COMPOUND;
+				case 11: return INTARRAY;
+				default: return null;
 			}
-			throw new IndexOutOfBoundsException("Tag ID out of bounds: "+ordinal);
 		}
 		/**
 		 * Converts this type to its respective class.
 		 * @return The class object for this type's relevant class.
 		 */
-		public Class<? extends Tag> ToClass()
+		public Class<? extends Tag> getImplementingClass()
 		{
 			switch(this)
 			{
-			case END:		return End.class;
-			case BYTE:		return Byte.class;
-			case SHORT:		return Short.class;
-			case INT:		return Int.class;
-			case LONG:		return Long.class;
-			case FLOAT:		return Float.class;
-			case DOUBLE:	return Double.class;
-			case BYTEARRAY:	return ByteArray.class;
-			case STRING:	return String.class;
-			case LIST:		return List.class;
-			case COMPOUND:	return Compound.class;
-			case INTARRAY:	return IntArray.class;
+				case END:       return End.class;
+				case BYTE:      return Byte.class;
+				case SHORT:     return Short.class;
+				case INT:       return Int.class;
+				case LONG:      return Long.class;
+				case FLOAT:     return Float.class;
+				case DOUBLE:    return Double.class;
+				case BYTEARRAY: return ByteArray.class;
+				case STRING:    return String.class;
+				case LIST:      return List.class;
+				case COMPOUND:  return Compound.class;
+				case INTARRAY:  return IntArray.class;
+				default: throw new IllegalStateException();
 			}
-			throw new IllegalArgumentException();
 		}
 
 		/**
@@ -114,20 +151,9 @@ public abstract class Tag implements Cloneable
 		{
 			switch(this)
 			{
-			case BYTEARRAY:	return"Byte Array";
-			case INTARRAY:	return"Int Array";
-			default:		return ToClass().getSimpleName();
-			}
-		}
-
-		/**
-		 * The exception thrown by <code>Tag.List</code> when a tag is added that doesn't match the tag's tag type.
-		 */
-		public static class MismatchException extends Exception
-		{
-			public MismatchException(java.lang.String msg)
-			{
-				super(msg);
+				case BYTEARRAY: return"Byte Array";
+				case INTARRAY: return"Int Array";
+				default: return getImplementingClass().getSimpleName();
 			}
 		}
 	}
@@ -135,24 +161,24 @@ public abstract class Tag implements Cloneable
 	 * The polymorphic method to get which tag type this tag corresponds to.
 	 * @return The tag type this tag corresponds to.
 	 */
-	public abstract Type Type();
+	public abstract Type getType();
 
 	/**
 	 * The main serialization function. Serializes raw, uncompressed NBT data by polymorphically calling a payload serialization function.
-	 * @param o The <code>OutputStream</code> to serialize to.
+	 * @param os The <code>OutputStream</code> to serialize to.
 	 * @throws IOException if the output operation generates an exception.
 	 */
-	public final void Serialize(OutputStream o) throws IOException
+	public final void serialize(OutputStream os) throws IOException
 	{
-		PreSerialize(o);
-		SerializePayload(o);
+		preSerialize(os);
+		serializePayload(os);
 	}
 	/**
 	 * The polymorphic method used to serialize only the tag's payload.
-	 * @param o The <code>OutputStream</code> to serialize to.
+	 * @param os The <code>OutputStream</code> to serialize to.
 	 * @throws IOException if the output operation generates an exception.
 	 */
-	protected abstract void SerializePayload(OutputStream o) throws IOException;
+	protected abstract void serializePayload(OutputStream os) throws IOException;
 	/**
 	 * Represents the UTF-8 <code>Charset</code>.
 	 */
@@ -174,15 +200,15 @@ public abstract class Tag implements Cloneable
 	}
 	/**
 	 * The method used to serialize the type and name of a tag.
-	 * @param o The <code>OutputStream</code> to serialize to.
+	 * @param os The <code>OutputStream</code> to serialize to.
 	 * @throws IOException if the output operation generates an exception.
 	 */
-	private void PreSerialize(OutputStream o) throws IOException
+	private void preSerialize(OutputStream os) throws IOException
 	{
-		o.write((byte)Type().ordinal());
+		os.write((byte)getType().ordinal());
 		if(name != null)
 		{
-			new String(null, name).SerializePayload(o);
+			new String(null, name).serializePayload(os);
 		}
 	}
 
@@ -195,13 +221,13 @@ public abstract class Tag implements Cloneable
 	 * A utility method for either quoting the tag's name or returning nothing if the name is <code>null</code>.
 	 * @return A space followed by the quoted name of the tag, or nothing if the name is null.
 	 */
-	protected final java.lang.String QuoteName()
+	protected final java.lang.String quoteName()
 	{
 		if(name != null)
 		{
-			return" \""+name+"\"";
+			return " \""+name+"\"";
 		}
-		return"";
+		return "";
 	}
 
 	/**
@@ -267,7 +293,7 @@ public abstract class Tag implements Cloneable
 		}
 		catch(CloneNotSupportedException e)
 		{
-			throw new IllegalArgumentException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 	/**
@@ -278,7 +304,7 @@ public abstract class Tag implements Cloneable
 	public final Tag clone(java.lang.String newname)
 	{
 		Tag t = clone();
-		if(this != End.TAG)
+		if(!(this instanceof End))
 		{
 			t.name = newname;
 		}
@@ -291,27 +317,18 @@ public abstract class Tag implements Cloneable
 	public static final class End extends Tag
 	{
 		/**
-		 * The single instance of this tag.
+		 * Constructs a new stateless End tag.
 		 */
-		public static final End TAG = new End();
-
-		/**
-		 * Used to construct the single instance of this tag.
-		 */
-		private End() throws UnsupportedOperationException
+		public End()
 		{
 			super(null);
-			if(TAG != null)
-			{
-				throw new UnsupportedOperationException();
-			}
 		}
 
 		/**
 		 * Returns the tag type corresponding to TAG_End.
 		 * @return <code>Type.END</code>.
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.END;
 		}
@@ -321,7 +338,7 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize to.
 		 * @throws IOException when pigs fly.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 		}
 
@@ -331,16 +348,16 @@ public abstract class Tag implements Cloneable
 		 */
 		@Override public java.lang.String toString()
 		{
-			return"End";
+			return "End";
 		}
 
 		/**
-		 * Returns <code>TAG</code>.
-		 * @return <code>TAG</code>.
+		 * Returns <code>this</code>.
+		 * @return <code>this</code>.
 		 */
 		@Override public End clone()
 		{
-			return TAG;
+			return this;
 		}
 	}
 
@@ -378,7 +395,7 @@ public abstract class Tag implements Cloneable
 		 * Returns the tag type corresponding to TAG_Byte.
 		 * @return <code>Type.BYTE</code>
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.BYTE;
 		}
@@ -387,7 +404,7 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize the byte to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			o.write(v);
 		}
@@ -397,7 +414,7 @@ public abstract class Tag implements Cloneable
 		 */
 		@Override public java.lang.String toString()
 		{
-			return"Byte"+QuoteName()+": "+v+"";
+			return"Byte"+quoteName()+": "+v+"";
 		}
 	}
 
@@ -435,7 +452,7 @@ public abstract class Tag implements Cloneable
 		 * returns the tag type corresponding to TAG_Short.
 		 * @return <code>Type.SHORT</code>
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.SHORT;
 		}
@@ -444,7 +461,7 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize the short to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			new DataOutputStream(o).writeShort(v);
 		}
@@ -454,7 +471,7 @@ public abstract class Tag implements Cloneable
 		 */
 		@Override public java.lang.String toString()
 		{
-			return"Short"+QuoteName()+": "+v+"";
+			return"Short"+quoteName()+": "+v+"";
 		}
 	}
 
@@ -492,7 +509,7 @@ public abstract class Tag implements Cloneable
 		 * Returns the tag type corresponding to TAG_Int.
 		 * @return <code>Type.INT</code>.
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.INT;
 		}
@@ -501,7 +518,7 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize the integer to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			new DataOutputStream(o).writeInt(v);
 		}
@@ -511,7 +528,7 @@ public abstract class Tag implements Cloneable
 		 */
 		@Override public java.lang.String toString()
 		{
-			return"Int"+QuoteName()+": "+v+"";
+			return"Int"+quoteName()+": "+v+"";
 		}
 	}
 
@@ -549,7 +566,7 @@ public abstract class Tag implements Cloneable
 		 * Returns the tag type corresponding to TAG_Long.
 		 * @return <code>Type.LONG</code>.
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.LONG;
 		}
@@ -558,7 +575,7 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize the long to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			new DataOutputStream(o).writeLong(v);
 		}
@@ -568,7 +585,7 @@ public abstract class Tag implements Cloneable
 		 */
 		@Override public java.lang.String toString()
 		{
-			return"Long"+QuoteName()+": "+v+"";
+			return"Long"+quoteName()+": "+v+"";
 		}
 	}
 
@@ -606,7 +623,7 @@ public abstract class Tag implements Cloneable
 		 * Returns the tag type corresponding to TAG_Float.
 		 * @return <code>Type.FLOAT</code>.
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.FLOAT;
 		}
@@ -615,7 +632,7 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize this long to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			new DataOutputStream(o).writeFloat(v);
 		}
@@ -625,7 +642,7 @@ public abstract class Tag implements Cloneable
 		 */
 		@Override public java.lang.String toString()
 		{
-			return"Float"+QuoteName()+": "+v+"";
+			return"Float"+quoteName()+": "+v+"";
 		}
 	}
 
@@ -663,7 +680,7 @@ public abstract class Tag implements Cloneable
 		 * Returns the tag type corresponding to TAG_Double.
 		 * @return <code>Type.DOUBLE</code>.
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.DOUBLE;
 		}
@@ -672,7 +689,7 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize this double to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			new DataOutputStream(o).writeDouble(v);
 		}
@@ -682,7 +699,7 @@ public abstract class Tag implements Cloneable
 		 */
 		@Override public java.lang.String toString()
 		{
-			return"Double"+QuoteName()+": "+v+"";
+			return"Double"+quoteName()+": "+v+"";
 		}
 	}
 
@@ -728,7 +745,7 @@ public abstract class Tag implements Cloneable
 		 * Returns the tag type that corresponds to TAG_Byte_Array.
 		 * @return <code>Type.BYTEARRAY</code>.
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.BYTEARRAY;
 		}
@@ -737,7 +754,7 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize this byte array to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			DataOutputStream dos = new DataOutputStream(o);
 			dos.writeInt(v.length);
@@ -758,7 +775,7 @@ public abstract class Tag implements Cloneable
 				}
 				s += b;
 			}
-			return"Byte Array"+QuoteName()+": ["+s+"]";
+			return"Byte Array"+quoteName()+": ["+s+"]";
 		}
 
 		/**
@@ -803,22 +820,13 @@ public abstract class Tag implements Cloneable
 		 */
 		public String(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
-			this(name, "");
-			DataInputStream dis = new DataInputStream(i);
-			short length = dis.readShort();
-			if(length < 0)
-			{
-				throw new FormatException("String length was negative: "+length);
-			}
-			byte[] str = new byte[length];
-			dis.readFully(str);
-			v = new java.lang.String(str, UTF8);
+			this(name, readString(new DataInputStream(i)));
 		}
 		/**
 		 * Returns the tag type that corresponds to TAG_String.
 		 * @return <code>Type.STRING</code>.
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.STRING;
 		}
@@ -827,7 +835,7 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize this string to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			byte[] sarr = v.getBytes(UTF8);
 			new DataOutputStream(o).writeShort((short)sarr.length);
@@ -839,7 +847,7 @@ public abstract class Tag implements Cloneable
 		 */
 		@Override public java.lang.String toString()
 		{
-			return"String"+QuoteName()+": \""+v+"\"";
+			return"String"+quoteName()+": \""+v+"\"";
 		}
 	}
 
@@ -875,17 +883,17 @@ public abstract class Tag implements Cloneable
 			{
 				for(Tag t : tags)
 				{
-					if(t.Name() != null)
+					if(t.getName() != null)
 					{
-						throw new IllegalArgumentException("Tags in Lists must have null names; given tag had name: \""+t.Name()+"\"");
+						throw new IllegalArgumentException("Tags in Lists must have null names; given tag had name: \""+t.getName()+"\"");
 					}
-					else if(t.Type() == type)
+					else if(t.getType() == type)
 					{
 						list.add(t);
 					}
 					else
 					{
-						throw new IllegalArgumentException(new Type.MismatchException(type+" required, given "+t.Type()));
+						throw new IllegalArgumentException(type+" required, given "+t.getType());
 					}
 				}
 			}
@@ -900,7 +908,7 @@ public abstract class Tag implements Cloneable
 		public List(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
 			super(name);
-			type = Type.FromID(i.read());
+			type = Type.fromId(i.read());
 			int size = new DataInputStream(i).readInt();
 			if(size < 0)
 			{
@@ -908,7 +916,7 @@ public abstract class Tag implements Cloneable
 			}
 			try
 			{
-				java.lang.reflect.Constructor<? extends Tag> c = type.ToClass().getConstructor(java.lang.String.class, InputStream.class);
+				java.lang.reflect.Constructor<? extends Tag> c = type.getImplementingClass().getConstructor(java.lang.String.class, InputStream.class);
 				for(int j = 0; j < size; ++j)
 				{
 					list.add(c.newInstance(null, i));
@@ -923,7 +931,7 @@ public abstract class Tag implements Cloneable
 		 * Returns the tag type that corresponds to TAG_List.
 		 * @return <code>Type.LIST</code>.
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.LIST;
 		}
@@ -932,13 +940,13 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize this tags to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			o.write((byte)type.ordinal());
 			new DataOutputStream(o).writeInt(list.size());
 			for(int i = 0; i < list.size(); ++i)
 			{
-				list.get(i).SerializePayload(o);
+				list.get(i).serializePayload(o);
 			}
 		}
 		/**
@@ -956,25 +964,24 @@ public abstract class Tag implements Cloneable
 				}
 				s += list.get(i);
 			}
-			return"List of "+type+""+QuoteName()+": \n[\n"+Compound.PreceedLinesWithTabs(s)+"\n]";
+			return"List of "+type+""+quoteName()+": \n[\n"+Compound.preceedLinesWithTabs(s)+"\n]";
 		}
 
 		/**
 		 * Adds all given tags to this list until a given tag is of a type not supported by this list.
 		 * @param tags The tags to be added.
-		 * @throws Type.MismatchException if the tag is of a type not supported by this tags.
 		 */
-		public void Add(Tag... tags) throws Type.MismatchException
+		public void add(Tag... tags)
 		{
 			for(Tag t : tags)
 			{
-				if(t.Name() != null)
+				if(t.getName() != null)
 				{
-					throw new IllegalArgumentException("Tags in Lists must have null names; given tag had name: \""+t.Name()+"\"");
+					throw new IllegalArgumentException("Tags in Lists must have null names; given tag had name: \""+t.getName()+"\"");
 				}
-				else if(t.Type() != type)
+				else if(t.getType() != type)
 				{
-					throw new Type.MismatchException(type+" required, given "+t.Type());
+					throw new IllegalArgumentException(type+" required, given "+t.getType());
 				}
 				list.add(t);
 			}
@@ -982,13 +989,12 @@ public abstract class Tag implements Cloneable
 		/**
 		 * Adds all the tags from the given list to this list.
 		 * @param l The list from which to add the tags.
-		 * @throws Type.MismatchException if the tags in the given list are not supported by this list.
 		 */
-		public void AddFrom(Tag.List l) throws Type.MismatchException
+		public void addAll(Tag.List l)
 		{
-			if(l.Supports() != type)
+			if(l.getContainedType() != type)
 			{
-				throw new Type.MismatchException(type+" required, given list of "+l.Supports());
+				throw new IllegalArgumentException(type+" required, given list of "+l.getContainedType());
 			}
 			for(Tag t : l.list)
 			{
@@ -998,20 +1004,19 @@ public abstract class Tag implements Cloneable
 		/**
 		 * Adds all the tags from the given collection to this list.
 		 * @param c The collection from which to add the tags.
-		 * @throws Type.MismatchException if the tags in the given collection are not supported by this list.
 		 */
-		public void AddFrom(Collection<? extends Tag> c) throws Type.MismatchException
+		public void addAll(Collection<? extends Tag> c)
 		{
 			for(Tag t : c)
 			{
-				Add(t);
+				add(t);
 			}
 		}
 		/**
 		 * Returns the number of tags in this list tag.
 		 * @return The number of tags in this list tag.
 		 */
-		public int Size()
+		public int getSize()
 		{
 			return list.size();
 		}
@@ -1019,13 +1024,12 @@ public abstract class Tag implements Cloneable
 		 * Sets the tag at the given index in the list to the given tag.
 		 * @param index The index to set.
 		 * @param t The tag that the index will be set to.
-		 * @throws Type.MismatchException if the tag is of a type not supported by this tags.
 		 */
-		public void Set(int index, Tag t) throws Type.MismatchException
+		public void set(int index, Tag t)
 		{
-			if(t.Type() != type)
+			if(t.getType() != type)
 			{
-				throw new Type.MismatchException(type+" required, given "+t.Type());
+				throw new IllegalArgumentException(type+" required, given "+t.getType());
 			}
 			list.set(index, t);
 		}
@@ -1033,19 +1037,18 @@ public abstract class Tag implements Cloneable
 		 * Inserts the given tags to this list at the specified index.
 		 * @param index The index before which to insert.
 		 * @param tags The tags to insert.
-		 * @throws Type.MismatchException if the tag is of a type not supported by this tags.
 		 */
-		public void Insert(int index, Tag... tags) throws Type.MismatchException
+		public void insert(int index, Tag... tags)
 		{
 			for(Tag t : tags)
 			{
-				if(t.Name() != null)
+				if(t.getName() != null)
 				{
-					throw new IllegalArgumentException("Tags in Lists must have null names; given tag had name: \""+t.Name()+"\"");
+					throw new IllegalArgumentException("Tags in Lists must have null names; given tag had name: \""+t.getName()+"\"");
 				}
-				else if(t.Type() != type)
+				else if(t.getType() != type)
 				{
-					throw new Type.MismatchException(type+" required, given "+t.Type());
+					throw new IllegalArgumentException(type+" required, given "+t.getType());
 				}
 				list.add(index++, t);
 			}
@@ -1054,13 +1057,12 @@ public abstract class Tag implements Cloneable
 		 * Inserts the tags from the given list to this list at the specified index.
 		 * @param index The index at which to insert the tags.
 		 * @param l The list from which to insert the tags.
-		 * @throws Type.MismatchException if the tags in the given list are not supported by this list.
 		 */
-		public void InsertFrom(int index, Tag.List l) throws Type.MismatchException
+		public void insertAll(int index, Tag.List l)
 		{
-			if(l.Supports() != type)
+			if(l.getContainedType() != type)
 			{
-				throw new Type.MismatchException(type+" required, given list of "+l.Supports());
+				throw new IllegalArgumentException(type+" required, given list of "+l.getContainedType());
 			}
 			for(Tag t : l.list)
 			{
@@ -1071,13 +1073,12 @@ public abstract class Tag implements Cloneable
 		 * Inserts the tags from the given collection to this list at the specified index.
 		 * @param index The index at which to insert the tags.
 		 * @param c The collection from which to insert the tags.
-		 * @throws Type.MismatchException if the tags in the given collection are not supported by this list.
 		 */
-		public void InsertFrom(int index, Collection<? extends Tag> c) throws Type.MismatchException
+		public void insertAll(int index, Collection<? extends Tag> c)
 		{
 			for(Tag t : c)
 			{
-				Insert(index++, t);
+				insert(index++, t);
 			}
 		}
 		/**
@@ -1085,7 +1086,7 @@ public abstract class Tag implements Cloneable
 		 * @param index The index to get a tag from.
 		 * @return The tag at the specified index.
 		 */
-		public Tag Get(int index)
+		public Tag get(int index)
 		{
 			return list.get(index);
 		}
@@ -1094,7 +1095,7 @@ public abstract class Tag implements Cloneable
 		 * @param index The index of the tag to remove.
 		 * @return The tag that was removed.
 		 */
-		public Tag Remove(int index)
+		public Tag remove(int index)
 		{
 			return list.remove(index);
 		}
@@ -1103,7 +1104,7 @@ public abstract class Tag implements Cloneable
 		 * Returns the tag type supported by this tags.
 		 * @return The tag type supported by this tags.
 		 */
-		public Type Supports()
+		public Type getContainedType()
 		{
 			return type;
 		}
@@ -1153,12 +1154,12 @@ public abstract class Tag implements Cloneable
 			super(name);
 			for(Tag t : tags)
 			{
-				java.lang.String n = t.Name();
+				java.lang.String n = t.getName();
 				if(n == null)
 				{
 					throw new IllegalArgumentException("Tag names cannot be null");
 				}
-				if(t == End.TAG)
+				if(t instanceof End)
 				{
 					throw new IllegalArgumentException("Cannot manually add the End tag!");
 				}
@@ -1175,29 +1176,17 @@ public abstract class Tag implements Cloneable
 		public Compound(java.lang.String name, InputStream i) throws IOException, FormatException //DeserializePayload
 		{
 			this(name);
-			try
+			Tag t;
+			while(!((t = deserialize(i)) instanceof End))
 			{
-				Type t;
-				while((t = Type.FromID(i.read())) != Type.END)
-				{
-					java.lang.String n = new String(null, i).v;
-					tags.put(n, t.ToClass().getConstructor(java.lang.String.class, InputStream.class).newInstance(n, i));
-				}
-			}
-			catch(IOException e)
-			{
-				throw e;
-			}
-			catch(Throwable e)
-			{
-				throw new FormatException("Exception while deserializing Compound tag", e, this);
+				tags.put(t.getName(), t);
 			}
 		}
 		/**
 		 * Returns the tag type that corresponds to TAG_Compound.
 		 * @return <code>Type.COMPOUND</code>.
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.COMPOUND;
 		}
@@ -1206,13 +1195,13 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize this compound tag to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			for(Tag t : tags.values())
 			{
-				t.Serialize(o);
+				t.serialize(o);
 			}
-			End.TAG.Serialize(o);
+			new End().serialize(o);
 		}
 		/**
 		 * Gives a textual representation of this compound tag with nice indenting even with nesting.
@@ -1229,14 +1218,14 @@ public abstract class Tag implements Cloneable
 				}
 				s += t;
 			}
-			return"Compound"+QuoteName()+":\n{\n"+PreceedLinesWithTabs(s)+"\n}";
+			return"Compound"+quoteName()+":\n{\n"+preceedLinesWithTabs(s)+"\n}";
 		}
 		/**
 		 * Utility function used by this class and the List class for preceeding lines with tabs.
 		 * @param s The string for which each line should be prefixed with a tab.
 		 * @return The string with each line prefixed with an additional tab.
 		 */
-		/*default*/ static java.lang.String PreceedLinesWithTabs(java.lang.String s)
+		/*default*/ static java.lang.String preceedLinesWithTabs(java.lang.String s)
 		{
 			return"\t"+s.replaceAll("\n", "\n\t");
 		}
@@ -1246,16 +1235,16 @@ public abstract class Tag implements Cloneable
 		 * @param tags The tags to be added.
 		 * @throws IllegalArgumentException if the name of one of the given tags is null.
 		 */
-		public void Add(Tag... tags) throws IllegalArgumentException
+		public void add(Tag... tags) throws IllegalArgumentException
 		{
 			for(Tag t : tags)
 			{
-				java.lang.String n = t.Name();
+				java.lang.String n = t.getName();
 				if(n == null)
 				{
 					throw new IllegalArgumentException("Tag names cannot be null");
 				}
-				if(t.Type() == Type.END)
+				if(t.getType() == Type.END)
 				{
 					throw new IllegalArgumentException("Cannot manually add a TAG_End!");
 				}
@@ -1266,7 +1255,7 @@ public abstract class Tag implements Cloneable
 		 * Adds all the tags from the given compound tag to this compound tag.
 		 * @param c The compound tag from which to add the tags.
 		 */
-		public void AddFrom(Tag.Compound c)
+		public void addAll(Tag.Compound c)
 		{
 			tags.putAll(c.tags);
 		}
@@ -1275,18 +1264,18 @@ public abstract class Tag implements Cloneable
 		 * @param c The collection from which to add the tags.
 		 * @throws IllegalArgumentException if the name of one of the given tags is null.
 		 */
-		public void AddFrom(Collection<? extends Tag> c) throws IllegalArgumentException
+		public void addAll(Collection<? extends Tag> c) throws IllegalArgumentException
 		{
 			for(Tag t : c)
 			{
-				Add(t);
+				add(t);
 			}
 		}
 		/**
 		 * Returns the number of tags in this compound tag.
 		 * @return The number of tags in this compound tag.
 		 */
-		public int Size()
+		public int getSize()
 		{
 			return tags.size();
 		}
@@ -1296,7 +1285,7 @@ public abstract class Tag implements Cloneable
 		 * @param name The name of the tag.
 		 * @return The tag with the given name, or null if the tag does not exist.
 		 */
-		public Tag Get(java.lang.String name)
+		public Tag get(java.lang.String name)
 		{
 			return tags.get(name);
 		}
@@ -1307,16 +1296,17 @@ public abstract class Tag implements Cloneable
 		 * @return The tag, guaranteed to be of the type specified.
 		 * @throws FormatException if the tag doesn't exist or is of the wrong type.
 		 */
-		public Tag Find(Type type, java.lang.String n) throws FormatException
+		@Deprecated
+		public Tag find(Type type, java.lang.String n) throws FormatException
 		{
 			Tag t = tags.get(n);
 			if(t == null)
 			{
 				throw new FormatException("No tag with the name \""+n+"\"", this);
 			}
-			else if(t.Type() != type)
+			else if(t.getType() != type)
 			{
-				throw new FormatException("\""+n+"\" is "+t.Type()+" instead of "+type, this);
+				throw new FormatException("\""+n+"\" is "+t.getType()+" instead of "+type, this);
 			}
 			return t;
 		}
@@ -1327,21 +1317,22 @@ public abstract class Tag implements Cloneable
 		 * @return The List tag, guaranteed to support the type specified.
 		 * @throws FormatException if the list doesn't exist or supports the wrong type.
 		 */
-		public List Find(java.lang.String n, Type type) throws FormatException
+		@Deprecated
+		public List findList(java.lang.String n, Type type) throws FormatException
 		{
 			Tag t = tags.get(n);
 			if(t == null)
 			{
 				throw new FormatException("No List tag with the name \""+n+"\"", this);
 			}
-			else if(t.Type() != Type.LIST)
+			else if(t.getType() != Type.LIST)
 			{
-				throw new FormatException("\""+n+"\" is "+t.Type()+" instead of a List tag", this);
+				throw new FormatException("\""+n+"\" is "+t.getType()+" instead of a List tag", this);
 			}
 			List l = (List)t;
-			if(l.Supports() != type)
+			if(l.getContainedType() != type)
 			{
-				throw new FormatException("\""+n+"\" supports "+l.Supports()+" instead of "+type, this);
+				throw new FormatException("\""+n+"\" supports "+l.getContainedType()+" instead of "+type, this);
 			}
 			return l;
 		}
@@ -1350,7 +1341,7 @@ public abstract class Tag implements Cloneable
 		 * @param n The name of the tag to remove.
 		 * @return The tag that was removed, or null if the tag didn't exist.
 		 */
-		public Tag Remove(java.lang.String n)
+		public Tag remove(java.lang.String n)
 		{
 			return tags.remove(n);
 		}
@@ -1425,7 +1416,7 @@ public abstract class Tag implements Cloneable
 		 * Returns the tag type that corresponds to TAG_Int_Array (?).
 		 * @return <code>Type.INTARRAY</code>.
 		 */
-		@Override public Type Type()
+		@Override public Type getType()
 		{
 			return Type.INTARRAY;
 		}
@@ -1434,7 +1425,7 @@ public abstract class Tag implements Cloneable
 		 * @param o The <code>OutputStream</code> to serialize this integer array to.
 		 * @throws IOException if the output operation generates an exception.
 		 */
-		@Override protected void SerializePayload(OutputStream o) throws IOException
+		@Override protected void serializePayload(OutputStream o) throws IOException
 		{
 			DataOutputStream dos = new DataOutputStream(o);
 			dos.writeInt(v.length);
@@ -1458,7 +1449,7 @@ public abstract class Tag implements Cloneable
 				}
 				s += i;
 			}
-			return"Int Array"+QuoteName()+": ["+s+"]";
+			return"Int Array"+quoteName()+": ["+s+"]";
 		}
 
 		/**

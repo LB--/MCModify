@@ -1,6 +1,7 @@
 package com.lb_stuff.mcmodify.minecraft;
 
 import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.nbt.Tag;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,11 +11,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
-import java.util.zip.InflaterInputStream;
 
 /**
  * Region file reader/writer
@@ -26,7 +28,7 @@ public class FileRegion extends Region
 	private static final int NUMBER_OF_HEADER_SECTORS = 2;
 
 	/**
-	 * The FileRegion File.
+	 * The Region File.
 	 */
 	private final File rf;
 
@@ -113,26 +115,13 @@ public class FileRegion extends Region
 			if(offset != -NUMBER_OF_HEADER_SECTORS && sectors != 0)
 			{
 				region.seek(CHUNK_SECTORS_START+offset*SECTOR_BYTES);
-				int length;
-				int compression;
-				byte[] chunk;
-				length = region.readInt()-1;
-				compression = region.readByte();
-				chunk = new byte[length];
+				int length = region.readInt()-1;
+				CompressionScheme compression = CompressionScheme.fromId(region.readByte());
+				byte[] chunk = new byte[length];
 				region.readFully(chunk);
-				try(ByteArrayInputStream chunkin = new ByteArrayInputStream(chunk))
+				try(InputStream is = compression.getInputStream(new ByteArrayInputStream(chunk)))
 				{
-					if(compression == GZip_Compression)
-					{
-						return new Chunk(com.lb_stuff.mcmodify.nbt.IO.Read(chunkin));
-					}
-					else if(compression == Zlib_Compression)
-					{
-						try(InflaterInputStream ci = new InflaterInputStream(chunkin))
-						{
-							return new Chunk(com.lb_stuff.mcmodify.nbt.IO.ReadUncompressed(ci));
-						}
-					}
+					return new Chunk((Tag.Compound)Tag.deserialize(is));
 				}
 			}
 		}
@@ -180,12 +169,15 @@ public class FileRegion extends Region
 			ByteBuffer chunkbytes;
 			try(ByteArrayOutputStream baos = new ByteArrayOutputStream(0))
 			{
-				com.lb_stuff.mcmodify.nbt.IO.Write(c.ToNBT(""), baos);
+				try(OutputStream os = CompressionScheme.GZip.getOutputStream(baos))
+				{
+					c.ToNBT("").serialize(os);
+				}
 				chunksize = baos.size();
 				newsectors = (int)((chunksize+5)/SECTOR_BYTES+1); //TODO: remove cast
 				chunkbytes = ByteBuffer.allocate((int)(newsectors*SECTOR_BYTES)); //TODO: remove cast
 				chunkbytes.putInt(chunksize+1);
-				chunkbytes.put(GZip_Compression);
+				chunkbytes.put(CompressionScheme.GZip.getId());
 				chunkbytes.put(baos.toByteArray());
 			}
 

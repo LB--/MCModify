@@ -45,14 +45,14 @@ public abstract class TileEntity
 	 */
 	public TileEntity(Tag.Compound tileentity) throws FormatException
 	{
-		String id = ((Tag.String)tileentity.Find(Tag.Type.STRING, "id")).v;
+		String id = ((Tag.String)tileentity.find(Tag.Type.STRING, "id")).v;
 		if(!getClass().getSimpleName().equals(id))
 		{
 			throw new FormatException("Tried to instantiate a "+getClass().getSimpleName()+" Tile Entity from a tag with id \""+id+"\"");
 		}
-		x = ((Tag.Int)tileentity.Find(Tag.Type.INT, "x")).v;
-		y = ((Tag.Int)tileentity.Find(Tag.Type.INT, "y")).v;
-		z = ((Tag.Int)tileentity.Find(Tag.Type.INT, "z")).v;
+		x = ((Tag.Int)tileentity.find(Tag.Type.INT, "x")).v;
+		y = ((Tag.Int)tileentity.find(Tag.Type.INT, "y")).v;
+		z = ((Tag.Int)tileentity.find(Tag.Type.INT, "z")).v;
 	}
 
 	/**
@@ -103,17 +103,17 @@ public abstract class TileEntity
 		{
 			super(furnace);
 
-			burntime = ((Tag.Short)furnace.Find(Tag.Type.SHORT, "BurnTime")).v;
-			cooktime = ((Tag.Short)furnace.Find(Tag.Type.SHORT, "CookTime")).v;
+			burntime = ((Tag.Short)furnace.find(Tag.Type.SHORT, "BurnTime")).v;
+			cooktime = ((Tag.Short)furnace.find(Tag.Type.SHORT, "CookTime")).v;
 
-			Tag.List items = (Tag.List)furnace.Find(Tag.Type.LIST, "Items");
-			if(items.Supports() != Tag.Type.COMPOUND)
+			Tag.List items = (Tag.List)furnace.find(Tag.Type.LIST, "Items");
+			if(items.getContainedType() != Tag.Type.COMPOUND)
 			{
-				throw new FormatException("Invalid Items list; expected list of Compound, got list of "+items.Supports());
+				throw new FormatException("Invalid Items list; expected list of Compound, got list of "+items.getContainedType());
 			}
-			smelting = new Inventory.Item((Tag.Compound)items.Get(0));
-			fuel = new Inventory.Item((Tag.Compound)items.Get(1));
-			result = new Inventory.Item((Tag.Compound)items.Get(2));
+			smelting = new Inventory.Item((Tag.Compound)items.get(0));
+			fuel = new Inventory.Item((Tag.Compound)items.get(1));
+			result = new Inventory.Item((Tag.Compound)items.get(2));
 		}
 
 		/**
@@ -175,7 +175,7 @@ public abstract class TileEntity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Short("BurnTime", burntime),
+			t.add(new Tag.Short("BurnTime", burntime),
 				  new Tag.Short("CookTime", cooktime),
 				  new Tag.List("Items", Tag.Type.COMPOUND, smelting.ToNBT(null),
 														   fuel.ToNBT(null),
@@ -202,10 +202,10 @@ public abstract class TileEntity
 		{
 			super(sign);
 
-			text1 = ((Tag.String)sign.Find(Tag.Type.STRING, "Text1")).v;
-			text2 = ((Tag.String)sign.Find(Tag.Type.STRING, "Text2")).v;
-			text3 = ((Tag.String)sign.Find(Tag.Type.STRING, "Text3")).v;
-			text4 = ((Tag.String)sign.Find(Tag.Type.STRING, "Text4")).v;
+			text1 = ((Tag.String)sign.find(Tag.Type.STRING, "Text1")).v;
+			text2 = ((Tag.String)sign.find(Tag.Type.STRING, "Text2")).v;
+			text3 = ((Tag.String)sign.find(Tag.Type.STRING, "Text3")).v;
+			text4 = ((Tag.String)sign.find(Tag.Type.STRING, "Text4")).v;
 		}
 
 		/**
@@ -251,7 +251,7 @@ public abstract class TileEntity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.String("Text1", text1),
+			t.add(new Tag.String("Text1", text1),
 				  new Tag.String("Text2", text2),
 				  new Tag.String("Text3", text3),
 				  new Tag.String("Text4", text4));
@@ -293,20 +293,20 @@ public abstract class TileEntity
 		{
 			super(mobspawner);
 
-			String eid = ((Tag.String)mobspawner.Find(Tag.Type.STRING, "EntityId")).v;
+			String eid = ((Tag.String)mobspawner.find(Tag.Type.STRING, "EntityId")).v;
 			entityid = Mob.ClassFromID(eid);
 			spawndata = new Tag.Compound(null);
 			try
 			{
-				spawndata.AddFrom((Tag.Compound)mobspawner.Find(Tag.Type.COMPOUND, "SpawnData"));
+				spawndata.addAll((Tag.Compound)mobspawner.find(Tag.Type.COMPOUND, "SpawnData"));
 			}
 			catch(FormatException e)
 			{
 			}
-			delay = ((Tag.Short)mobspawner.Find(Tag.Type.SHORT, "Delay")).v;
-			minspawndelay = ((Tag.Short)mobspawner.Find(Tag.Type.SHORT, "MinSpawnDelay")).v;
-			maxspawndelay = ((Tag.Short)mobspawner.Find(Tag.Type.SHORT, "MaxSpawnDelay")).v;
-			spawncount = ((Tag.Short)mobspawner.Find(Tag.Type.SHORT, "SpawnCount")).v;
+			delay = ((Tag.Short)mobspawner.find(Tag.Type.SHORT, "Delay")).v;
+			minspawndelay = ((Tag.Short)mobspawner.find(Tag.Type.SHORT, "MinSpawnDelay")).v;
+			maxspawndelay = ((Tag.Short)mobspawner.find(Tag.Type.SHORT, "MaxSpawnDelay")).v;
+			spawncount = ((Tag.Short)mobspawner.find(Tag.Type.SHORT, "SpawnCount")).v;
 		}
 
 		/**
@@ -418,13 +418,13 @@ public abstract class TileEntity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name), sd;
-			t.Add(new Tag.String("EntityId", entityid.getSimpleName()),
+			t.add(new Tag.String("EntityId", entityid.getSimpleName()),
 				  sd = new Tag.Compound("SpawnData"),
 				  new Tag.Short("Delay", delay),
 				  new Tag.Short("MinSpawnDelay", minspawndelay),
 				  new Tag.Short("MaxSpawnDelay", maxspawndelay),
 				  new Tag.Short("SpawnCount", spawncount));
-			sd.AddFrom(spawndata);
+			sd.addAll(spawndata);
 			return t;
 		}
 	}
@@ -449,7 +449,7 @@ public abstract class TileEntity
 		{
 			super(chest);
 
-			items = new Inventory((Tag.List)chest.Find(Tag.Type.LIST, "Items"));
+			items = new Inventory((Tag.List)chest.find(Tag.Type.LIST, "Items"));
 		}
 
 		/**
@@ -489,7 +489,7 @@ public abstract class TileEntity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(items.ToNBT("Items"));
+			t.add(items.ToNBT("Items"));
 			return t;
 		}
 	}
@@ -514,7 +514,7 @@ public abstract class TileEntity
 		{
 			super(music);
 
-			note = ((Tag.Byte)music.Find(Tag.Type.BYTE, "note")).v;
+			note = ((Tag.Byte)music.find(Tag.Type.BYTE, "note")).v;
 		}
 
 		/**
@@ -542,7 +542,7 @@ public abstract class TileEntity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Byte("note", note));
+			t.add(new Tag.Byte("note", note));
 			return t;
 		}
 	}
@@ -556,7 +556,7 @@ public abstract class TileEntity
 		{
 			super(trap);
 
-			items = new Inventory((Tag.List)trap.Find(Tag.Type.LIST, "Items"));
+			items = new Inventory((Tag.List)trap.find(Tag.Type.LIST, "Items"));
 		}
 
 		/**
@@ -596,7 +596,7 @@ public abstract class TileEntity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(items.ToNBT("Items"));
+			t.add(items.ToNBT("Items"));
 			return t;
 		}
 	}
@@ -621,7 +621,7 @@ public abstract class TileEntity
 		{
 			super(recordplayer);
 
-			record = ((Tag.Int)recordplayer.Find(Tag.Type.INT, "Record")).v;
+			record = ((Tag.Int)recordplayer.find(Tag.Type.INT, "Record")).v;
 		}
 
 		/**
@@ -649,7 +649,7 @@ public abstract class TileEntity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Int("Record", record));
+			t.add(new Tag.Int("Record", record));
 			return t;
 		}
 	}
@@ -716,11 +716,11 @@ public abstract class TileEntity
 		{
 			super(piston);
 
-			blockid = ((Tag.Int)piston.Find(Tag.Type.INT, "blockId")).v;
-			blockdata = ((Tag.Int)piston.Find(Tag.Type.INT, "blockData")).v;
-			facing = Facing.FromOrdinal(((Tag.Int)piston.Find(Tag.Type.INT, "facing")).v);
-			progress = ((Tag.Float)piston.Find(Tag.Type.FLOAT, "progress")).v;
-			extending = ((Tag.Byte)piston.Find(Tag.Type.BYTE, "extending")).v != 0 ? true : false;
+			blockid = ((Tag.Int)piston.find(Tag.Type.INT, "blockId")).v;
+			blockdata = ((Tag.Int)piston.find(Tag.Type.INT, "blockData")).v;
+			facing = Facing.FromOrdinal(((Tag.Int)piston.find(Tag.Type.INT, "facing")).v);
+			progress = ((Tag.Float)piston.find(Tag.Type.FLOAT, "progress")).v;
+			extending = ((Tag.Byte)piston.find(Tag.Type.BYTE, "extending")).v != 0 ? true : false;
 		}
 
 		/**
@@ -816,7 +816,7 @@ public abstract class TileEntity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(new Tag.Int("blockId", blockid),
+			t.add(new Tag.Int("blockId", blockid),
 				  new Tag.Int("blockData", blockdata),
 				  new Tag.Int("facing", facing.ordinal()),
 				  new Tag.Float("progress", progress),
@@ -852,8 +852,8 @@ public abstract class TileEntity
 		{
 			super(cauldron);
 
-			items = new Inventory((Tag.List)cauldron.Find(Tag.Type.LIST, "Items"));
-			brewtime = ((Tag.Int)cauldron.Find(Tag.Type.INT, "BrewTime")).v;
+			items = new Inventory((Tag.List)cauldron.find(Tag.Type.LIST, "Items"));
+			brewtime = ((Tag.Int)cauldron.find(Tag.Type.INT, "BrewTime")).v;
 		}
 
 		/**
@@ -927,7 +927,7 @@ public abstract class TileEntity
 		@Override public Tag.Compound ToNBT(String name)
 		{
 			Tag.Compound t = super.ToNBT(name);
-			t.Add(items.ToNBT("Items"),
+			t.add(items.ToNBT("Items"),
 				  new Tag.Int("BrewTime", brewtime));
 			return t;
 		}

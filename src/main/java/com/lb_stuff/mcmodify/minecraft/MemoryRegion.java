@@ -1,7 +1,7 @@
 package com.lb_stuff.mcmodify.minecraft;
 
 import com.lb_stuff.mcmodify.nbt.FormatException;
-import com.lb_stuff.mcmodify.nbt.IO;
+import com.lb_stuff.mcmodify.nbt.Tag;
 
 import org.apache.commons.io.IOUtils;
 
@@ -19,10 +19,10 @@ import java.io.RandomAccessFile;
  */
 public class MemoryRegion extends Region
 {
-	private final ChunkCompression compression;
+	private final CompressionScheme compression;
 	private final int[] timestamps = new int[MAX_CHUNKS];
 	private final byte[][] chunks = new byte[MAX_CHUNKS][];
-	public MemoryRegion(File mca, ChunkCompression preferred) throws IOException
+	public MemoryRegion(File mca, CompressionScheme preferred) throws IOException
 	{
 		compression = preferred;
 		try(RandomAccessFile region = new RandomAccessFile(mca, "r"))
@@ -39,7 +39,7 @@ public class MemoryRegion extends Region
 				{
 					region.seek(loc.offset);
 					final int length = region.readInt();
-					final ChunkCompression compressed = ChunkCompression.fromId(region.readByte());
+					final CompressionScheme compressed = CompressionScheme.fromId(region.readByte());
 					chunks[i] = new byte[length-1];
 					region.readFully(chunks[i]);
 					if(compressed != null && compressed != compression)
@@ -61,9 +61,9 @@ public class MemoryRegion extends Region
 		}
 	}
 
-	public void saveToFile(File mca, ChunkCompression preferred) throws IOException
+	public void saveToFile(File mca, CompressionScheme preferred) throws IOException
 	{
-		if(preferred == ChunkCompression.None)
+		if(preferred == CompressionScheme.None)
 		{
 			throw new IllegalArgumentException("Minecraft does not support uncompressed region files");
 		}
@@ -107,12 +107,12 @@ public class MemoryRegion extends Region
 	}
 
 	@Override
-	public Chunk getChunk(int x, int z) throws FormatException, IOException
+	public Chunk getChunk(int x, int z) throws IOException
 	{
 		final int index = chunkIndex(x, z);
 		if(chunks[index] != null)
 		{
-			return new Chunk(IO.ReadUncompressed(compression.getInputStream(new ByteArrayInputStream(chunks[index]))));
+			return new Chunk((Tag.Compound)Tag.deserialize(compression.getInputStream(new ByteArrayInputStream(chunks[index]))));
 		}
 		return null;
 	}
@@ -130,7 +130,7 @@ public class MemoryRegion extends Region
 		{
 			try(OutputStream os = compression.getOutputStream(baos))
 			{
-				c.ToNBT("").Serialize(os);
+				c.ToNBT("").serialize(os);
 			}
 			chunks[index] = baos.toByteArray();
 		}

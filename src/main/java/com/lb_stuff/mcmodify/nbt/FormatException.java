@@ -1,5 +1,6 @@
 package com.lb_stuff.mcmodify.nbt;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,12 +8,12 @@ import java.util.List;
 /**
  * The generic "this data is wonky" exception.
  */
-public class FormatException extends Exception
+public class FormatException extends IOException
 {
 	/**
 	 * The tag(s) that caused the problem, if any.
 	 */
-	List<Tag> t = new ArrayList<>();
+	private List<Tag> t = new ArrayList<>();
 
 	/**
 	 * Instantiates this exception with the given message.
