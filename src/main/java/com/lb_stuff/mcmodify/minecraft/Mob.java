@@ -851,11 +851,11 @@ public abstract class Mob extends Entity
 		{
 			equip.set(e.getKey().ID(), e.getValue().ToNBT(null));
 		}
-		drops.add(new Tag.Compound(null),
-				  new Tag.Compound(null),
-				  new Tag.Compound(null),
-				  new Tag.Compound(null),
-				  new Tag.Compound(null));
+		drops.add(new Tag.Float(null, 0.0f),
+				  new Tag.Float(null, 0.0f),
+				  new Tag.Float(null, 0.0f),
+				  new Tag.Float(null, 0.0f),
+				  new Tag.Float(null, 0.0f));
 		for(Map.Entry<EquipmentSlot, Float> e : dropchances.entrySet())
 		{
 			drops.set(e.getKey().ID(), new Tag.Float(null, e.getValue()));
