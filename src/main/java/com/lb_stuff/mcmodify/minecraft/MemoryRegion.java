@@ -1,6 +1,6 @@
 package com.lb_stuff.mcmodify.minecraft;
 
-import com.lb_stuff.mcmodify.nbt.FormatException;
+import com.lb_stuff.mcmodify.location.LocChunkInRegion;
 import com.lb_stuff.mcmodify.nbt.Tag;
 
 import org.apache.commons.io.IOUtils;
@@ -35,7 +35,7 @@ public class MemoryRegion extends Region
 				region.seek(TIMESTAMPS_SECTOR_START + i*4);
 				timestamps[i] = region.readInt();
 
-				if(loc.offset != 0 && loc.count != 0)
+				if(loc.offset > 0 && loc.size > 0)
 				{
 					region.seek(loc.offset);
 					final int length = region.readInt();
@@ -73,7 +73,7 @@ public class MemoryRegion extends Region
 			for(int i = 0; i < MAX_CHUNKS; ++i)
 			{
 				region.seek(LOCATIONS_SECTOR_START + i*4);
-				region.writeInt(0);
+				new LocationPair(0, 0).serialize(region);
 
 				region.seek(TIMESTAMPS_SECTOR_START + i*4);
 				region.writeInt(timestamps[i]);
@@ -98,7 +98,7 @@ public class MemoryRegion extends Region
 					region.write(chunk);
 
 					final LocationPair loc = new LocationPair(offset, region.getFilePointer()-offset);
-					offset = LocationPair.nextSector(region.getFilePointer());
+					offset = nextSector(region.getFilePointer());
 					region.seek(LOCATIONS_SECTOR_START + i*4);
 					loc.serialize(region);
 				}
@@ -107,9 +107,9 @@ public class MemoryRegion extends Region
 	}
 
 	@Override
-	public Chunk getChunk(int x, int z) throws IOException
+	public Chunk getChunk(LocChunkInRegion pos) throws IOException
 	{
-		final int index = chunkIndex(x, z);
+		final int index = chunkIndex(pos);
 		if(chunks[index] != null)
 		{
 			return new Chunk((Tag.Compound)Tag.deserialize(compression.getInputStream(new ByteArrayInputStream(chunks[index]))));
@@ -117,15 +117,15 @@ public class MemoryRegion extends Region
 		return null;
 	}
 	@Override
-	public int getTimestamp(int x, int z)
+	public int getTimestamp(LocChunkInRegion pos)
 	{
-		return timestamps[chunkIndex(x, z)];
+		return timestamps[chunkIndex(pos)];
 	}
 
 	@Override
-	public void setChunk(int x, int z, Chunk c) throws IOException
+	public void setChunk(LocChunkInRegion pos, Chunk c) throws IOException
 	{
-		final int index = chunkIndex(x, z);
+		final int index = chunkIndex(pos);
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream())
 		{
 			try(OutputStream os = compression.getOutputStream(baos))
@@ -136,8 +136,8 @@ public class MemoryRegion extends Region
 		}
 	}
 	@Override
-	public void setTimestamp(int x, int z, int timestamp)
+	public void setTimestamp(LocChunkInRegion pos, int timestamp)
 	{
-		timestamps[chunkIndex(x, z)] = timestamp;
+		timestamps[chunkIndex(pos)] = timestamp;
 	}
 }

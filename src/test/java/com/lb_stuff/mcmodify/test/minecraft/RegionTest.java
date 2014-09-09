@@ -1,5 +1,6 @@
 package com.lb_stuff.mcmodify.test.minecraft;
 
+import com.lb_stuff.mcmodify.location.LocChunkInRegion;
 import com.lb_stuff.mcmodify.minecraft.Chunk;
 import com.lb_stuff.mcmodify.minecraft.FileRegion;
 import com.lb_stuff.mcmodify.minecraft.Mob;
@@ -7,7 +8,6 @@ import com.lb_stuff.mcmodify.test.TestingUtils;
 
 import org.junit.Test;
 
-import java.io.File;
 
 public class RegionTest
 {
@@ -20,12 +20,12 @@ public class RegionTest
 		{
 			for(int z = 0; z < 31; ++z)
 			{
-				Chunk chunk = region.getChunk(x, z);
+				Chunk chunk = region.getChunk(new LocChunkInRegion(x, z));
 				if(chunk != null)
 				{
 					chunk.Entities().add(new Mob.EnderDragon(x*16+8, 96, z*16+8));
 				}
-				newregion.setChunk(x, z, chunk);
+				newregion.setChunk(new LocChunkInRegion(x, z), chunk);
 			}
 		}
 	}

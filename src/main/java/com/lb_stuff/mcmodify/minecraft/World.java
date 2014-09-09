@@ -1,11 +1,12 @@
 package com.lb_stuff.mcmodify.minecraft;
 
+import com.lb_stuff.mcmodify.location.LocChunkInRegion;
+import com.lb_stuff.mcmodify.location.LocRegionInDimension;
 import com.lb_stuff.mcmodify.nbt.FormatException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -143,42 +144,39 @@ public final class World
 
 	/**
 	 * Get a {@link FileRegion} instance tied to this world.
-	 * @param d The dimension of the chunk/region.
-	 * @param chunkX The X chunk coordinate of the chunk in the world.
-	 * @param chunkZ The Z chunk coordinate of the chunk in the world.
+	 * @param d The dimension of the region.
+	 * @param pos The location of the region.
 	 * @return a {@link FileRegion} instance tied to this world.
 	 * @throws IOException if thrown by the FileRegion constructor.
 	 */
-	public FileRegion getFileRegion(Dimension d, int chunkX, int chunkZ) throws IOException
+	public FileRegion getFileRegion(Dimension d, LocRegionInDimension pos) throws IOException
 	{
 		d.getFolder(this).mkdirs();
-		int rx = (int)Math.floor(chunkX/32.0);
-		int rz = (int)Math.floor(chunkZ/32.0);
-		return new FileRegion(new File(d.getFolder(this), "r."+rx+"."+rz+".mca"))
+		return new FileRegion(new File(d.getFolder(this), "r."+pos.x+"."+pos.z+".mca"))
 		{
 			@Override
-			public Chunk getChunk(int x, int z) throws FormatException, IOException
+			public Chunk getChunk(LocChunkInRegion pos) throws FormatException, IOException
 			{
 				throwIfNotLocked();
-				return super.getChunk(x, z);
+				return super.getChunk(pos);
 			}
 			@Override
-			public int getTimestamp(int x, int z) throws IOException
+			public int getTimestamp(LocChunkInRegion pos) throws IOException
 			{
 				throwIfNotLocked();
-				return super.getTimestamp(x, z);
+				return super.getTimestamp(pos);
 			}
 			@Override
-			public void setChunk(int x, int z, Chunk c) throws IOException
+			public void setChunk(LocChunkInRegion pos, Chunk c) throws IOException
 			{
 				throwIfNotLocked();
-				super.setChunk(x, z, c);
+				super.setChunk(pos, c);
 			}
 			@Override
-			public void setTimestamp(int x, int z, int timestamp) throws IOException
+			public void setTimestamp(LocChunkInRegion pos, int timestamp) throws IOException
 			{
 				throwIfNotLocked();
-				super.setTimestamp(x, z, timestamp);
+				super.setTimestamp(pos, timestamp);
 			}
 		};
 	}
