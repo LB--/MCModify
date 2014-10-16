@@ -76,7 +76,9 @@ public class Map
 			new Color(74, 128, 255),
 			new Color(0, 217, 58),
 			new Color(21, 20, 31),
-			new Color(112, 2, 0)
+			new Color(112, 2, 0),
+			//new 1.8 colors
+			new Color(126, 84, 48)
 		};
 		MapColors = new Color[BaseMapColors.length*4];
 		for(int i = 0; i < BaseMapColors.length; ++i)
